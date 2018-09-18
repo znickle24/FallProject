@@ -1,12 +1,22 @@
 package com.zandernickle.fallproject_pt1;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 
 /**
@@ -17,7 +27,7 @@ import android.view.ViewGroup;
  * Use the {@link HikesFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HikesFragment extends Fragment {
+public class HikesFragment extends Fragment implements View.OnClickListener, LocationListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -29,6 +39,22 @@ public class HikesFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
+    //Create variables for the UI elements
+    private TextView mTvTemp, mTvHumid;
+    private Button mButtonSearch;
+
+    //Variables that hold the current location's latitude and longitude
+    private double mLatitude, mLongitude;
+
+    Context mContext;
+
+    //Used to find current location
+    protected LocationManager locationManager;
+
+
+    /**
+     * Constructor for HikesFragment
+     */
     public HikesFragment() {
         // Required empty public constructor
     }
@@ -61,22 +87,50 @@ public class HikesFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_hikes, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //Inflate the HikesFragment layout view
+        View view = inflater.inflate(R.layout.fragment_hikes, container, false);
+
+        //Get hike search button
+        mButtonSearch = (Button) view.findViewById(R.id.button_hike_search);
+
+        //Set hike search button to an onClickListener
+        mButtonSearch.setOnClickListener(this);
+
+        //Get the TextViews to display the temperature and humidity
+        mTvTemp = (TextView) view.findViewById(R.id.tv_temp_data);
+        mTvHumid = (TextView) view.findViewById(R.id.tv_humid_data);
+
+        //Get the temperature and humidity data
+        int tempInt = getArguments().getInt("temp");
+        String tempString = Integer.toString(tempInt);
+        int humidInt = getArguments().getInt("humidity");
+        String humidString = Integer.toString(humidInt);
+
+        //Set the full name, age, and occupation strings in TextViews
+        if (tempString != null) {
+            mTvTemp.setText(tempString);
+        }
+        if (humidString != null) {
+            mTvHumid.setText(humidString);
+        }
+
+        return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
+//    // TODO: Rename method, update argument and hook method into UI event
+//    public void onButtonPressed(Uri uri) {
+//        if (mListener != null) {
+//            mListener.onFragmentInteraction(uri);
+//        }
+//    }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
+        mContext = context; //added; MIGHT NOT NEED
+
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
@@ -105,4 +159,92 @@ public class HikesFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+
+
+
+    /**
+     * Handles clicks for the hike search button
+     * Finds the user's current location
+     * Presents the user with hikes near their current location
+     * @param view
+     */
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.button_hike_search: {
+
+                //Get current location
+                locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+
+                if (ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(getActivity(), "First enable LOCATION ACCESS in settings.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 1, listener);
+
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+
+                LocationManager locManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+
+                boolean network_enabled = locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+                Location location;
+
+                if(network_enabled){
+
+                    location = locManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+                    if(location!=null){
+                        mLatitude = location.getLatitude();
+                        Log.d("mLatitude: ", Double.toString(mLatitude));
+                        mLongitude = location.getLongitude();
+                        Log.d("mLongitude: ", Double.toString(mLongitude));
+
+                    }
+                }
+
+                Uri searchUri = Uri.parse("geo:" + Double.toString(mLatitude) + "," + Double.toString(mLongitude) + "?q=" + "hikes");
+
+                //Create the implicit intent for Google Maps
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, searchUri);
+
+                //If there's an activity associated with this intent, launch it
+                if (mapIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    startActivity(mapIntent);
+                    }
+                }
+        }
+    } //end of onClick function
+
+
+
+@Override
+public void onLocationChanged(Location location) {
+        Log.d("HikesFragment.java: ", "in onLocationChanged() in HikesFragment.java");
+        mLatitude = location.getLatitude();
+        Log.d("mLatitude: ", Double.toString(mLatitude));
+        mLongitude = location.getLongitude();
+        Log.d("mLongitude: ", Double.toString(mLongitude));
+    }
+
+
+@Override
+public void onProviderDisabled(String provider) {
+        Log.d("Latitude","disable");
+    }
+
+
+@Override
+public void onProviderEnabled(String provider) {
+        Log.d("Latitude","enable");
+    }
+
+
+@Override
+public void onStatusChanged(String provider, int status, Bundle extras) {
+        Log.d("Latitude","status");
+    }
+
 }
