@@ -20,4 +20,10 @@ public class Key {
     public static final String ACTIVITY_LEVEL = "ACTIVITY_LEVEL"; // enum (com.zandernickle.fallproject_pt1.ActivityLevel)
     public static final String GOAL = "GOAL"; // enum (com.zandernickle.fallproject_pt1.Goal)
 
+    /* MATT
+     *
+     * Reusable constants.
+     */
+    public static final int REQUEST_IMAGE_CAPTURE = 1;
+
 }
