@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
@@ -24,8 +25,8 @@ public class ReusableUtil {
      *
      * Fails if camera access is denied.
      *
-     * @param activity
-     * @param requestCode
+     * @param activity the Activity from which to send the image capture intent.
+     * @param requestCode the request code assigned to this intent.
      */
     public static void attemptImageCapture(Activity activity, int requestCode) {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -129,6 +130,10 @@ public class ReusableUtil {
         for (EditText e : editTexts) {
             e.addTextChangedListener(textWatcher);
         }
+    }
+
+    public String getStringFromTextInputLayout(TextInputLayout layout) {
+        return layout.getEditText().getText().toString();
     }
 
 }
