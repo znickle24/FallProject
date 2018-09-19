@@ -88,24 +88,29 @@
             android:layout_height="match_parent"></android.support.v7.widget.AppCompatSpinner>
     </FrameLayout>
 
-    <FrameLayout
-        android:id="@+id/fl_spin_wrap_city"
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/til_postal_code"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
         android:layout_width="0dp"
-        android:layout_height="56dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
-        android:background="@drawable/spinner"
+        android:hint="Postal code"
+        android:textColorHint="#87888E"
+        app:boxBackgroundColor="#282A31"
         app:layout_constraintEnd_toStartOf="@+id/fl_spin_wrap_country"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fl_spin_wrap_age">
+        app:layout_constraintTop_toBottomOf="@id/fl_spin_wrap_age">
 
-        <android.support.v7.widget.AppCompatSpinner
-            android:id="@+id/spinner_city"
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/tiet_postal_code"
+            style="@style/Widget.MaterialComponents.TextInputEditText.FilledBox"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:entries="@array/spinnerCityData"></android.support.v7.widget.AppCompatSpinner>
-    </FrameLayout>
+            android:paddingBottom="16dp"
+            android:paddingTop="16dp" />
+    </android.support.design.widget.TextInputLayout>
 
     <FrameLayout
         android:id="@+id/fl_spin_wrap_country"

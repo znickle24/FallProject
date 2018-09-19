@@ -16,11 +16,18 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.HashMap;
+
 public class SignInActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher {
 
-    public static final String AGE_LABEL = "Age";
-    public static final String CITY_LABEL = "City";
-    public static final String COUNTRY_LABEL = "Country";
+    private static final String AGE_LABEL = "Age";
+    private static final String COUNTRY_LABEL = "Country";
+
+    private static final int KEY = 0;
+    private static final int EDIT_TEXT = 1;
+
+    // "*" According to Material Design guidelines.
+    private static final String REQUIRED_FIELD = "*Required";
 
     public static final int MIN_AGE = 13;
     public static final int MAX_AGE = 120;
@@ -28,12 +35,12 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     TextView mTvSignUp;
     ImageButton mImgBtnAddProfileImage;
     ImageView mImgViewProfileImage;
-    TextInputLayout mTilName;
-    AppCompatSpinner mSpinAge, mSpinCity, mSpinCountry;
+    CustomTextInputLayout mTilName, mTilPostalCode;
+    AppCompatSpinner mSpinAge, mSpinCountry;
     Button mBtnSubmit;
 
+    HashMap<String, CustomTextInputLayout> mTextInputLayouts;
     Bitmap mBitmapProfileImg;
-
     Boolean mHasCompleteData = true;
 
     @Override
@@ -45,11 +52,12 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         mImgBtnAddProfileImage = findViewById(R.id.ib_add_profile_image);
         mImgViewProfileImage = findViewById(R.id.iv_profile_image);
         mTilName = findViewById(R.id.til_name);
+        mTilPostalCode = findViewById(R.id.til_postal_code);
         mSpinAge = findViewById(R.id.spinner_age);
-        mSpinCity = findViewById(R.id.spinner_city);
         mSpinCountry = findViewById(R.id.spinner_country);
         mBtnSubmit = findViewById(R.id.button_submit);
 
+        initializeMapTextInputLayouts();
         initializeSpinners();
 
         ReusableUtil.setOnClickListeners(SignInActivity
@@ -71,12 +79,23 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     /**
+     * Initializes the HashMap containing all TextInputLayouts for SignInActivity. Use this method
+     * to initialize any future additions of TextInputLayout.
+     */
+    private void initializeMapTextInputLayouts() {
+        mTextInputLayouts = new HashMap<String, CustomTextInputLayout>() {{
+            put(Key.NAME, mTilName);
+            put(Key.POSTAL_CODE, mTilPostalCode);
+        }};
+    }
+
+    /**
      * Initializes Spinner Views with the appropriate data. Use this method to add any additional
      * spinners not defined in the xml or those to which external or dynamic data should be added.
      * <p>
      * See SpinnerUtil.java for creating/retrieving Spinner data.
      */
-    private void initializeSpinners(AppCompatSpinner... spinners) {
+    private void initializeSpinners() {
 
         // TODO: Will the adapter need to be stored as a member variable and re-initialized?
 
@@ -93,8 +112,6 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                 R.layout.spinner_item, spinnerCountryData);
         // Set dropdown View resource here.
         mSpinCountry.setAdapter(countryAdapter);
-
-        // TODO: Implement city Spinner
     }
 
     @Override
@@ -108,35 +125,37 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
             case R.id.button_submit:
 
-                String name = mTilName.getEditText().getText().toString();
-                String age = mSpinAge.getSelectedItem().toString();
-                String city = mSpinCity.getSelectedItem().toString();
-                String country = mSpinCountry.getSelectedItem().toString();
+                String[][] editTextData = {
+                        new String[] { Key.NAME, mTilName.getEditTextString() },
+                        new String[] { Key.POSTAL_CODE, mTilPostalCode.getEditTextString() }
+                };
 
-                Bundle userAccountBundle = new Bundle();
+                String age = mSpinAge.getSelectedItem().toString();
+                String country = mSpinCountry.getSelectedItem().toString();
 
                 if (mBitmapProfileImg == null) {
                     mHasCompleteData = false;
                     // TODO: Provide user feedback.
                 }
 
-                // TODO: Additional error handling needed? Remove extra spaces.
-                if (name.length() == 0) {
-                    mHasCompleteData = false;
-                    mTilName.setErrorEnabled(true);
-                    mTilName.setError("*Required"); // "*" According to Material Design guidelines.
+                for (String[] data : editTextData) {
+                    if (data[EDIT_TEXT].length() == 0) {
+                        mHasCompleteData = false;
+                        mTextInputLayouts.get(data[KEY]).showError(REQUIRED_FIELD);
+                    }
                 }
 
-                if (age == AGE_LABEL || city == CITY_LABEL || country == COUNTRY_LABEL) {
+                if (age == AGE_LABEL || country == COUNTRY_LABEL) {
                     mHasCompleteData = false;
                     // TODO: Error/Required messages
                 }
 
                 if (mHasCompleteData) {
+                    Bundle userAccountBundle = new Bundle();
                     ReusableUtil.bitmapToBundle(userAccountBundle, mBitmapProfileImg, Key.PROFILE_IMAGE);
                     userAccountBundle.putString(Key.NAME, mTilName.getEditText().getText().toString());
                     userAccountBundle.putInt(Key.AGE, Integer.parseInt(age));
-                    userAccountBundle.putString(Key.CITY, city);
+                    // TODO: Put postal code
                     userAccountBundle.putString(Key.COUNTRY, country);
                 }
 
