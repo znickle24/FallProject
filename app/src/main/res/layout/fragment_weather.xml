@@ -105,7 +105,7 @@
 
         //CHANGE LOCATION Button
         <Button
-            android:id="@+id/button_hike_search"
+            android:id="@+id/button_change_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="16dp"

@@ -12,12 +12,18 @@ public class Key {
     public static final String NAME = "NAME"; // String
     public static final String PROFILE_IMAGE = "PROFILE_IMAGE"; // String
     public static final String AGE = "AGE"; // int
-    public static final String CITY = "CITY"; // String
+    public static final String POSTAL_CODE = "POSTAL_CODE"; // String
     public static final String COUNTRY = "COUNTRY"; // String
     public static final String HEIGHT = "HEIGHT"; // int (inches)
     public static final String WEIGHT = "WEIGHT"; // int (lbs)
     public static final String SEX = "SEX"; // enum (com.zandernickle.fallproject_pt1.Sex)
     public static final String ACTIVITY_LEVEL = "ACTIVITY_LEVEL"; // enum (com.zandernickle.fallproject_pt1.ActivityLevel)
     public static final String GOAL = "GOAL"; // enum (com.zandernickle.fallproject_pt1.Goal)
+
+    /* MATT
+     *
+     * Reusable constants.
+     */
+    public static final int REQUEST_IMAGE_CAPTURE = 1;
 
 }

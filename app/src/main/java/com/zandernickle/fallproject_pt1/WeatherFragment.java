@@ -1,12 +1,20 @@
 package com.zandernickle.fallproject_pt1;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import org.json.JSONException;
+import java.net.URL;
 
 
 /**
@@ -17,7 +25,7 @@ import android.view.ViewGroup;
  * Use the {@link WeatherFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class WeatherFragment extends Fragment {
+public class WeatherFragment extends Fragment implements View.OnClickListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -28,6 +36,20 @@ public class WeatherFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    private TextView mTvTemp, mTvPressure, mTvHumid;
+    private WeatherData mWeatherData;
+    private Button mBtLocation;
+    private ImageView mIvProfilePic;
+
+    private Context mContext;
+
+    //Uniquely identify loader
+    private static final int SEARCH_LOADER = 11;
+
+    //Uniquely identify string you passed in
+    public static final String URL_STRING = "query";
+
 
     public WeatherFragment() {
         // Required empty public constructor
@@ -60,11 +82,43 @@ public class WeatherFragment extends Fragment {
         }
     }
 
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_weather, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //Inflate the HikesFragment layout view
+        View view = inflater.inflate(R.layout.fragment_weather, container, false);
+
+        //ONLY NEED THIS IF WE WANT TO CHANGE LOCATION
+        mBtLocation = (Button) view.findViewById(R.id.button_change_location);
+        mBtLocation.setOnClickListener(this);
+
+        //Get the TextViews to display the temperature and humidity
+        mTvTemp = (TextView) view.findViewById(R.id.tv_temp_data);
+        mTvHumid = (TextView) view.findViewById(R.id.tv_humid_data);
+        mTvPressure = (TextView) view.findViewById(R.id.tv_pressure_data);
+
+        //Get the temperature and humidity data
+        int tempInt = getArguments().getInt("temp");
+        String tempString = Integer.toString(tempInt);
+        int humidInt = getArguments().getInt("humidity");
+        String humidString = Integer.toString(humidInt);
+
+        //Set the full name, age, and occupation strings in TextViews
+        if (tempString != null) {
+            mTvTemp.setText(tempString);
+        }
+        if (humidString != null) {
+            mTvHumid.setText(humidString);
+        }
+
+        //Set the image view
+        String imagePath = getArguments().getString("imagePath");
+        Bitmap thumbnailImage = BitmapFactory.decodeFile(imagePath);
+        if(thumbnailImage != null){
+            mIvProfilePic.setImageBitmap(thumbnailImage);
+        }
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -77,6 +131,7 @@ public class WeatherFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mContext = context;
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
@@ -105,4 +160,58 @@ public class WeatherFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+    private void loadWeatherData(String location){
+        new FetchWeatherTask().execute(location);
+    }
+
+
+    private class FetchWeatherTask extends AsyncTask<String,Void,String> {
+        @Override
+        protected String doInBackground(String... inputStringArray) {
+            String location = inputStringArray[0];
+            URL weatherDataURL = Network.buildURLFromString(location);
+            String jsonWeatherData = null;
+            try{
+                jsonWeatherData = Network.getDataFromURL(weatherDataURL);
+                return jsonWeatherData;
+            }catch(Exception e){
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String jsonWeatherData) {
+            if (jsonWeatherData!=null){
+                try {
+                    mWeatherData = JSONWeather.getWeatherData(jsonWeatherData);
+                }
+                catch(JSONException e){
+                    e.printStackTrace();
+                }
+                if(mWeatherData!=null) {
+                    mTvTemp.setText("" + Math.round(mWeatherData.getTemperature().getTemp() - 273.15) + " C");
+                    mTvHumid.setText("" + mWeatherData.getCurrentCondition().getHumidity() + "%");
+                    mTvPressure.setText("" + mWeatherData.getCurrentCondition().getPressure() + " hPa");
+                }
+            }
+        }
+    }
+
+
+        //CHANGE THIS IF WE WANT TO CHANGE THE LOCATION WITH BUTTON
+        @Override
+        public void onClick(View view) {
+            switch(view.getId()){
+                case R.id.button_change_location:{
+                    //Get the string from the edit text and sanitize the input
+                    //String inputFromEt = mEtLocation.getText().toString().replace(' ','&');
+                    //loadWeatherData(inputFromEt);
+                }
+                break;
+            }
+        }
+
+
 }

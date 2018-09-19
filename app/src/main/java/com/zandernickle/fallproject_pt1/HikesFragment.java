@@ -3,6 +3,8 @@ package com.zandernickle.fallproject_pt1;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -15,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +45,7 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
     //Create variables for the UI elements
     private TextView mTvTemp, mTvHumid;
     private Button mButtonSearch;
+    private ImageView mIvProfilePic;
 
     //Variables that hold the current location's latitude and longitude
     private double mLatitude, mLongitude;
@@ -114,6 +118,14 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
         if (humidString != null) {
             mTvHumid.setText(humidString);
         }
+
+        //Set the image view
+        String imagePath = getArguments().getString("imagePath");
+        Bitmap thumbnailImage = BitmapFactory.decodeFile(imagePath);
+        if(thumbnailImage != null){
+            mIvProfilePic.setImageBitmap(thumbnailImage);
+        }
+
 
         return view;
     }
