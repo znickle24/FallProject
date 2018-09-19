@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="spinnerAgeData">
+        <item>Age</item>
+        <item>20</item>
+        <item>21</item>
+        <item>22</item>
+        <item>23</item>
+    </string-array>
+    <string-array name="spinnerCityData">
+        <item>City</item>
+        <item>Salt Lake City</item>
+        <item>San Francisco</item>
+        <item>New York</item>
+        <item>Seattle</item>
+    </string-array>
+    <string-array name="spinnerCountryData">
+        <item>Country</item>
+        <item>US</item>
+        <item>UK</item>
+        <item>CA</item>
+    </string-array>
+</resources>
