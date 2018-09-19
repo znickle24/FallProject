@@ -2,10 +2,10 @@ package com.zandernickle.fallproject_pt1;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.AppCompatSpinner;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,7 +14,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 public class SignInActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher {
@@ -74,7 +73,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     /**
      * Initializes Spinner Views with the appropriate data. Use this method to add any additional
      * spinners not defined in the xml or those to which external or dynamic data should be added.
-     *
+     * <p>
      * See SpinnerUtil.java for creating/retrieving Spinner data.
      */
     private void initializeSpinners(AppCompatSpinner... spinners) {
@@ -149,25 +148,28 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // Nullable
-        mBitmapProfileImg = ReusableUtil.onImageCaptureResult(SignInActivity
-                        .this, data,
-                requestCode, resultCode, null);
-        if (mBitmapProfileImg != null) {
-            mImgBtnAddProfileImage.setVisibility(View.INVISIBLE);
-            mImgViewProfileImage.setImageBitmap(mBitmapProfileImg);
-            mImgViewProfileImage.setVisibility(View.VISIBLE);
-        }
+        // TODO: Only pass resultCode to onImageCaptureResult; check request code here.
 
-        /* TODO: Move back here?
-         * If mBitmapProfileImg is null, mHasCompleteData is set to false when mBtnSubmit is
-         * clicked.
-         */
+        if (requestCode == Key.REQUEST_IMAGE_CAPTURE) {
+            // Nullable
+            mBitmapProfileImg = ReusableUtil.onImageCaptureResult(SignInActivity
+                            .this, data, resultCode, null);
+            if (mBitmapProfileImg != null) {
+                mImgBtnAddProfileImage.setVisibility(View.INVISIBLE);
+                mImgViewProfileImage.setImageBitmap(mBitmapProfileImg);
+                mImgViewProfileImage.setVisibility(View.VISIBLE);
+            }
+
+            /* TODO: Move back here?
+             * If mBitmapProfileImg is null, mHasCompleteData is set to false when mBtnSubmit is
+             * clicked.
+             */
+        }
     }
 
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+        // Required override. Do nothing.
     }
 
     @Override
@@ -179,7 +181,6 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void afterTextChanged(Editable s) {
-
+        // Required override. Do nothing.
     }
 }
-

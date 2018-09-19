@@ -25,11 +25,10 @@ public class ReusableUtil {
     }
 
     @Nullable
-    public static Bitmap onImageCaptureResult(Activity activity, Intent data, int requestCode,
-                                              int resultCode, @Nullable String errorMessage) {
-
+    public static Bitmap onImageCaptureResult(Activity activity, Intent data, int resultCode,
+                                              @Nullable String errorMessage) {
         Bitmap image = null;
-        if (requestCode == Key.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+        if (resultCode == RESULT_OK) {
             image = (Bitmap) data.getExtras().get("data");
         } else {
             String defaultError = "Oops. Something went wrong. Please try again.";
