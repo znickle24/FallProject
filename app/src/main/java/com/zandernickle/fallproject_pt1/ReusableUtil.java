@@ -18,13 +18,43 @@ import static android.app.Activity.RESULT_OK;
 
 public class ReusableUtil {
 
+    /**
+     * Attempts to access the device's camera and return the resulting Bitmap when the user chooses
+     * to take a photo.
+     *
+     * Fails if camera access is denied.
+     *
+     * @param activity
+     * @param requestCode
+     */
     public static void attemptImageCapture(Activity activity, int requestCode) {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (intent.resolveActivity(activity.getPackageManager()) != null) {
             activity.startActivityForResult(intent, requestCode);
         }
+        // TODO: Error message. Are there other causes of failure beside permissions?
     }
 
+    /**
+     * Returns the Bitmap from the onActivityResult callback. However, if the result code is
+     * RESULT_CANCELLED, shows a default Toast message (unless otherwise indicated by the
+     * errorMessage argument), and returns null.
+     *
+     * Call this method from within the onActivityResult callback after checking for the
+     * appropriate request code. Intended for use with the ReusableUtil.attemptImageCapture method
+     * but applicable anywhere an image capture intent was sent.
+     *
+     * The null return is useful for checking whether an image exists before starting a new
+     * Activity, Fragment, or other task. Usually, the return value is stored as a member
+     * variable within the Activity calling this method.
+     *
+     * @param activity the Activity from which the image capture intent was sent.
+     * @param data the Intent expected to contain the Bitmap (passed from the onActivityResult
+     *             callback).
+     * @param resultCode the result code passed from the onActivityResult callback.
+     * @param errorMessage an optional error message to display via Toast.
+     * @return the Bitmap from the image capture, if it exists; null otherwise.
+     */
     @Nullable
     public static Bitmap onImageCaptureResult(Activity activity, Intent data, int resultCode,
                                               @Nullable String errorMessage) {
@@ -32,6 +62,13 @@ public class ReusableUtil {
         if (resultCode == RESULT_OK) {
             image = (Bitmap) data.getExtras().get("data");
         } else {
+
+            /* TODO: Possible to distinguish the cause of RESULT_CANCELLED?
+             *
+             * RESULT_CANCELLED, according to the documentation, is returned whether the user opted
+             * to cancel the action or a system error occurred. It would be nice to either avoid a
+             * Toast or cater its message if the user simply chose to cancel the image capture.
+             */
             String defaultError = "Oops. Something went wrong. Please try again.";
             errorMessage = errorMessage == null ? defaultError : errorMessage;
             Toast.makeText(activity, errorMessage, Toast.LENGTH_SHORT).show();
@@ -67,7 +104,7 @@ public class ReusableUtil {
      *
      * @param bundle the Bundle object from which to extract the compressed Bitmap.
      * @param key the Key to access the compressed Bitmap from the Bundle.
-     * @return the Bitmap
+     * @return the Bitmap to decode and extract from the Bundle.
      */
     @Nullable
     public static Bitmap bitmapFromBundle(Bundle bundle, String key) {
