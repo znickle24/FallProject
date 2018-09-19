@@ -119,13 +119,15 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
             mTvHumid.setText(humidString);
         }
 
-        //Set the image view
-        String imagePath = getArguments().getString("imagePath");
-        Bitmap thumbnailImage = BitmapFactory.decodeFile(imagePath);
+
+
+
+
+        //Set the ImageView with the profile pic
+        Bitmap thumbnailImage = ReusableUtil.bitmapFromBundle();
         if(thumbnailImage != null){
             mIvProfilePic.setImageBitmap(thumbnailImage);
         }
-
 
         return view;
     }
@@ -230,6 +232,52 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
         }
     } //end of onClick function
 
+
+
+
+
+//    public void findLocation(){
+//        //Get current location
+//        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+//
+//        if (ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+//                && ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            Toast.makeText(getActivity(), "First enable LOCATION ACCESS in settings.", Toast.LENGTH_LONG).show();
+//            return;
+//        }
+//        //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 1, listener);
+//
+//        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+//
+//        LocationManager locManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+//
+//        boolean network_enabled = locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+//
+//        Location location;
+//
+//        if(network_enabled){
+//
+//            location = locManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+//
+//            if(location!=null){
+//                mLatitude = location.getLatitude();
+//                Log.d("mLatitude: ", Double.toString(mLatitude));
+//                mLongitude = location.getLongitude();
+//                Log.d("mLongitude: ", Double.toString(mLongitude));
+//
+//            }
+//        }
+//    }
+//
+//    public double getLatitude(){
+//        return mLatitude;
+//    }
+//
+//
+//
+//    public double getLongitude(){
+//        return mLongitude;
+//    }
 
 
 @Override
