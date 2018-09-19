@@ -12,6 +12,10 @@ import static org.junit.Assert.*;
 public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
+        WeatherData myClass = new WeatherData();
+        //int result = myClass.getRain();
+        int expected = 4;
+        //assertEquals(expected, result);
+        //assertEquals(4, 2 + 2);
     }
 }

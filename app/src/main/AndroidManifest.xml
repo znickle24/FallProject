@@ -25,7 +25,8 @@
         <activity android:name=".JSONWeather" />
         <activity android:name=".WeatherData" />
         <activity android:name=".LocationData" />
-        <activity android:name=".Network"></activity>
+        <activity android:name=".Network" />
+        <activity android:name=".GPSTracker"></activity>
     </application>
 
 </manifest>
