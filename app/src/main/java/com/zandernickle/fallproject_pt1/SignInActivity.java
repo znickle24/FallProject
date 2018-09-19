@@ -151,12 +151,16 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                 }
 
                 if (mHasCompleteData) {
-                    Bundle userAccountBundle = new Bundle();
-                    ReusableUtil.bitmapToBundle(userAccountBundle, mBitmapProfileImg, Key.PROFILE_IMAGE);
-                    userAccountBundle.putString(Key.NAME, mTilName.getEditText().getText().toString());
-                    userAccountBundle.putInt(Key.AGE, Integer.parseInt(age));
+                    Bundle signInBundle = new Bundle();
+                    ReusableUtil.bitmapToBundle(signInBundle, mBitmapProfileImg, Key.PROFILE_IMAGE);
+                    signInBundle.putString(Key.NAME, mTilName.getEditText().getText().toString());
+                    signInBundle.putInt(Key.AGE, Integer.parseInt(age));
                     // TODO: Put postal code
-                    userAccountBundle.putString(Key.COUNTRY, country);
+                    signInBundle.putString(Key.COUNTRY, country);
+
+                    Intent fitnessInputIntent = new Intent(SignInActivity.this, FitnessInputActivity.class);
+                    fitnessInputIntent.putExtras(signInBundle);
+                    startActivity(fitnessInputIntent);
                 }
 
                 break;
