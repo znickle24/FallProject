@@ -1,6 +1,8 @@
 package com.zandernickle.fallproject_pt1;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import org.json.JSONException;
 import java.net.URL;
@@ -37,6 +40,7 @@ public class WeatherFragment extends Fragment implements View.OnClickListener{
     private TextView mTvTemp, mTvPressure, mTvHumid;
     private WeatherData mWeatherData;
     private Button mBtLocation;
+    private ImageView mIvProfilePic;
 
     private Context mContext;
 
@@ -105,6 +109,13 @@ public class WeatherFragment extends Fragment implements View.OnClickListener{
         }
         if (humidString != null) {
             mTvHumid.setText(humidString);
+        }
+
+        //Set the image view
+        String imagePath = getArguments().getString("imagePath");
+        Bitmap thumbnailImage = BitmapFactory.decodeFile(imagePath);
+        if(thumbnailImage != null){
+            mIvProfilePic.setImageBitmap(thumbnailImage);
         }
 
         return view;
