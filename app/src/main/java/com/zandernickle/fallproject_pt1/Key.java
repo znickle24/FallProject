@@ -12,7 +12,7 @@ public class Key {
     public static final String NAME = "NAME"; // String
     public static final String PROFILE_IMAGE = "PROFILE_IMAGE"; // String
     public static final String AGE = "AGE"; // int
-    public static final String CITY = "CITY"; // String
+    public static final String POSTAL_CODE = "POSTAL_CODE"; // String
     public static final String COUNTRY = "COUNTRY"; // String
     public static final String HEIGHT = "HEIGHT"; // int (inches)
     public static final String WEIGHT = "WEIGHT"; // int (lbs)
