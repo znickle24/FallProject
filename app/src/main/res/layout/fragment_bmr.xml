@@ -3,5 +3,60 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.zandernickle.fallproject_pt1.BMRFragment">
+    <android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        //PROFILE PIC ImageView (in top right corner)
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:id="@+id/iv_prof_pic"/>
 
+        <TextView
+            android:id="@+id/tv_bmr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/iv_prof_pic"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            />
+        <TextView
+            android:id="@+id/tv_bmr_data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="16dp"
+            app:layout_constraintTop_toBottomOf="@id/iv_prof_pic"
+            app:layout_constraintLeft_toRightOf="@+id/tv_bmr"
+            />
+        <Button
+            android:id="@+id/button_calculate_bmi"
+            android:text="Calculate BMI"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/tv_bmr"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            />
+        <TextView
+            android:id="@+id/tv_calculate_bmi_data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/tv_bmr"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="16dp"
+            />
+
+    </android.support.constraint.ConstraintLayout>
 </FrameLayout>

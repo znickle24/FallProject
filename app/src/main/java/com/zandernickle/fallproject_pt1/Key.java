@@ -19,6 +19,9 @@ public class Key {
     public static final String SEX = "SEX"; // enum (com.zandernickle.fallproject_pt1.Sex)
     public static final String ACTIVITY_LEVEL = "ACTIVITY_LEVEL"; // enum (com.zandernickle.fallproject_pt1.ActivityLevel)
     public static final String GOAL = "GOAL"; // enum (com.zandernickle.fallproject_pt1.Goal)
+    public static final String WEIGHT_GOAL = "WEIGHT_GOAL"; //int (lbs or kg)
+    public static final String BMR = "BMR"; //int (num kCal per day a person needs to maintain weight)
+    public static final String BMI = "BMI"; //int
 
     /* MATT
      *
