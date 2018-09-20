@@ -124,7 +124,8 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
 
 
         //Set the ImageView with the profile pic
-        Bitmap thumbnailImage = ReusableUtil.bitmapFromBundle();
+        Bundle picBundle = getArguments();
+        Bitmap thumbnailImage = ReusableUtil.bitmapFromBundle(picBundle, Key.PROFILE_IMAGE);
         if(thumbnailImage != null){
             mIvProfilePic.setImageBitmap(thumbnailImage);
         }
