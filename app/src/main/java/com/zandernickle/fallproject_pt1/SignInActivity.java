@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
 import android.text.Editable;
@@ -62,8 +61,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
         ReusableUtil.setOnClickListeners(SignInActivity
                 .this, mImgBtnAddProfileImage, mBtnSubmit);
-        ReusableUtil.setOnClickListeners(SignInActivity
-                .this, mTilName.getEditText());
+        ReusableUtil.setTextChangedListeners(SignInActivity
+                .this, mTilName.getEditText(), mTilPostalCode.getEditText());
     }
 
     @Override
@@ -126,8 +125,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.button_submit:
 
                 String[][] editTextData = {
-                        new String[] { Key.NAME, mTilName.getEditTextString() },
-                        new String[] { Key.POSTAL_CODE, mTilPostalCode.getEditTextString() }
+                        new String[] { Key.NAME, mTilName.getTextString() },
+                        new String[] { Key.POSTAL_CODE, mTilPostalCode.getTextString() }
                 };
 
                 String age = mSpinAge.getSelectedItem().toString();
@@ -163,6 +162,11 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                     startActivity(fitnessInputIntent);
                 }
 
+                // TODO: Remove
+                Intent fitnessInputIntent = new Intent(SignInActivity.this, FitnessInputActivity.class);
+//                fitnessInputIntent.putExtras(signInBundle);
+                startActivity(fitnessInputIntent);
+
                 break;
         }
     }
@@ -197,8 +201,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        if (mTilName.isErrorEnabled()) {
-            mTilName.setErrorEnabled(false);
+        if (mTilName.isErrorEnabled() || mTilPostalCode.isErrorEnabled()) {
+            ReusableUtil.disableTILErrorOnTextChanged(s.hashCode(), mTilName, mTilPostalCode);
         }
     }
 
