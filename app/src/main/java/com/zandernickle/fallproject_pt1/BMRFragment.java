@@ -14,8 +14,6 @@ import android.widget.Toast;
 
 /**
  * A simple {@link android.support.v4.app.Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link BMRFragment.OnFragmentInteractionListener} interface
  */
 public class BMRFragment extends android.support.v4.app.Fragment implements View.OnClickListener {
     private TextView mTv_BMR;
