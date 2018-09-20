@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
 import android.text.Editable;
@@ -46,7 +45,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_sign_in);
 
         mTvSignUp = findViewById(R.id.tv_sign_up);
         mImgBtnAddProfileImage = findViewById(R.id.ib_add_profile_image);
@@ -62,8 +61,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
         ReusableUtil.setOnClickListeners(SignInActivity
                 .this, mImgBtnAddProfileImage, mBtnSubmit);
-        ReusableUtil.setOnClickListeners(SignInActivity
-                .this, mTilName.getEditText());
+        ReusableUtil.setTextChangedListeners(SignInActivity
+                .this, mTilName.getEditText(), mTilPostalCode.getEditText());
     }
 
     @Override
@@ -126,8 +125,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.button_submit:
 
                 String[][] editTextData = {
-                        new String[] { Key.NAME, mTilName.getEditTextString() },
-                        new String[] { Key.POSTAL_CODE, mTilPostalCode.getEditTextString() }
+                        new String[] { Key.NAME, mTilName.getTextString() },
+                        new String[] { Key.POSTAL_CODE, mTilPostalCode.getTextString() }
                 };
 
                 String age = mSpinAge.getSelectedItem().toString();
@@ -151,13 +150,22 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                 }
 
                 if (mHasCompleteData) {
-                    Bundle userAccountBundle = new Bundle();
-                    ReusableUtil.bitmapToBundle(userAccountBundle, mBitmapProfileImg, Key.PROFILE_IMAGE);
-                    userAccountBundle.putString(Key.NAME, mTilName.getEditText().getText().toString());
-                    userAccountBundle.putInt(Key.AGE, Integer.parseInt(age));
+                    Bundle signInBundle = new Bundle();
+                    ReusableUtil.bitmapToBundle(signInBundle, mBitmapProfileImg, Key.PROFILE_IMAGE);
+                    signInBundle.putString(Key.NAME, mTilName.getEditText().getText().toString());
+                    signInBundle.putInt(Key.AGE, Integer.parseInt(age));
                     // TODO: Put postal code
-                    userAccountBundle.putString(Key.COUNTRY, country);
+                    signInBundle.putString(Key.COUNTRY, country);
+
+                    Intent fitnessInputIntent = new Intent(SignInActivity.this, FitnessInputActivity.class);
+                    fitnessInputIntent.putExtras(signInBundle);
+                    startActivity(fitnessInputIntent);
                 }
+
+                // TODO: Remove
+                Intent fitnessInputIntent = new Intent(SignInActivity.this, FitnessInputActivity.class);
+//                fitnessInputIntent.putExtras(signInBundle);
+                startActivity(fitnessInputIntent);
 
                 break;
         }
@@ -172,7 +180,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         if (requestCode == Key.REQUEST_IMAGE_CAPTURE) {
             // Nullable
             mBitmapProfileImg = ReusableUtil.onImageCaptureResult(SignInActivity
-                            .this, data, resultCode, null);
+                    .this, data, resultCode, null);
             if (mBitmapProfileImg != null) {
                 mImgBtnAddProfileImage.setVisibility(View.INVISIBLE);
                 mImgViewProfileImage.setImageBitmap(mBitmapProfileImg);
@@ -193,8 +201,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        if (mTilName.isErrorEnabled()) {
-            mTilName.setErrorEnabled(false);
+        if (mTilName.isErrorEnabled() || mTilPostalCode.isErrorEnabled()) {
+            ReusableUtil.disableTILErrorOnTextChanged(s.hashCode(), mTilName, mTilPostalCode);
         }
     }
 

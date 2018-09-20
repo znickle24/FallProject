@@ -18,20 +18,20 @@ import android.widget.Toast;
 
 public class GPSTracker extends Service implements LocationListener {
 
-    private final Context mContext;
+    private static Context mContext;
 
     // Flag for GPS status
-    boolean isGPSEnabled = false;
+    static boolean isGPSEnabled = false;
 
     // Flag for network status
-    boolean isNetworkEnabled = false;
+    static boolean isNetworkEnabled = false;
 
     // Flag for GPS status
-    boolean canGetLocation = false;
+    static boolean canGetLocation = false;
 
-    Location location; // Location
-    double latitude; // Latitude
-    double longitude; // Longitude
+    static Location location; // Location
+    static double latitude; // Latitude
+    static double longitude; // Longitude
 
     // The minimum distance to change Updates in meters
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
@@ -40,7 +40,7 @@ public class GPSTracker extends Service implements LocationListener {
     private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
 
     // Declaring a Location Manager
-    protected LocationManager locationManager;
+    protected static LocationManager locationManager;
 
     public GPSTracker(Context context) {
         this.mContext = context;
@@ -65,9 +65,9 @@ public class GPSTracker extends Service implements LocationListener {
             if (!isGPSEnabled && !isNetworkEnabled) {
                 // No network provider is enabled
             } else {
-                this.canGetLocation = true;
+                canGetLocation = true;
                 if (isNetworkEnabled) {
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this); //null was this
                     Log.d("Network", "Network");
                     if (locationManager != null) {
                         location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -115,7 +115,7 @@ public class GPSTracker extends Service implements LocationListener {
     /**
      * Function to get latitude
      * */
-    public double getLatitude(){
+    public static double getLatitude(){
         if(location != null){
             latitude = location.getLatitude();
         }
@@ -128,7 +128,7 @@ public class GPSTracker extends Service implements LocationListener {
     /**
      * Function to get longitude
      * */
-    public double getLongitude(){
+    public static double getLongitude(){
         if(location != null){
             longitude = location.getLongitude();
         }

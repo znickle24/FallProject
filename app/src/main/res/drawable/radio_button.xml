@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--https://stackoverflow.com/questions/18696275/change-color-of-a-radio-button-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="true"
+        android:drawable="@drawable/ic_select_radio"/>
+    <item android:state_checked="false"
+        android:drawable="@drawable/ic_empty_radio"/>
+</selector>

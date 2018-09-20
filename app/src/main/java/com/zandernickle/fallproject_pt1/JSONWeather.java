@@ -27,6 +27,8 @@ public class JSONWeather {
         WeatherData.Temperature temperature = weatherData.getTemperature();
         WeatherData.Wind wind = weatherData.getWind();
         WeatherData.Clouds clouds = weatherData.getClouds();
+        WeatherData.Rain rain = weatherData.getRain();
+        WeatherData.Snow snow = weatherData.getSnow();
         temperature.setMaxTemp(jsonMain.getDouble("temp_max"));
         temperature.setMinTemp(jsonMain.getDouble("temp_min"));
         temperature.setTemp(jsonMain.getDouble("temp"));
