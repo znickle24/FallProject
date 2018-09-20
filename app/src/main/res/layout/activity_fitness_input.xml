@@ -6,4 +6,228 @@
     android:layout_height="match_parent"
     tools:context=".FitnessInputActivity">
 
+    <TextView
+        android:id="@+id/tv_welcome_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="48dp"
+        tools:text="WELCOME USER"
+        android:fontFamily="sans-serif-condensed"
+        android:textColor="@color/colorPureWhite"
+        android:textSize="20sp"
+        android:gravity="center_horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_height_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="56dp"
+        android:textColor="#87888e"
+        android:text="Height"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_welcome_user" />
+
+    <android.support.v7.widget.AppCompatSeekBar
+        android:id="@+id/sb_height"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="80dp"
+        android:layout_marginStart="80dp"
+        android:layout_marginTop="56dp"
+        android:maxHeight="2dp"
+        android:minHeight="1dp"
+        android:progressDrawable="@drawable/seekbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_welcome_user" />
+
+    <TextView
+        android:id="@+id/tv_height_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="56dp"
+        android:fontFamily="sans-serif"
+        android:gravity="end"
+        android:textColor="@color/colorPureWhite"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_welcome_user"
+        tools:text="5'9&quot;" />
+
+    <TextView
+        android:id="@+id/tv_weight_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="40dp"
+        android:text="Weight"
+        android:textColor="#87888e"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sb_height" />
+
+    <android.support.v7.widget.AppCompatSeekBar
+        android:id="@+id/sb_weight"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="80dp"
+        android:layout_marginStart="80dp"
+        android:layout_marginTop="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sb_height"
+        android:maxHeight="2dp"
+        android:minHeight="1dp"
+        android:progressDrawable="@drawable/seekbar"/>
+
+    <TextView
+        android:id="@+id/tv_weight_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="40dp"
+        android:fontFamily="sans-serif"
+        android:gravity="end"
+        android:textColor="@color/colorPureWhite"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sb_height"
+        tools:text="157 lbs" />
+
+    <View
+        android:id="@+id/v_divider_1"
+        android:layout_marginTop="32dp"
+        app:layout_constraintTop_toBottomOf="@id/sb_weight"
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="32dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorBackgroundDark"
+        />
+
+    <LinearLayout
+        android:id="@+id/ll_section_2_labels"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="32dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/v_divider_1">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Sex"
+            android:textColor="#87888e"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingStart="32dp"
+            android:text="Activity Level"
+            android:textColor="#87888e"
+            android:textSize="16sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_radio_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:paddingTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/ll_section_2_labels">
+
+        <RadioGroup
+            android:id="@+id/rg_sex"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <RadioButton
+                android:id="@+id/rb_male"
+                android:paddingStart="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/colorPureWhite"
+                android:button="@drawable/radio_button"
+                android:text="Male"/>
+            <RadioButton
+                android:id="@+id/rb_female"
+                android:paddingStart="8dp"
+                android:textSize="16sp"
+                android:layout_marginTop="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPureWhite"
+                android:button="@drawable/radio_button"
+                android:text="Female"/>
+        </RadioGroup>
+
+        <RadioGroup
+            android:id="@+id/rg_activity_level"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingStart="32dp"
+            android:orientation="vertical">
+            <RadioButton
+                android:id="@+id/rb_sedentary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:textSize="16sp"
+                android:textColor="@color/colorPureWhite"
+                android:button="@drawable/radio_button"
+                android:text="Sedentary"/>
+            <RadioButton
+                android:id="@+id/rb_moderately_active"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@drawable/radio_button"
+                android:textColor="@color/colorPureWhite"
+                android:paddingStart="8dp"
+                android:layout_marginTop="16dp"
+                android:textSize="16sp"
+                android:text="Moderately\nActive"/>
+            <RadioButton
+                android:id="@+id/rb_active"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:layout_marginTop="16dp"
+                android:textSize="16sp"
+                android:button="@drawable/radio_button"
+                android:textColor="@color/colorPureWhite"
+                android:text="Active"/>
+        </RadioGroup>
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/v_divider_2"
+        android:layout_marginTop="32dp"
+        app:layout_constraintTop_toBottomOf="@id/ll_radio_buttons"
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="32dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorBackgroundDark"
+        />
+
+
+
+
 </android.support.constraint.ConstraintLayout>
