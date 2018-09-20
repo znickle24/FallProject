@@ -46,7 +46,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_sign_in);
 
         mTvSignUp = findViewById(R.id.tv_sign_up);
         mImgBtnAddProfileImage = findViewById(R.id.ib_add_profile_image);
@@ -163,6 +163,11 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                     startActivity(fitnessInputIntent);
                 }
 
+                // TODO: Remove
+                Intent fitnessInputIntent = new Intent(SignInActivity.this, FitnessInputActivity.class);
+//                fitnessInputIntent.putExtras(signInBundle);
+                startActivity(fitnessInputIntent);
+
                 break;
         }
     }
@@ -176,7 +181,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         if (requestCode == Key.REQUEST_IMAGE_CAPTURE) {
             // Nullable
             mBitmapProfileImg = ReusableUtil.onImageCaptureResult(SignInActivity
-                            .this, data, resultCode, null);
+                    .this, data, resultCode, null);
             if (mBitmapProfileImg != null) {
                 mImgBtnAddProfileImage.setVisibility(View.INVISIBLE);
                 mImgViewProfileImage.setImageBitmap(mBitmapProfileImg);
