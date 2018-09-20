@@ -163,11 +163,6 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                     startActivity(fitnessInputIntent);
                 }
 
-                // TODO: Remove
-                Intent fitnessInputIntent = new Intent(SignInActivity.this, FitnessInputActivity.class);
-//                fitnessInputIntent.putExtras(signInBundle);
-                startActivity(fitnessInputIntent);
-
                 break;
         }
     }
