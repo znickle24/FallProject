@@ -16,19 +16,21 @@ import android.view.ViewGroup;
  */
 public class BMRFragment extends Fragment {
     private double BMR;
-    private double weight;
+    private int mWeight;
     private View mFr_view;
     private boolean mAmerican = false;
-    private static final int inch = 12;
-    private int inches;
+    private static final int mFeet = 12;
+    private int mInches;
+    private String mHeight;
     private int mAge;
     private Bundle mArgsReceived;
     @Override
     public void onSaveInstanceState (Bundle savedInstanceState) {
         savedInstanceState.putDouble("BMRFragment", BMR);
-        savedInstanceState.putDouble(Key.WEIGHT, weight);
-        savedInstanceState.putInt("INCHES", inches);
+        savedInstanceState.putInt(Key.WEIGHT, mWeight);
+        savedInstanceState.putInt("INCHES", mInches);
         savedInstanceState.putInt(Key.AGE, mAge);
+        savedInstanceState.putString(Key.HEIGHT, mHeight);
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -42,7 +44,31 @@ public class BMRFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
+    public String getHeightAmerican(int numberOfInches) {
+        String height = "";
+        int feet;
+        if (numberOfInches % 12 == 0) {
+            feet = numberOfInches/mFeet;
+            height = String.valueOf(feet) + "\"";
+        } else {
+            int inch = numberOfInches % 12;
+            feet = numberOfInches/mFeet;
+            height = String.valueOf(feet) + "\'" + String.valueOf(inch) + "\"";
+        }
+        return height;
+    }
+    public String getHeightNonAmerican(int numberOfCm) {
+        String height = "";
+        int cm;
+        if (numberOfCm < 100) {
 
+            height = String.valueOf(numberOfCm) + "cm.";
+        } else {
+            double m = numberOfCm/100;
+            height = String.valueOf(m) + "m.";
+        }
+        return height;
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -52,16 +78,23 @@ public class BMRFragment extends Fragment {
         if (getArguments() != null) {
             mArgsReceived = getArguments();
         }
-        weight = mArgsReceived.getDouble(Key.WEIGHT);
+        mWeight = mArgsReceived.getInt(Key.WEIGHT);
         mAge = mArgsReceived.getInt(Key.AGE);
-        if (mArgsReceived.getString(Key.COUNTRY) == "USA") {
+        mInches = mArgsReceived.getInt(Key.HEIGHT);
+
+        if (mArgsReceived.getString(Key.COUNTRY) == "US") {
             mAmerican = true;
+        }
+        if (mAmerican) {
+            mHeight = getHeightAmerican(mInches);
+        } else {//is any other nationality
+            mHeight = getHeightNonAmerican(mInches);
         }
         //formulas differ depending on whether you're a male or female
         if (Sex.MALE != null) {
-            BMR = 66 + (6.23 * weight) + (12.7 * inches) - (6.8 * mAge);
+            BMR = 66 + (6.23 * mWeight) + (12.7 * mInches) - (6.8 * mAge);
         } else { //is female
-            BMR = 655 + ( 4.35 * weight ) + ( 4.7 * inches) - ( 4.7 * mAge);
+            BMR = 655 + ( 4.35 * mWeight) + ( 4.7 * mInches) - ( 4.7 * mAge);
         }
         //for BMRFragment to be accurate, you need to multiply it by your activity level
         //may want to add different levels of activity
@@ -69,7 +102,7 @@ public class BMRFragment extends Fragment {
             BMR *= 1.725;
         } else if (ActivityLevel.MODERATELY_ACTIVE != null) {
             BMR *= 1.55;
-        }else { //is sedentary
+        }else { //is SEDENTARY
             BMR *= 1.2;
         }
         return mFr_view;
