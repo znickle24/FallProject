@@ -23,12 +23,16 @@ public class CustomTextInputLayout extends TextInputLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    public String getEditTextString() {
+    public String getTextString() {
         return getEditText().getText().toString();
     }
 
     public void showError(String message) {
         setError(message);
         setErrorEnabled(true);
+    }
+
+    public boolean textHashMatches(int hashCode) {
+        return hashCode == getEditText().getText().hashCode();
     }
 }
