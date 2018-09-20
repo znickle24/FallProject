@@ -126,14 +126,30 @@ public class ReusableUtil {
      * Initializes EditText TextWatcher.TextChangeListeners. Use this method to add any additional
      * TextChangeListeners.
      */
-    public void setTextChangedListeners(TextWatcher textWatcher, EditText... editTexts) {
+    public static void setTextChangedListeners(TextWatcher textWatcher, EditText... editTexts) {
         for (EditText e : editTexts) {
             e.addTextChangedListener(textWatcher);
         }
     }
 
-    public String getStringFromTextInputLayout(TextInputLayout layout) {
-        return layout.getEditText().getText().toString();
+    /**
+     * Disables an active TextInputLayout error. Intended to be called from the
+     * TextWatcher.onTextChanged callback.
+     *
+     * If used as intended, guarantees any active TextInputLayout passed as an argument will have
+     * its error disabled.
+     *
+     * @param hashCode the hash code of the active EditText whose text has been changed (passed from
+     *                 TextWatcher.onTextChanged).
+     * @param layouts any potentially active TextInputLayouts whose error state might be set to
+     *                true (in most cases, all of them).
+     */
+    public static void disableTILErrorOnTextChanged(int hashCode, CustomTextInputLayout... layouts) {
+        for (CustomTextInputLayout l : layouts) {
+            if (l.isErrorEnabled() && l.textHashMatches(hashCode)) {
+                l.setErrorEnabled(false);
+            }
+        }
     }
 
 }
