@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class WeatherFragment extends Fragment implements View.OnClickListener {
+public class WeatherFragment extends Fragment {
 
     //Variables for TextViews holding location and weather data
     private TextView mTvLocation, mTvTemp, mTvHighTemp, mTvLowTemp,
@@ -187,17 +187,17 @@ public class WeatherFragment extends Fragment implements View.OnClickListener {
     }
 
 
-    //CHANGE THIS IF WE WANT TO CHANGE THE LOCATION WITH BUTTON
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.button_change_location: {
-                //Get the string from the edit text and sanitize the input
-                //String inputFromEt = mEtLocation.getText().toString().replace(' ','&');
-                //loadWeatherData(inputFromEt);
-            }
-            break;
-        }
-    }
+//    //CHANGE THIS IF WE WANT TO CHANGE THE LOCATION WITH BUTTON
+//    @Override
+//    public void onClick(View view) {
+//        switch (view.getId()) {
+//            //case R.id.button_change_location: {
+//                //Get the string from the edit text and sanitize the input
+//                //String inputFromEt = mEtLocation.getText().toString().replace(' ','&');
+//                //loadWeatherData(inputFromEt);
+//            //}
+//            //break;
+//        }
+//    }
 
 }
