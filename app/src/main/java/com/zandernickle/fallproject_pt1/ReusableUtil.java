@@ -12,15 +12,20 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.AppCompatSpinner;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.neovisionaries.i18n.CountryCode;
 
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -149,6 +154,18 @@ public class ReusableUtil {
         }
     }
 
+    public static void setOnItemClickListeners(AdapterView.OnItemClickListener listener, AdapterView<?>... adapterViews) {
+        for (AdapterView v : adapterViews) {
+            v.setOnItemClickListener(listener);
+        }
+    }
+
+    public static void setOnItemSelectedListeners(AdapterView.OnItemSelectedListener listener, AdapterView<?>... adapterViews) {
+        for (AdapterView v : adapterViews) {
+            v.setOnItemSelectedListener(listener);
+        }
+    }
+
     /**
      * Disables an active TextInputLayout error. Intended to be called from the
      * TextWatcher.onTextChanged callback.
@@ -189,11 +206,32 @@ public class ReusableUtil {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         Fragment previousInstance = fragmentManager.findFragmentByTag(tag);
         if (previousInstance != null) {
+            // ensure no other instances are visible
             transaction.remove(previousInstance);
         }
         if (addToBackStack) { transaction.addToBackStack(null); }
         dialogFragment.setTargetFragment(targetFragment, 0);
         dialogFragment.show(transaction, tag);
+    }
+
+    public static HashMap<Integer, TextInputLayout> mapTextInputLayouts(TextInputLayout... layouts) {
+        HashMap<Integer, TextInputLayout> map = new HashMap<>();
+        for (TextInputLayout l : layouts) {
+            map.put(l.getId(), l);
+        }
+        return map;
+    }
+
+    public static String[][] pairEditableTextToLayouts(TextInputLayout... layouts) {
+        String[][] data = new String[layouts.length][2]; // key-value pairs
+        for (int i = 0; i < layouts.length; i++) {
+            data[i] = new String[] {Integer.toString(layouts[i].getId()), layouts[i].getEditText().getText().toString()};
+        }
+        return data;
+    }
+
+    public static void log(String message) {
+        Log.d("Log", message);
     }
 
 }
