@@ -20,9 +20,14 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
     private TextView mTv_BMR_data;
     private Button mButton_BMI_calculator;
     private TextView mTv_BMI_data;
+    private boolean mGainWeight = false;
+    private boolean mLoseWeight = false;
+    private boolean mMaintainWeight = false;
     private double BMR; //value calculated based on age, sex, height, & weight
     private double mBMI = -1.0; //value calculated based on height, weight (metric or imperial) set to -1 if the user hasn't calculated it before.
     private int mWeight; //value in lbs (imperial) or kgs (metric)
+    private int mWeightGoal; //represents the number of lbs a user wants to lose or gain/week
+    private int mCalorieIntake; //the number of calories an individual needs to eat to meet their goal
     private View mFr_view; //view to be returned from onCreateView
     private boolean mAmerican = false; //used to determine metric or imperial calculation
     private static final int mFeet = 12; //used to calculate height in Amerians
@@ -54,6 +59,16 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
         super.onCreate(savedInstanceState);
     }
 
+    //Set the correct bool to true for the participants goal
+    public void getGoal() {
+        if (Goal.GAIN_WEIGHT != null) {
+            mGainWeight = true;
+        } else if (Goal.LOSE_WEIGHT != null) {
+            mLoseWeight = true;
+        } else {
+            mMaintainWeight = true;
+        }
+    }
     //Design decision was to make anyone in the US show height in feet/inches instead of cm
     public String getHeightAmerican(int numberOfInches) {
         String height = "";
@@ -131,6 +146,9 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
         mWeight = mArgsReceived.getInt(Key.WEIGHT);
         mAge = mArgsReceived.getInt(Key.AGE);
         mInches = mArgsReceived.getInt(Key.HEIGHT);
+        mWeightGoal = mArgsReceived.getInt(Key.GOAL);
+
+        getGoal();;
 
         if (mArgsReceived.getString(Key.COUNTRY) == "US") {
             mAmerican = true;
