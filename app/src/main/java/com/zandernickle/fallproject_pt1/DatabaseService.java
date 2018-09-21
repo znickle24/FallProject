@@ -2,12 +2,12 @@ package com.zandernickle.fallproject_pt1;
 
 import java.util.HashMap;
 
-public class DatabaseServiceUtil {
+public class DatabaseService {
 
     private int nextId = 1;
     private HashMap<Integer, User> database;
 
-    public DatabaseServiceUtil() {
+    public DatabaseService() {
         database = new HashMap<>();
     }
 
@@ -16,9 +16,11 @@ public class DatabaseServiceUtil {
         database.put(nextId++, user);
     }
 
+    public void updateUser(User user) {
+        database.put(user.getId(), user);
+    }
+
     public User getUser(int id) {
         return database.get(id);
     }
-
-
 }
