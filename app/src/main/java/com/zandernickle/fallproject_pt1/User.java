@@ -6,6 +6,7 @@ public class User {
 
     private int id;
     private String name;
+    private byte[] profileImage;
     private int age;
     private int postalCode;
     private String countryCode;
@@ -14,14 +15,15 @@ public class User {
     private int weight;
     private Sex sex;
     private ActivityLevel activityLevel;
-    // TODO: Add objective (weight loss/gain per week).
+    private int weightGoal; // neg, 0, or pos
 
     public User() {
 
     }
 
-    public User(String name, int age, int postalCode, String countryCode) {
+    public User(String name, byte[] profileImage, int age, int postalCode, String countryCode) {
         this.name = name;
+        this.profileImage = profileImage;
         this.age = age;
         this.postalCode = postalCode;
         this.countryCode = countryCode;
@@ -29,9 +31,18 @@ public class User {
 
     public User(Bundle signInBundle) {
         this.name = signInBundle.getString(Key.NAME);
+        this.profileImage = signInBundle.getByteArray(Key.PROFILE_IMAGE);
         this.age = signInBundle.getInt(Key.AGE);
         this.postalCode = signInBundle.getInt(Key.POSTAL_CODE);
         this.countryCode = signInBundle.getString(Key.COUNTRY);
+    }
+
+    public void updateFitnessData(Bundle fitnessInputBundle) {
+        this.height = fitnessInputBundle.getInt(Key.HEIGHT);
+        this.weight = fitnessInputBundle.getInt(Key.WEIGHT);
+        this.sex = (Sex) fitnessInputBundle.getSerializable(Key.SEX);
+        this.activityLevel = (ActivityLevel) fitnessInputBundle.getSerializable(Key.ACTIVITY_LEVEL);
+        this.weightGoal = fitnessInputBundle.getInt(Key.GOAL);
     }
 
     public int getId() {
