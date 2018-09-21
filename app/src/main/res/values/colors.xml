@@ -11,4 +11,5 @@
     <color name="colorPureWhite">#FFFFFF</color>
     <color name="colorBackgroundDark">#282A31</color>
     <color name="colorInvisible">#FFFFFFFF</color>
+    <color name="colorDialogBackground">#1e1e1e</color>
 </resources>
