@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 
 import com.neovisionaries.i18n.CountryCode;
 
+import static com.zandernickle.fallproject_pt1.ReusableUtil.loadDialogFragment;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.setOnClickListeners;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.setOnSeekBarChangeListeners;
 import static com.zandernickle.fallproject_pt1.UnitConversionUtil.insToCms;
@@ -23,7 +25,7 @@ import static com.zandernickle.fallproject_pt1.UnitConversionUtil.lbsToKgs;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FitnessInputFragment extends Fragment implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
+public class FitnessInputFragment extends Fragment implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, WarningDialogFragment.OnWarningAcceptListener {
 
     // TODO: Put these in Key.java FOR USE IN ONDATAPASS
     private static final String SIGN_IN_FRAGMENT = "SIGN_IN_FRAGMENT";
@@ -68,15 +70,13 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
     private Button mBtnSubmit;
 
     private Boolean mHasCompleteData = true;
+    private CountryCode mCountryCode;
 
     private OnDataPass mDataPasser;
+    private Bundle mFitnessInputBundle;
 
     public FitnessInputFragment() {
         // Required empty public constructor
-    }
-
-    public interface OnDataPass {
-        void onDataPass(String key, Bundle signInBundle);
     }
 
     @Override
@@ -163,43 +163,13 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
 
         Bundle signInBundle = getArguments();
         String uppercaseName = signInBundle.getString(Key.NAME).toUpperCase();
-        CountryCode countryCode = (CountryCode) signInBundle.getSerializable(Key.COUNTRY);
+        mCountryCode = (CountryCode) signInBundle.getSerializable(Key.COUNTRY);
 
         mTvWelcome.setText(WELCOME + " " + uppercaseName);
 
-        convertUnitsToLocale(countryCode);
+        convertUnitsToLocale(mCountryCode);
         initializeSeekBars();
         initializeSeekBarLabelValues();
-    }
-
-    @Nullable
-    private Sex getRadioSelectedSex(int buttonId) {
-
-        Sex sex = null;
-        switch (buttonId) {
-            case R.id.rb_male: sex = Sex.MALE;
-                break;
-            case R.id.rb_female: sex = Sex.FEMALE;
-                break;
-            default: break;
-        }
-        return sex;
-    }
-
-    @Nullable
-    private ActivityLevel getRadioSelectedActivityLevel(int buttonId) {
-
-        ActivityLevel activityLevel = null;
-        switch (buttonId) {
-            case R.id.rb_sedentary: activityLevel = ActivityLevel.SEDENTARY;
-                break;
-            case R.id.rb_moderately_active: activityLevel = ActivityLevel.MODERATELY_ACTIVE;
-                break;
-            case R.id.rb_active: activityLevel = ActivityLevel.ACTIVE;
-                break;
-            default: break;
-        }
-        return activityLevel;
     }
 
     @Override
@@ -222,20 +192,35 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
 
                 int weightDelta = mSbWeightDelta.getProgress();
                 if (Math.abs(weightDelta) > mUnhealthyDelta) {
-                    // TODO: Show dialog but do not set complete data to false
+                    // Show dialog but do not set complete to false -- the user may choose to proceed.
+                    loadDialogFragment(getFragmentManager(), new WarningDialogFragment(),
+                            FitnessInputFragment.this, "test", false);
                 }
 
-                // Nothing will be null at this point
-                Bundle fitnessInputBundle = new Bundle();
-                fitnessInputBundle.putSerializable(Key.SEX, sex);
-                fitnessInputBundle.putSerializable(Key.ACTIVITY_LEVEL, activityLevel);
-                fitnessInputBundle.putInt(Key.HEIGHT, height);
-                fitnessInputBundle.putInt(Key.WEIGHT, weight);
-//                fitnessInputBundle.putSerializable();
+                Goal fitnessGoal = getFitnessGoalEnum(weightDelta);
 
-                mDataPasser.onDataPass(FITNESS_INPUT_FRAGMENT, new Bundle());
+                // Nothing will be null at this point
+                mFitnessInputBundle = new Bundle();
+                mFitnessInputBundle.putSerializable(Key.SEX, sex);
+                mFitnessInputBundle.putSerializable(Key.ACTIVITY_LEVEL, activityLevel);
+                mFitnessInputBundle.putInt(Key.HEIGHT, height);
+                mFitnessInputBundle.putInt(Key.WEIGHT, weight);
+                // TODO: Technically, could just pass neg, 0, or pos as Key.WEIGHT_GOAL value.
+                // No essential need for Key.GOAL (implicit in value of Key.WEIGHT_GOAL.
+                mFitnessInputBundle.putSerializable(Key.GOAL, fitnessGoal);
+                mFitnessInputBundle.putSerializable(Key.WEIGHT_GOAL, weightDelta);
+
+                // Data can be passed here or on reception of data from warning dialog.
+                // Better way to avoid multiple exit points?
+                mDataPasser.onDataPass(FITNESS_INPUT_FRAGMENT, mFitnessInputBundle);
                 break;
         }
+    }
+
+    @Override
+    public void onWarningAccepted() {
+        mDataPasser.onDataPass(FITNESS_INPUT_FRAGMENT, mFitnessInputBundle);
+        Log.d("Log", "SUCCESS"); // TODO: Interface with BMRFragment
     }
 
     @Override
@@ -264,5 +249,57 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
 
+    }
+
+    @Nullable
+    private Sex getRadioSelectedSex(int buttonId) {
+
+        Sex sex = null;
+        switch (buttonId) {
+            case R.id.rb_male:
+                sex = Sex.MALE;
+                break;
+            case R.id.rb_female:
+                sex = Sex.FEMALE;
+                break;
+            default:
+                break;
+        }
+        return sex;
+    }
+
+    @Nullable
+    private ActivityLevel getRadioSelectedActivityLevel(int buttonId) {
+
+        ActivityLevel activityLevel = null;
+        switch (buttonId) {
+            case R.id.rb_sedentary:
+                activityLevel = ActivityLevel.SEDENTARY;
+                break;
+            case R.id.rb_moderately_active:
+                activityLevel = ActivityLevel.MODERATELY_ACTIVE;
+                break;
+            case R.id.rb_active:
+                activityLevel = ActivityLevel.ACTIVE;
+                break;
+            default:
+                break;
+        }
+        return activityLevel;
+    }
+
+    // Can be negative too, should not be null
+    private Goal getFitnessGoalEnum(int weightDelta) {
+        Goal weightGoal = Goal.MAINTAIN_WEIGHT;
+        if (weightDelta < 0) {
+            weightGoal = Goal.LOSE_WEIGHT;
+        } else if (weightDelta > 0) {
+            weightGoal = Goal.GAIN_WEIGHT;
+        }
+        return weightGoal;
+    }
+
+    public interface OnDataPass {
+        void onDataPass(String key, Bundle signInBundle);
     }
 }

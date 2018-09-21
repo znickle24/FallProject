@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -182,6 +183,17 @@ public class ReusableUtil {
         transaction.replace(replaceableViewId, fragmentToLoad, tag);
         if (addToBackStack) { transaction.addToBackStack(null); }
         transaction.commit();
+    }
+
+    public static void loadDialogFragment(FragmentManager fragmentManager, DialogFragment dialogFragment, Fragment targetFragment, @Nullable String tag, boolean addToBackStack) {
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        Fragment previousInstance = fragmentManager.findFragmentByTag(tag);
+        if (previousInstance != null) {
+            transaction.remove(previousInstance);
+        }
+        if (addToBackStack) { transaction.addToBackStack(null); }
+        dialogFragment.setTargetFragment(targetFragment, 0);
+        dialogFragment.show(transaction, tag);
     }
 
 }
