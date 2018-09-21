@@ -31,4 +31,6 @@ public class Key {
 
     // Misc
     public static final int REQUEST_IMAGE_CAPTURE = 1;
+    public static final String AGE_SPINNER_LABEL = "Age";
+    public static final String COUNTRY_SPINNER_LABEL = "Country";
 }
