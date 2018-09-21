@@ -8,10 +8,16 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.SeekBar;
 import android.widget.Toast;
+
+import com.neovisionaries.i18n.CountryCode;
 
 import java.io.ByteArrayOutputStream;
 
@@ -21,17 +27,17 @@ public class ReusableUtil {
 
     /**
      * Attempts to access the device's camera and return the resulting Bitmap when the user chooses
-     * to take a photo.
+     * to take a photo. Must be called within a Fragment class.
      *
      * Fails if camera access is denied.
      *
-     * @param activity the Activity from which to send the image capture intent.
+     * @param fragment the Fragment from which to send the image capture intent.
      * @param requestCode the request code assigned to this intent.
      */
-    public static void attemptImageCapture(Activity activity, int requestCode) {
+    public static void attemptImageCapture(Fragment fragment, int requestCode) {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (intent.resolveActivity(activity.getPackageManager()) != null) {
-            activity.startActivityForResult(intent, requestCode);
+        if (intent.resolveActivity(fragment.getActivity().getPackageManager()) != null) {
+            fragment.startActivityForResult(intent, requestCode);
         }
         // TODO: Error message. Are there other causes of failure beside permissions?
     }
@@ -133,6 +139,16 @@ public class ReusableUtil {
     }
 
     /**
+     * Initializes SeekBar.OnSeekBarChangeListeners. Use this method to add any additional
+     * SeekBarChangeListeners.
+     */
+    public static void setOnSeekBarChangeListeners(SeekBar.OnSeekBarChangeListener listener, SeekBar... seekBars) {
+        for (SeekBar s : seekBars) {
+            s.setOnSeekBarChangeListener(listener);
+        }
+    }
+
+    /**
      * Disables an active TextInputLayout error. Intended to be called from the
      * TextWatcher.onTextChanged callback.
      *
@@ -150,6 +166,22 @@ public class ReusableUtil {
                 l.setErrorEnabled(false);
             }
         }
+    }
+
+    /**
+     * Replaces a View with another Fragment.
+     *
+     * @param fragmentManager the FragmentManager used to manipulate the Views.
+     * @param replaceableViewId the id of the View to be replaced.
+     * @param fragmentToLoad the Fragment to display.
+     * @param tag the tag to uniquely identify fragmentToLoad.
+     * @param addToBackStack whether to add fragmentToLoad to the Back Stack.
+     */
+    public static void loadFragment(FragmentManager fragmentManager, int replaceableViewId, Fragment fragmentToLoad, @Nullable String tag, boolean addToBackStack) {
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(replaceableViewId, fragmentToLoad, tag);
+        if (addToBackStack) { transaction.addToBackStack(null); }
+        transaction.commit();
     }
 
 }
