@@ -9,10 +9,6 @@ import java.util.ArrayList;
  */
 public class SpinnerUtil {
 
-    public static final String AGE_SPINNER_LABEL = "Age";
-    public static final String CITY_SPINNER_LABEL = "City";
-    public static final String COUNTRY_SPINNER_LABEL = "Country";
-
     /**
      * Returns an array of ages represented by integers.
      *
@@ -30,7 +26,7 @@ public class SpinnerUtil {
          * inclusion of the label.
          */
         String[] ages = new String[maxAge - minAge + 2]; // Inclusive + additional index for label.
-        ages[0] = AGE_SPINNER_LABEL;
+        ages[0] = Key.AGE_SPINNER_LABEL;
 
         for (int i = 1; i <= maxAge - minAge + 1; i++) {
             ages[i] = Integer.toString(i + minAge - 1); // Min to max inclusive.
@@ -54,7 +50,7 @@ public class SpinnerUtil {
         CountryCode[] codes = CountryCode.values();
 
         ArrayList<String> countries = new ArrayList<>();
-        countries.add(COUNTRY_SPINNER_LABEL);
+        countries.add(Key.COUNTRY_SPINNER_LABEL);
 
         for (CountryCode code : CountryCode.values()) {
 
