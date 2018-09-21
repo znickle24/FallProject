@@ -26,8 +26,8 @@ public class Key {
     public static final String BMI = "BMI"; //int
 
     // Used as both keys & tags
-    private static final String SIGN_IN_FRAGMENT = "SIGN_IN_FRAGMENT";
-    private static final String FITNESS_INPUT_FRAGMENT = "FITNESS_INPUT_FRAGMENT";
+    public static final String SIGN_IN_FRAGMENT = "SIGN_IN_FRAGMENT";
+    public static final String FITNESS_INPUT_FRAGMENT = "FITNESS_INPUT_FRAGMENT";
 
     // Misc
     public static final int REQUEST_IMAGE_CAPTURE = 1;
