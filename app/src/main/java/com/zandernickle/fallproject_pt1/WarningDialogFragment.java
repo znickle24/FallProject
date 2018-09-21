@@ -27,7 +27,8 @@ public class WarningDialogFragment extends DialogFragment implements View.OnClic
         try {
             mWarningAcceptListener = (OnWarningAcceptListener) getTargetFragment();
         } catch (ClassCastException e) {
-            throw new ClassCastException("Test");
+            // TODO: Implement a more meaningful message.
+            throw new ClassCastException();
         }
     }
 
@@ -49,17 +50,11 @@ public class WarningDialogFragment extends DialogFragment implements View.OnClic
 
     @Override
     public void onClick(View v) {
-
-        switch (v.getId()) {
-            case R.id.button_neg:
-                dismiss();
-                break;
-            case R.id.button_pos:
-                mWarningAcceptListener.onWarningAccepted();
-                // FitnessInputFragment will then send data to Main which will replace the view.
-                break;
-            default:
-                break;
+        int viewId = v.getId();
+        if (viewId == R.id.button_neg) {
+            dismiss();
+        } else if (viewId == R.id.button_pos) {
+            mWarningAcceptListener.onWarningAccepted();
         }
     }
 }
