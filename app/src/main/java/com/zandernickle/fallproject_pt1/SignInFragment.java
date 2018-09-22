@@ -11,7 +11,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatSpinner;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,10 +30,8 @@ import java.util.HashMap;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.attemptImageCapture;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.bitmapToBundle;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.disableTILErrorOnTextChanged;
-import static com.zandernickle.fallproject_pt1.ReusableUtil.log;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.mapTextInputLayouts;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.onImageCaptureResult;
-import static com.zandernickle.fallproject_pt1.ReusableUtil.pairEditableTextToLayouts;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.setOnClickListeners;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.setOnItemSelectedListeners;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.setTextChangedListeners;
@@ -98,7 +95,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
 
         mTvAgeRequiredLabel = thisFragment.findViewById(R.id.tv_age_required);
         mTvCountryRequiredLabel = thisFragment.findViewById(R.id.tv_country_required);
-        mImgBtnAddProfileImage = thisFragment.findViewById(R.id.ib_add_profile_image);
+        mImgBtnAddProfileImage = thisFragment.findViewById(R.id.iv_add_profile_image);
         mImgViewProfileImage = thisFragment.findViewById(R.id.civ_profile_container);
         mTilName = thisFragment.findViewById(R.id.til_name);
         mTilPostalCode = thisFragment.findViewById(R.id.til_postal_code);
@@ -136,7 +133,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
     public void onClick(View v) {
 
         switch (v.getId()) {
-            case R.id.ib_add_profile_image:
+            case R.id.iv_add_profile_image:
                 attemptImageCapture(SignInFragment.this, Key.REQUEST_IMAGE_CAPTURE);
                 break;
 
@@ -178,7 +175,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
 
         if (requestCode == Key.REQUEST_IMAGE_CAPTURE) {
             // Nullable
-            mBitmapProfileImg = onImageCaptureResult(SignInFragment.this.getActivity(), data, resultCode, null);
+            mBitmapProfileImg = onImageCaptureResult(SignInFragment.this.getActivity(), data, mBitmapProfileImg, resultCode, null);
             if (mBitmapProfileImg != null) {
 
                 // TODO: Add an update image button.
