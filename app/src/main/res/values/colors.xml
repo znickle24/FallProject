@@ -14,4 +14,6 @@
     <color name="colorDialogBackground">#1e1e1e</color>
     <color name="colorErrorRed">#FF7043</color>
     <color name="colorMenuBarBackground">#1f1f26</color>
+    <color name="colorDivider">#3e3e3f</color>
+
 </resources>

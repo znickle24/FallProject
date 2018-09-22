@@ -1,7 +1,6 @@
 package com.zandernickle.fallproject_pt1;
 
 
-
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
@@ -11,7 +10,6 @@ import android.view.ViewGroup;
 
 /**
  * A simple {@link Fragment} subclass.
- *
  */
 public class MasterListHeaderFragment extends Fragment {
 

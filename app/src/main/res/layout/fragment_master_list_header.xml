@@ -3,12 +3,39 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MasterListHeaderFragment">
+    tools:context=".MasterListHeaderFragment"
+    android:background="@color/colorMenuBarBackground">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="24dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingBottom="32dp"
+        android:background="@drawable/border_bottom_master_list">
+        <ImageView
+            android:id="@+id/iv_app_icon"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@drawable/ic_app_icon"/>
+        <TextView
+            android:id="@+id/tv_app_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hike / Fitness App"
+            android:textSize="20sp"
+            android:textColor="@color/colorPureWhite"
+            android:fontFamily="sans-serif-condensed"/>
+        <TextView
+            android:id="@+id/tv_user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPureWhite"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-condensed"
+            tools:text="Henry Williams" />
+    </LinearLayout>
 
 </FrameLayout>
