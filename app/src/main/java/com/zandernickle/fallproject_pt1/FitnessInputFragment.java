@@ -3,6 +3,7 @@ package com.zandernickle.fallproject_pt1;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -23,7 +24,10 @@ import static com.zandernickle.fallproject_pt1.UnitConversionUtil.insToCms;
 import static com.zandernickle.fallproject_pt1.UnitConversionUtil.lbsToKgs;
 
 /**
- * A simple {@link Fragment} subclass.
+ * Welcomes new users and asks for some basic fitness data in order to provide each user
+ * with personalized BMI/BMR estimates. Shows locale-appropriate units such as pounds vs
+ * kilograms and inches vs centimeters. Sends the fitness data to Main in order to update
+ * the user's profile and display the BMR/BMI calculations (BMRFragment).
  */
 public class FitnessInputFragment extends Fragment implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, WarningDialogFragment.OnWarningAcceptListener {
 
@@ -126,12 +130,14 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
     /**
      * {@inheritDoc}
      *
-     *
-     *
+     * Initializes or updates non-graphical member variables and updates some graphical
+     * elements.
      */
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        // TODO: Separate name into first and last (in the SignInFragment).
 
         Bundle signInBundle = getArguments();
         String uppercaseName = signInBundle.getString(Key.NAME).toUpperCase();
@@ -139,11 +145,17 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
 
         mTvWelcome.setText(WELCOME + " " + uppercaseName);
 
+        // The order is important here. See the docs.
         initializeUnitsToLocale(mCountryCode);
         initializeSeekBars();
         initializeSeekBarLabelValues();
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Register views in onCreateView via ReusableUtil.setOnClickListeners.
+     */
     @Override
     public void onClick(View v) {
 
@@ -158,15 +170,6 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
                         mRgActivityLevel.getCheckedRadioButtonId());
 
                 int delta = mSbWeightDelta.getProgress();
-                if (isUnhealthyGoal(delta)) {
-                    /* The user's fitness data should not be updated if they select the dialog's back
-                     * button (as would happen if this condition did not break the switch statement.
-                     * Instead, the user should be able to update their weight goal and click the
-                     * submit button again.
-                     */
-                    displayDialog(UNHEALTHY_GOAL_DIALOG);
-                    break;
-                }
 
                 mFitnessInputBundle = new Bundle();
 
@@ -176,45 +179,71 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
                 mFitnessInputBundle.putInt(Key.WEIGHT, weight);
                 mFitnessInputBundle.putSerializable(Key.WEIGHT_GOAL, delta);
 
-                /* Important! onDataPass may also be called from onWarningAccepted. Control flow is
-                 * diverted to onWarningAccepted if the user's weight goal is unhealthy. The user is
-                 * then given the decision whether to proceed against the warning or return to change
-                 * their weight goal.
-                 */
-                mDataPasser.onDataPass(FITNESS_INPUT_FRAGMENT, mFitnessInputBundle);
+                if (isUnhealthyGoal(delta)) {
+                    /* The user's fitness data should not be updated if they select the dialog's back
+                     * button (as would happen if onDataPass was immediately called).
+                     */
+                    displayDialog(UNHEALTHY_GOAL_DIALOG);
+                } else {
+                    /* Important! onDataPass may also be called from onWarningAccepted. Control flow is
+                     * diverted to onWarningAccepted if the user's weight goal is unhealthy. The user is
+                     * then given the decision whether to proceed against the warning or return to change
+                     * their weight goal.
+                     */
+                    mDataPasser.onDataPass(FITNESS_INPUT_FRAGMENT, mFitnessInputBundle);
+                }
 
                 break;
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Implemented on behalf of WarningDialogFragment.OnWarningAcceptListener.
+     * Called when the user opts to accept the warning dialog and proceed to the
+     * next task.
+     */
     @Override
     public void onWarningAccepted() {
+        //
         mDataPasser.onDataPass(FITNESS_INPUT_FRAGMENT, mFitnessInputBundle);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Implemented on behalf of SeekBar.OnSeekBarChangeListener. Updates the
+     * corresponding labels to show the current progress of the SeekBar.
+     */
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
-        switch (seekBar.getId()) {
-            case R.id.sb_height:
-                mTvHeightResult.setText(seekBar.getProgress() + mUnitsHeight);
-                break;
-            case R.id.sb_weight:
-                mTvWeightResult.setText(seekBar.getProgress() + mUnitsWeight);
-                break;
-            case R.id.sb_weight_delta:
-                mTvWeightDeltaResult.setText(seekBar.getProgress() + " " + mUnitsWeight);
-                break;
-            default:
-                break;
-        }
+        int seekBarId = seekBar.getId();
+        if (seekBarId == R.id.sb_height) {
+            mTvHeightResult.setText(seekBar.getProgress() + mUnitsHeight);
+        } else if (seekBarId == R.id.sb_weight) {
+            mTvWeightResult.setText(seekBar.getProgress() + mUnitsWeight);
+        } else if (seekBarId == R.id.sb_weight_delta) {
+            mTvWeightDeltaResult.setText(seekBar.getProgress() + " " + mUnitsWeight);
+        } // Additional SeekBars could be added in the future.
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Unimplemented. Required by SeekBar.OnSeekBarChangeListener.
+     */
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
         // Do nothing.
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Unimplemented. Required by SeekBar.OnSeekBarChangeListener.
+     */
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         // Do nothing.
@@ -227,7 +256,14 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
         void onDataPass(String key, Bundle signInBundle);
     }
 
-    // call this first
+    /**
+     * Sets the appropriate units to the locale based on the provided CountryCode.
+     *
+     * Important! This method should be called before initializeSeekBars and
+     * initializeSeekBarLabelValues.
+     *
+     * @param countryCode
+     */
     private void initializeUnitsToLocale(CountryCode countryCode) {
         if (countryCode != CountryCode.US) {
             mMinHeight = insToCms(mMinHeight);
@@ -244,7 +280,17 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
         }
     }
 
-    // should call this second
+    /**
+     * Sets the initial progress for each SeekBar when the View is first rendered. The
+     * values defined here represent what the user will see before interacting with
+     * any of the SeekBars.
+     *
+     * Call this method after initializeUnitsToLocale to ensure the locale-appropriate
+     * units are shown.
+     *
+     * Important! This method should be called before initializeSeekBarLabelValues.
+     * Otherwise the label values will not be updated with the intended progress.
+     */
     private void initializeSeekBars() {
         mSbHeight.setBounds(mMinHeight, mMaxHeight);
         mSbWeight.setBounds(mMinWeight, mMaxWeight);
@@ -255,7 +301,12 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
         mSbWeightDelta.setProgress(mInitProgWeightDelta);
     }
 
-    // Should call this third
+    /**
+     * Sets the SeekBar label values to show the numerical value of the SeekBar's progress
+     * when the View is first rendered.
+     *
+     * Call this method after initializeSeekBars.
+     */
     private void initializeSeekBarLabelValues() {
         mTvHeightResult.setText(mSbHeight.getProgress() + " " + mUnitsHeight);
         mTvWeightResult.setText(mSbWeight.getProgress() + " " + mUnitsWeight);
@@ -264,12 +315,30 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
         mTvWeightDeltaPos.setText(POS + mMaxDelta + " " + mUnitsWeight);
     }
 
-    // Current implementation there is a default button selected so no way for this to return null
+    /**
+     * Returns a Sex enum representing the user's sex.
+     *
+     * The current implementation sets a default button to be selected. Therefore, the
+     * return value should never be null.
+     *
+     * @param buttonId the button id of the currently selected radio button.
+     * @return the user's sex.
+     */
+    @NonNull
     private Sex getRadioSelectedSex(int buttonId) {
         return buttonId == R.id.rb_male ? Sex.MALE : Sex.FEMALE;
     }
 
-    // Current implementation there is a default button selected so no way for this to return null
+    /**
+     * Returns an ActivityLevel enum representing the user's activity level.
+     *
+     * The current implementation sets a default button to be selected. Therefore, the
+     * return value should never be null.
+     *
+     * @param buttonId the button id of the currently selected radio button.
+     * @return the user's activity level.
+     */
+    @NonNull
     private ActivityLevel getRadioSelectedActivityLevel(int buttonId) {
 
         ActivityLevel activityLevel = ActivityLevel.SEDENTARY;
@@ -282,16 +351,42 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
         return activityLevel;
     }
 
+    /**
+     * Returns true if the weightDelta is greater than the calculated unhealthy weight delta.
+     * See mUnhealthyDelta member variable initialization.
+     *
+     * Important! This is the weight change per week.
+     *
+     * @param weightDelta the user-specified weight change (neg, 0, or pos) per week.
+     */
     private boolean isUnhealthyGoal(int weightDelta) {
         return Math.abs(weightDelta) > mUnhealthyDelta;
     }
 
+    /**
+     * Displays a DialogFragment as specified by the tag argument.
+     *
+     * The current implementation only contains a single DialogFragment, WarningDialogFragment.
+     * However, this method was designed for the addition of future fragments. Simply create an
+     * xml layout file, a custom DialogFragment class, and a local tag to specify which Dialog
+     * to display.
+     *
+     * @param tag an identifier to determine which DialogFragment to display.
+     */
     private void displayDialog(String tag) {
         if (tag == UNHEALTHY_GOAL_DIALOG) {
             loadDialogFragment(new WarningDialogFragment(), UNHEALTHY_GOAL_DIALOG, false);
         }
     }
 
+    /**
+     * A wrapper for the ReusableUtil.loadDialogFragment method. This method simply ensures this
+     * Fragment is the Dialog's host.
+     *
+     * @param dialogFragment the DialogFragment to load and render.
+     * @param tag  the tag to find the DialogFragment at a later point in time.
+     * @param addToBackStack whether to add the DialogFragment to the Back Stack.
+     */
     private void loadDialogFragment(DialogFragment dialogFragment, String tag, boolean addToBackStack) {
         ReusableUtil.loadDialogFragment(getFragmentManager(), dialogFragment, FitnessInputFragment.this, tag, addToBackStack);
     }
