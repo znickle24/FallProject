@@ -7,6 +7,7 @@ public class User {
     private int id;
     private String name;
     private byte[] profileImage;
+
     private int age;
     private int postalCode;
     private String countryCode;
@@ -59,6 +60,14 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public byte[] getProfileImage() {
+        return profileImage;
+    }
+
+    public int getWeightGoal() {
+        return weightGoal;
     }
 
     public int getAge() {
