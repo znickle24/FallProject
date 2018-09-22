@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
@@ -14,17 +15,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.AppCompatSpinner;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.SeekBar;
-import android.widget.Spinner;
 import android.widget.Toast;
-
-import com.neovisionaries.i18n.CountryCode;
 
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
@@ -230,20 +227,43 @@ public class ReusableUtil {
     }
 
 
-    public static void loadMenuBarFragment(FragmentActivity fragmentActivity, Bundle arguments) {
+    /**
+     * Loads an instance of MenuBarFragment. If the device is a tablet (larger than the specified
+     * size as saved to the values/layout resources), the MenuBarTabletFragment (a subclass of
+     * MenuBarFragment) is automatically loaded.
+     *
+     * @param fragmentActivity the FragmentActivity from which to load the MenuBarFragment. This
+     *                         will be the Fragment whose xml contains the placeholder.
+     * @param arguments the bundle containing the data to be passed to the MenuBarFragment. This
+     *                  bundle should contain a boolean specifying whether the device is a tablet.
+     * @param replaceableId the id of the xml element to be replaced by the MenuBarFragment.
+     */
+    public static void loadMenuBarFragment(FragmentActivity fragmentActivity, Bundle arguments, int replaceableId) {
 
-        boolean isTablet = arguments.getBoolean("IS_TABLET");
+        boolean isTablet = arguments.getBoolean(Key.IS_TABLET);
         Fragment menuBarFragment = isTablet ? new MenuBarTabletFragment() : new MenuBarFragment();
 
         menuBarFragment.setArguments(arguments);
-        loadFragment(fragmentActivity.getSupportFragmentManager(), R.id.fl_menu_bar_fragment_placeholder,
-                menuBarFragment, Key.MENU_BAR_FRAGMENT, false);
+        loadFragment(fragmentActivity.getSupportFragmentManager(), replaceableId, menuBarFragment, Key.MENU_BAR_FRAGMENT, false);
     }
 
+    /**
+     * A wrapper for the system-wide logger. Can be useful for some bug squishing.
+     *
+     * @param message the message to display in the logger.
+     */
     public static void log(String message) {
         Log.d("Log", message);
     }
 
+    /**
+     * A wrapper for android.Widget.Toast. Useful for rendering messages to the emulator
+     * screen such as when a button is clicked but no app functionality has yet been attached
+     * to that button.
+     *
+     * @param context the current Context.
+     * @param message the message to display on the device screen.
+     */
     public static void toast(Context context, String message) {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
