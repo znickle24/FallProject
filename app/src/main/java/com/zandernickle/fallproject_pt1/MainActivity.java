@@ -10,7 +10,24 @@ import static com.zandernickle.fallproject_pt1.Key.MENU_BAR_FRAGMENT_PROFILE_PRE
 import static com.zandernickle.fallproject_pt1.Key.SIGN_IN_FRAGMENT;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.loadFragment;
 
-public class MainActivity extends CustomAppCompatActivity implements SignInFragment.OnDataPass, FitnessInputFragment.OnDataPass, MenuBarFragment.OnDataPass {
+public class MainActivity extends CustomAppCompatActivity implements SignInFragment.OnDataPass,
+        FitnessInputFragment.OnDataPass, MenuBarFragment.OnDataPass {
+
+    /* TODO
+     *
+     * (Zander)
+     * BMRFragment should expect a CountryCode rather than a String. This is a safer approach and the Key documentation
+     * has already been changed to reflect this.
+     * Simply use CountryCode countryCode = (CountryCode) arguments.getSerializable(Key.COUNTRY) and then check whether
+     * countryCode == CountryCode.US.
+     *
+     * (Matt)
+     * Create XML layout resources for every phone screen's landscape mode. How do we ensure the landscape fragment is
+     * not rendered when a tablet is in landscape orientation?
+     *
+     *
+     *
+     */
 
     private DatabaseService database = new DatabaseService(); // A placeholder for a real database.
     private FragmentManager mFragmentManager = getSupportFragmentManager(); // Reusable throughout the application.
@@ -79,6 +96,11 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
                  * User.updateFitnessData method). However, their BMI and BMR have yet to be calculated. These are
                  * added when the BMR fragment returns its data.
                  */
+
+//                mWeight = mArgsReceived.getInt(Key.WEIGHT);
+//                mAge = mArgsReceived.getInt(Key.AGE);
+//                mInches = mArgsReceived.getInt(Key.HEIGHT);
+//                mWeightGoal = mArgsReceived.getInt(Key.GOAL);
 
 
                 // TESTS ........
