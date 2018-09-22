@@ -28,6 +28,8 @@ public class Key {
     // Used as both keys & tags
     public static final String SIGN_IN_FRAGMENT = "SIGN_IN_FRAGMENT";
     public static final String FITNESS_INPUT_FRAGMENT = "FITNESS_INPUT_FRAGMENT";
+    public static final String WEATHER_FRAGMENT = "WEATHER_FRAGMENT";
+    public static final String HIKES_FRAGMENT = "HIKES_FRAGMENT";
 
     // Misc
     public static final int REQUEST_IMAGE_CAPTURE = 1;
