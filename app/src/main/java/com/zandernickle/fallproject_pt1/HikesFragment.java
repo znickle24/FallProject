@@ -100,7 +100,7 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
             mIvProfilePic.setImageBitmap(thumbnailImage);
         }
 
-        ReusableUtil.loadMenuBarFragment(this.getActivity(), picBundle);
+        ReusableUtil.loadMenuBarFragment(this.getActivity(), picBundle, R.id.fl_menu_bar_fragment_placeholder);
         return view;
     }
 
@@ -177,7 +177,7 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
                 }
                 break;
             }
-             case R.id.spinner: {
+            case R.id.spinner: {
                 mDataPasser.onDataPass(Key.HIKES_FRAGMENT);
             }
             break;
@@ -262,8 +262,8 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
     }
 
 
-@Override
-public void onLocationChanged(Location location) {
+    @Override
+    public void onLocationChanged(Location location) {
         Log.d("HikesFragment.java: ", "in onLocationChanged() in HikesFragment.java");
         mLatitude = location.getLatitude();
         Log.d("mLatitude: ", Double.toString(mLatitude));
@@ -272,20 +272,20 @@ public void onLocationChanged(Location location) {
     }
 
 
-@Override
-public void onProviderDisabled(String provider) {
+    @Override
+    public void onProviderDisabled(String provider) {
         Log.d("Latitude","disable");
     }
 
 
-@Override
-public void onProviderEnabled(String provider) {
+    @Override
+    public void onProviderEnabled(String provider) {
         Log.d("Latitude","enable");
     }
 
 
-@Override
-public void onStatusChanged(String provider, int status, Bundle extras) {
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
         Log.d("Latitude","status");
     }
 

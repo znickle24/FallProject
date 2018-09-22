@@ -87,7 +87,7 @@ public class WeatherFragment extends Fragment implements View.OnClickListener{
             mIvProfilePic.setImageBitmap(thumbnailImage);
         }
 
-        ReusableUtil.loadMenuBarFragment(this.getActivity(), picBundle);
+        ReusableUtil.loadMenuBarFragment(this.getActivity(), picBundle, R.id.fl_menu_bar_fragment_placeholder);
         return view;
     }
 
