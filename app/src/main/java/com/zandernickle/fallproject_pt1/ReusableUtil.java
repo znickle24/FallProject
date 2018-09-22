@@ -229,8 +229,12 @@ public class ReusableUtil {
         return map;
     }
 
+
     public static void loadMenuBarFragment(FragmentActivity fragmentActivity, Bundle arguments) {
-        MenuBarFragment menuBarFragment = new MenuBarFragment();
+
+        boolean isTablet = arguments.getBoolean("IS_TABLET");
+        Fragment menuBarFragment = isTablet ? new MenuBarTabletFragment() : new MenuBarFragment();
+
         menuBarFragment.setArguments(arguments);
         loadFragment(fragmentActivity.getSupportFragmentManager(), R.id.fl_menu_bar_fragment_placeholder,
                 menuBarFragment, Key.MENU_BAR_FRAGMENT, false);
