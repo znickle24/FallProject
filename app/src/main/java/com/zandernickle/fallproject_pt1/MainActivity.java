@@ -32,6 +32,7 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
     private DatabaseService database = new DatabaseService(); // A placeholder for a real database.
     private FragmentManager mFragmentManager = getSupportFragmentManager(); // Reusable throughout the application.
     private User mUser; // The current user (kind of like a Cookie).
+    private boolean mIsTablet = isTablet();
 
     /**
      * {@inheritDoc}
@@ -44,7 +45,7 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        int viewId = isTablet() ? R.id.fl_fragment_placeholder_tablet_right :
+        int viewId = mIsTablet ? R.id.fl_fragment_placeholder_tablet_right :
                 R.id.fl_fragment_placeholder_phone;
 
         loadFragment(mFragmentManager, viewId, new SignInFragment(), SIGN_IN_FRAGMENT, false);
@@ -108,6 +109,8 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
                 Bundle testBundle = new Bundle();
                 testBundle.putSerializable(Key.MODULE, Module.HEALTH);
                 testBundle.putByteArray(Key.PROFILE_IMAGE, mUser.getProfileImage());
+
+                testBundle.putBoolean(Key.IS_TABLET, mIsTablet);
 
                 Fragment prevFitnessInputFragment = mFragmentManager.findFragmentByTag(FITNESS_INPUT_FRAGMENT);
                 Fragment playgroundFragment = new PlaygroundFragment();

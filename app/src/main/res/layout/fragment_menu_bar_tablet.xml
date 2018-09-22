@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MenuBarFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:paddingEnd="24dp"
+        android:paddingStart="24dp"
+        android:orientation="horizontal"
+        android:background="@color/colorMenuBarBackground">
+
+        <TextView
+            android:id="@+id/tv_module_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="10"
+            android:fontFamily="sans-serif-condensed"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/colorPureWhite"
+            android:textSize="20sp"
+            tools:text="MODULE NAME" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/civ_profile_image"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical|right"
+            tools:src="@drawable/ic_tools_profile_image"
+            />
+
+    </LinearLayout>
+
+</FrameLayout>

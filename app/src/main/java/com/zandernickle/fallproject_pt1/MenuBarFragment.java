@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -15,19 +14,18 @@ import android.widget.TextView;
 
 import static com.zandernickle.fallproject_pt1.Key.MENU_BAR_FRAGMENT_MENU_PRESSED;
 import static com.zandernickle.fallproject_pt1.Key.MENU_BAR_FRAGMENT_PROFILE_PRESSED;
-import static com.zandernickle.fallproject_pt1.ReusableUtil.attemptImageCapture;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.bitmapFromBundle;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.setOnClickListeners;
 
 
 public class MenuBarFragment extends Fragment implements View.OnClickListener {
 
-    private TextView mTvModuleName;
-    private ImageView mIvMenuIcon, mIvProfileImage;
+    protected TextView mTvModuleName;
+    protected ImageView mIvMenuIcon, mIvProfileImage;
 
-    private Bitmap mBitmapProfileImage;
+    protected Bitmap mBitmapProfileImage;
 
-    private OnDataPass mDataPasser;
+    protected OnDataPass mDataPasser;
 
 
     public MenuBarFragment() {
@@ -48,7 +46,7 @@ public class MenuBarFragment extends Fragment implements View.OnClickListener {
             mDataPasser = (MenuBarFragment.OnDataPass) context;
         } catch (ClassCastException e) {
             // This should never happen; if it does, its nice to have a decent error message.
-            String message = context.toString() + " must implement " + MenuBarFragment.class.toString() + ".OnDataPass";
+            String message = context.toString() + " must implement " + this.toString() + ".OnDataPass";
             throw new ClassCastException(message);
         }
     }
