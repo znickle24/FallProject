@@ -8,7 +8,7 @@ import static com.zandernickle.fallproject_pt1.Key.FITNESS_INPUT_FRAGMENT;
 import static com.zandernickle.fallproject_pt1.Key.SIGN_IN_FRAGMENT;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.loadFragment;
 
-public class MainActivity extends CustomAppCompatActivity implements SignInFragment.OnDataPass, FitnessInputFragment.OnDataPass {
+public class MainActivity extends CustomAppCompatActivity implements SignInFragment.OnDataPass, FitnessInputFragment.OnDataPass, MenuBarFragment.OnDataPass {
 
     private DatabaseService database = new DatabaseService(); // A placeholder for a real database.
     private FragmentManager mFragmentManager = getSupportFragmentManager(); // Reusable throughout the application.
@@ -45,6 +45,7 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
         // TODO: Decide how often to update the database.
 
         switch (key) {
+
             case SIGN_IN_FRAGMENT:
                 mUser = new User(bundle);
                 database.addUser(mUser);
@@ -62,7 +63,7 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
                 Fragment fitnessInputFragment = new FitnessInputFragment();
                 fitnessInputFragment.setArguments(bundle);
 
-                loadFragment(mFragmentManager, signInFragment.getId(), fitnessInputFragment, FITNESS_INPUT_FRAGMENT, true);
+                loadFragment(mFragmentManager, signInFragment.getId(), fitnessInputFragment, FITNESS_INPUT_FRAGMENT, false);
 
                 break;
 
@@ -78,12 +79,27 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
                  */
 
 
+                // TESTS ........
 
+                Bundle testBundle = new Bundle();
+                testBundle.putSerializable(Key.MODULE, Module.HEALTH);
+                testBundle.putByteArray(Key.PROFILE_IMAGE, mUser.getProfileImage());
 
+                Fragment prevFitnessInputFragment = mFragmentManager.findFragmentByTag(FITNESS_INPUT_FRAGMENT);
+                Fragment playgroundFragment = new PlaygroundFragment();
+                playgroundFragment.setArguments(testBundle);
 
-//                // TODO: Store as member variable instead of looking up from tag or just use scope of switch?
-//                Fragment returnedFitnessInputFragment = mFragmentManager.findFragmentByTag(FITNESS_INPUT_FRAGMENT);
-//                loadFragment(mFragmentManager, returnedFitnessInputFragment.getId(), new BMRFragment(), "TEST", false);
+                loadFragment(mFragmentManager, prevFitnessInputFragment.getId(), playgroundFragment, "TEST", false);
+
+                // End tests ........
+
+                break;
+
+            case Key.MENU_BAR_FRAGMENT_MENU_PRESSED:
+                ReusableUtil.toast(this, "Load the RecyclerView");
+                break;
+            case Key.MENU_BAR_FRAGMENT_PROFILE_PRESSED:
+                ReusableUtil.toast(this, "Load the UpdateProfileFragment");
                 break;
         }
     }

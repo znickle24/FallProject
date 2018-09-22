@@ -14,7 +14,7 @@
         android:background="@color/colorMenuBarBackground">
 
         <ImageView
-            android:id="@+id/ib_menu_icon"
+            android:id="@+id/iv_menu_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"

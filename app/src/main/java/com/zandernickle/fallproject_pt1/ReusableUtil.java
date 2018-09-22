@@ -1,6 +1,7 @@
 package com.zandernickle.fallproject_pt1;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.AppCompatSpinner;
@@ -67,13 +69,15 @@ public class ReusableUtil {
      * @param resultCode the result code passed from the onActivityResult callback.
      * @param errorMessage an optional error message to display via Toast.
      * @return the Bitmap from the image capture, if it exists; null otherwise.
+     *
+     * TODO: Update params docs (bitmap)
      */
     @Nullable
-    public static Bitmap onImageCaptureResult(Activity activity, Intent data, int resultCode,
+    public static Bitmap onImageCaptureResult(Activity activity, Intent data, Bitmap bitmap, int resultCode,
                                               @Nullable String errorMessage) {
-        Bitmap image = null;
+
         if (resultCode == RESULT_OK) {
-            image = (Bitmap) data.getExtras().get("data");
+            bitmap = (Bitmap) data.getExtras().get("data");
         } else {
 
             /* TODO: Possible to distinguish the cause of RESULT_CANCELLED?
@@ -86,7 +90,7 @@ public class ReusableUtil {
             errorMessage = errorMessage == null ? defaultError : errorMessage;
             Toast.makeText(activity, errorMessage, Toast.LENGTH_SHORT).show();
         }
-        return image;
+        return bitmap;
     }
 
     /**
@@ -222,8 +226,19 @@ public class ReusableUtil {
         return map;
     }
 
+    public static void loadMenuBarFragment(FragmentActivity fragmentActivity, Bundle arguments) {
+        MenuBarFragment menuBarFragment = new MenuBarFragment();
+        menuBarFragment.setArguments(arguments);
+        loadFragment(fragmentActivity.getSupportFragmentManager(), R.id.fl_menu_bar_fragment_placeholder,
+                menuBarFragment, Key.MENU_BAR_FRAGMENT, false);
+    }
+
     public static void log(String message) {
         Log.d("Log", message);
+    }
+
+    public static void toast(Context context, String message) {
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
 
 }
