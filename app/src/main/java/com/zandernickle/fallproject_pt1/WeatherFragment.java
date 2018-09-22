@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -21,16 +20,15 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class WeatherFragment extends Fragment {
+public class WeatherFragment extends Fragment implements View.OnClickListener{
 
-    //Variables for TextViews holding location and weather data
+    //Variables for TextViews displaying location and weather data
     private TextView mTvLocation, mTvTemp, mTvHighTemp, mTvLowTemp,
             mTvPrecip, mTvPressure, mTvHumid;
 
-    //Variables for other UI elements
+    //Variables for other UI elements (Master List and Profile Pic)
     private Spinner mSpinner;
     private ImageView mIvProfilePic;
-    private Button mBtLocation;
 
     //Variables holding current latitude and longitude
     private double mLatitude, mLongitude;
@@ -41,15 +39,17 @@ public class WeatherFragment extends Fragment {
     private WeatherData mWeatherData;
     private Context mContext;
 
+    OnDataPass mDataPasser;
+
 
     //WeatherFragment Constructor
     public WeatherFragment() {
     }
 
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    //Callback interface
+    public interface OnDataPass{
+        public void onDataPass(String data);
     }
 
 
@@ -58,9 +58,9 @@ public class WeatherFragment extends Fragment {
         //Inflate the HikesFragment layout view
         View view = inflater.inflate(R.layout.fragment_weather, container, false);
 
-//        //ONLY NEED THIS IF WE WANT TO CHANGE LOCATION
-//        mBtLocation = (Button) view.findViewById(R.id.button_change_location);
-//        mBtLocation.setOnClickListener(this);
+        //Set Spinner (Master List) to an onClickListener
+        mSpinner = (Spinner) view.findViewById(R.id.spinner);
+        mSpinner.setOnClickListener(this);
 
         //Get the ImageView to set the profile pic in
         mIvProfilePic = (ImageView) view.findViewById(R.id.iv_pic);
@@ -74,7 +74,7 @@ public class WeatherFragment extends Fragment {
         mTvPressure = (TextView) view.findViewById(R.id.tv_pressure_data);
         mTvHumid = (TextView) view.findViewById(R.id.tv_humid_data);
 
-        //Get the current latitude, longitude, city name, and country name for display
+        //Get the current latitude, longitude, city name, and country name
         mLatitude = GPSTracker.getLatitude();
         mLongitude = GPSTracker.getLongitude();
         String currentCityCountry = getCityAndCountry(mLatitude, mLongitude);
@@ -94,6 +94,12 @@ public class WeatherFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         this.mContext = context;
+
+        try{
+            mDataPasser = (OnDataPass) context;
+        }catch(ClassCastException e){
+            throw new ClassCastException(context.toString() + " must implement OnDataPass");
+        }
     }
 
 
@@ -146,6 +152,7 @@ public class WeatherFragment extends Fragment {
 
 
     private class FetchWeatherTask extends AsyncTask<String, Void, String> {
+
         @Override
         protected String doInBackground(String... inputStringArray) {
             String location = inputStringArray[0];
@@ -187,17 +194,15 @@ public class WeatherFragment extends Fragment {
     }
 
 
-//    //CHANGE THIS IF WE WANT TO CHANGE THE LOCATION WITH BUTTON
-//    @Override
-//    public void onClick(View view) {
-//        switch (view.getId()) {
-//            //case R.id.button_change_location: {
-//                //Get the string from the edit text and sanitize the input
-//                //String inputFromEt = mEtLocation.getText().toString().replace(' ','&');
-//                //loadWeatherData(inputFromEt);
-//            //}
-//            //break;
-//        }
-//    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.spinner: {
+                mDataPasser.onDataPass(Key.WEATHER_FRAGMENT);
+            }
+            break;
+        }
+    }
 
 }
