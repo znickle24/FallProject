@@ -222,14 +222,6 @@ public class ReusableUtil {
         return map;
     }
 
-    public static String[][] pairEditableTextToLayouts(TextInputLayout... layouts) {
-        String[][] data = new String[layouts.length][2]; // key-value pairs
-        for (int i = 0; i < layouts.length; i++) {
-            data[i] = new String[] {Integer.toString(layouts[i].getId()), layouts[i].getEditText().getText().toString()};
-        }
-        return data;
-    }
-
     public static void log(String message) {
         Log.d("Log", message);
     }
