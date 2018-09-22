@@ -32,7 +32,7 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
     private DatabaseService database = new DatabaseService(); // A placeholder for a real database.
     private FragmentManager mFragmentManager = getSupportFragmentManager(); // Reusable throughout the application.
     private User mUser; // The current user (kind of like a Cookie).
-    private boolean mIsTablet = isTablet();
+    private boolean mIsTablet;
 
     /**
      * {@inheritDoc}
@@ -44,6 +44,8 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mIsTablet = isTablet(); // Pass to individual modules.
 
         int viewId = mIsTablet ? R.id.fl_fragment_placeholder_tablet_right :
                 R.id.fl_fragment_placeholder_phone;
@@ -97,11 +99,6 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
                  * User.updateFitnessData method). However, their BMI and BMR have yet to be calculated. These are
                  * added when the BMR fragment returns its data.
                  */
-
-//                mWeight = mArgsReceived.getInt(Key.WEIGHT);
-//                mAge = mArgsReceived.getInt(Key.AGE);
-//                mInches = mArgsReceived.getInt(Key.HEIGHT);
-//                mWeightGoal = mArgsReceived.getInt(Key.GOAL);
 
 
                 // TESTS ........
