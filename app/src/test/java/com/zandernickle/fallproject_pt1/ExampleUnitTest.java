@@ -11,11 +11,33 @@ import static org.junit.Assert.*;
  */
 public class ExampleUnitTest {
     @Test
-    public void addition_isCorrect() throws Exception {
-        WeatherData myClass = new WeatherData();
-        //int result = myClass.getRain();
-        int expected = 4;
-        //assertEquals(expected, result);
-        //assertEquals(4, 2 + 2);
+    public void getHeightAmerican_isCorrect() throws Exception {
+        //BMRFragment myClass = new WeatherData();
+        String result1 = BMRFragment.getHeightAmerican(60); //enter number of inches
+        String expected1 = "5'";
+        //inches are "
+        //feet are '
+        assertEquals(result1, expected1);
+
+        String result2 = BMRFragment.getHeightAmerican(66); //enter number of inches
+        String expected2 = "5'6\"";'
+        assertEquals(result2, expected2);
     }
+
+
+    @Test
+    public void getHeightAmerican_isCorrect() throws Exception {
+        //BMRFragment myClass = new WeatherData();
+        String result1 = BMRFragment.getHeightAmerican(60); //enter number of inches
+        String expected1 = "5'";
+        //inches are "
+        //feet are '
+        assertEquals(result1, expected1);
+
+        String result2 = BMRFragment.getHeightAmerican(66); //enter number of inches
+        String expected2 = "5'6\"";'
+        assertEquals(result2, expected2);
+    }
+
+
 }
