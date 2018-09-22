@@ -40,7 +40,9 @@ import static com.zandernickle.fallproject_pt1.ReusableUtil.setOnItemSelectedLis
 import static com.zandernickle.fallproject_pt1.ReusableUtil.setTextChangedListeners;
 
 /**
- * A simple {@link Fragment} subclass.
+ * The first functional View rendered (vs. splash screen). Sets up a user's profile data
+ * and sends the data to Main in order to create a new user profile and add the user's
+ * data to the database.
  */
 public class SignInFragment extends Fragment implements View.OnClickListener, TextWatcher, AppCompatSpinner.OnItemSelectedListener {
 
@@ -49,7 +51,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
     private static final int SPINNER_LABEL_INDEX = 0;
     private static final String REQUIRED_FIELD = "*Required"; // "*" According to Material Design guidelines.
 
-    private TextView mTvSignUp, mTvAgeRequiredLabel, mTvCountryRequiredLabel;
+    private TextView mTvAgeRequiredLabel, mTvCountryRequiredLabel;
     private ImageButton mImgBtnAddProfileImage;
     private ImageView mImgViewProfileImage;
     private CustomTextInputLayout mTilName, mTilPostalCode;
@@ -86,7 +88,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
     /**
      * {@inheritDoc}
      *
-     * Does the usual inflation stuff, initializes the Spinners, and sets up any action listeners.
+     * Does the usual inflation stuff and sets up any action listeners.
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -94,7 +96,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
 
         View thisFragment = inflater.inflate(R.layout.fragment_sign_in, container, false);
 
-        mTvSignUp = thisFragment.findViewById(R.id.tv_sign_up);
         mTvAgeRequiredLabel = thisFragment.findViewById(R.id.tv_age_required);
         mTvCountryRequiredLabel = thisFragment.findViewById(R.id.tv_country_required);
         mImgBtnAddProfileImage = thisFragment.findViewById(R.id.ib_add_profile_image);
@@ -104,10 +105,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
         mSpinAge = thisFragment.findViewById(R.id.spin_age);
         mSpinCountry = thisFragment.findViewById(R.id.spin_country);
         mBtnSubmit = thisFragment.findViewById(R.id.button_submit);
-
-        mTextInputLayoutMap = mapTextInputLayouts(mTilName, mTilPostalCode);
-
-        initializeSpinners();
 
         setOnClickListeners(SignInFragment.this, mImgBtnAddProfileImage, mBtnSubmit);
         setTextChangedListeners(SignInFragment.this, mTilName.getEditText(), mTilPostalCode.getEditText());
@@ -119,10 +116,25 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
     /**
      * {@inheritDoc}
      *
+     * Initializes or updates non-graphical member variables and updates some graphical
+     * elements.
+     */
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        mTextInputLayoutMap = mapTextInputLayouts(mTilName, mTilPostalCode);
+        initializeSpinners();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * Register views in onCreateView via ReusableUtil.setOnClickListeners.
      */
     @Override
     public void onClick(View v) {
+
         switch (v.getId()) {
             case R.id.ib_add_profile_image:
                 attemptImageCapture(SignInFragment.this, Key.REQUEST_IMAGE_CAPTURE);
@@ -181,7 +193,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
     /**
      * {@inheritDoc}
      *
-     * Required by TextWatcher.
+     * Unimplemented. Required by TextWatcher.
      */
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -204,7 +216,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
     /**
      * {@inheritDoc}
      *
-     * Required by TextWatcher.
+     * Unimplemented. Required by TextWatcher.
      */
     @Override
     public void afterTextChanged(Editable s) {
@@ -232,7 +244,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
     /**
      * {@inheritDoc}
      *
-     * Required by AppCompatSpinner.
+     * Unimplemented. Required by AppCompatSpinner.
      */
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
