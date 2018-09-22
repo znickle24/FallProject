@@ -137,13 +137,11 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // TODO: Separate name into first and last (in the SignInFragment).
+        Bundle arguments = getArguments();
+        String firstNameUppercase = getFirstNameUppercase(arguments.getString(Key.NAME));
+        mCountryCode = (CountryCode) arguments.getSerializable(Key.COUNTRY);
 
-        Bundle signInBundle = getArguments();
-        String uppercaseName = signInBundle.getString(Key.NAME).toUpperCase();
-        mCountryCode = (CountryCode) signInBundle.getSerializable(Key.COUNTRY);
-
-        mTvWelcome.setText(WELCOME + " " + uppercaseName);
+        mTvWelcome.setText(WELCOME + " " + firstNameUppercase);
 
         // The order is important here. See the docs.
         initializeUnitsToLocale(mCountryCode);
@@ -389,5 +387,19 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
      */
     private void loadDialogFragment(DialogFragment dialogFragment, String tag, boolean addToBackStack) {
         ReusableUtil.loadDialogFragment(getFragmentManager(), dialogFragment, FitnessInputFragment.this, tag, addToBackStack);
+    }
+
+    /**
+     * Splits the name argument on whitespace and returns the String at index 0. This is
+     * assumed to be the user's first name.
+     *
+     * Only call this method when name is guaranteed to be non-null.
+     *
+     * @param name the full name from which to extract the first name.
+     * @return the user's first name.
+     */
+    private String getFirstNameUppercase(String name) {
+        String firstName = name.split("\\s+")[0];
+        return firstName.toUpperCase();
     }
 }
