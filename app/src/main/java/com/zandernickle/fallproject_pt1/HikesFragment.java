@@ -100,6 +100,7 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
             mIvProfilePic.setImageBitmap(thumbnailImage);
         }
 
+        ReusableUtil.loadMenuBarFragment(this.getActivity(), picBundle);
         return view;
     }
 

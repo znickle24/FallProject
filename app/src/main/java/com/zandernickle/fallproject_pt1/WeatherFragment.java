@@ -86,6 +86,8 @@ public class WeatherFragment extends Fragment implements View.OnClickListener{
         if (thumbnailImage != null) {
             mIvProfilePic.setImageBitmap(thumbnailImage);
         }
+
+        ReusableUtil.loadMenuBarFragment(this.getActivity(), picBundle);
         return view;
     }
 

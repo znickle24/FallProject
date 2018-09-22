@@ -120,7 +120,7 @@ public class GPSTracker extends Service implements LocationListener {
         return longitude;
     }
 
-    
+
     @Override
     public void onLocationChanged(Location location) {
     }
