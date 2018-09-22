@@ -22,11 +22,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".JSONWeather" />
-        <activity android:name=".WeatherData" />
-        <activity android:name=".LocationData" />
-        <activity android:name=".Network" />
-        <activity android:name=".GPSTracker"></activity>
         <activity android:name=".FitnessInputActivity"></activity>
     </application>
 
