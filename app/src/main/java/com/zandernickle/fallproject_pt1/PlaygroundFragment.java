@@ -26,7 +26,7 @@ public class PlaygroundFragment extends Fragment {
 
         // Pass the module name and the profile image on to the menu bar fragment
         // This method is in the ReusableUtil class.
-        loadMenuBarFragment(PlaygroundFragment.this.getActivity(), arguments);
+        loadMenuBarFragment(PlaygroundFragment.this.getActivity(), arguments, R.id.fl_menu_bar_fragment_placeholder);
 
         return thisFragment;
     }

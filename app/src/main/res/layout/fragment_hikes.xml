@@ -12,9 +12,7 @@
         android:id="@+id/fl_menu_bar_fragment_placeholder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_constraintEnd_toEndOf="parent"
-        android:layout_constraintStart_toStartOf="parent"
-        android:layout_constraintTop_toTopOf="parent"
+
         ></FrameLayout>
 
 
