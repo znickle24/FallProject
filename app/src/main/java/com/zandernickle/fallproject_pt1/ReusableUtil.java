@@ -206,7 +206,7 @@ public class ReusableUtil {
         transaction.commit();
     }
 
-    public static void loadDialogFragment(FragmentManager fragmentManager, DialogFragment dialogFragment, Fragment targetFragment, @Nullable String tag, boolean addToBackStack) {
+    public static void loadDialogFragment(FragmentManager fragmentManager, DialogFragment dialogFragment, Fragment targetFragment, @Nullable Bundle arguments, @Nullable String tag, boolean addToBackStack) {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         Fragment previousInstance = fragmentManager.findFragmentByTag(tag);
         if (previousInstance != null) {
@@ -214,6 +214,9 @@ public class ReusableUtil {
             transaction.remove(previousInstance);
         }
         if (addToBackStack) { transaction.addToBackStack(null); }
+        if (arguments != null) {
+            dialogFragment.setArguments(arguments);
+        }
         dialogFragment.setTargetFragment(targetFragment, 0);
         dialogFragment.show(transaction, tag);
     }

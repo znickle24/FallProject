@@ -4,6 +4,9 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <!-- DialogFragment: Unhealthy weight goal warning -->
+    <string name="unhealthy_weight_goal_warning_lbs">Heads up, losing or gaining more than 2 lbs per week is not a healthy goal.</string>
+    <string name="unhealthy_weight_goal_warning_kg">Heads up, losing or gaining more than 0.91 kgs per week is not a healthy goal.</string>
 
     <!-- Tests -->
     <string name="pos">Pos</string>
@@ -11,6 +14,5 @@
 
     <string name="unhealthy_weight_goal_warning_button_neg">Back</string>
     <string name="unhealthy_weight_goal_warning_button_pos">Accept</string>
-    <string name="unhealthy_weight_goal_warning_lbs">Heads up, losing or gaining more than 2 lbs per week is not a healthy goal.</string>
-    <string name="unhealthy_weight_goal_warning_kg">Heads up, losing or gaining more than 0.91 kgs per week is not a healthy goal.</string>
+
 </resources>

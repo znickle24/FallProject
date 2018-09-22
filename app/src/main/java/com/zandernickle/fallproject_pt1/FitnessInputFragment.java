@@ -180,8 +180,15 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
                 if (isUnhealthyGoal(delta)) {
                     /* The user's fitness data should not be updated if they select the dialog's back
                      * button (as would happen if onDataPass was immediately called).
+                     *
+                     * Pass a Bundle containing the CountryCode in order to choose which units to show
+                     * in the Dialog's message. The decision to pass a bundle in place of only a CountryCode
+                     * will facilitate future development when additional data may be required by the
+                     * DialogFragment.
                      */
-                    displayDialog(UNHEALTHY_GOAL_DIALOG);
+                    Bundle arguments = new Bundle();
+                    arguments.putSerializable(Key.COUNTRY, mCountryCode);
+                    displayDialog(UNHEALTHY_GOAL_DIALOG, arguments);
                 } else {
                     /* Important! onDataPass may also be called from onWarningAccepted. Control flow is
                      * diverted to onWarningAccepted if the user's weight goal is unhealthy. The user is
@@ -370,10 +377,11 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
      * to display.
      *
      * @param tag an identifier to determine which DialogFragment to display.
+     * @param arguments optional data to pass to the DialogFragment.
      */
-    private void displayDialog(String tag) {
+    private void displayDialog(String tag, Bundle arguments) {
         if (tag == UNHEALTHY_GOAL_DIALOG) {
-            loadDialogFragment(new WarningDialogFragment(), UNHEALTHY_GOAL_DIALOG, false);
+            loadDialogFragment(new WarningDialogFragment(), arguments, UNHEALTHY_GOAL_DIALOG, false);
         }
     }
 
@@ -382,11 +390,12 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
      * Fragment is the Dialog's host.
      *
      * @param dialogFragment the DialogFragment to load and render.
+     * @param arguments optional data to pass to the DialogFragment.
      * @param tag  the tag to find the DialogFragment at a later point in time.
      * @param addToBackStack whether to add the DialogFragment to the Back Stack.
      */
-    private void loadDialogFragment(DialogFragment dialogFragment, String tag, boolean addToBackStack) {
-        ReusableUtil.loadDialogFragment(getFragmentManager(), dialogFragment, FitnessInputFragment.this, tag, addToBackStack);
+    private void loadDialogFragment(DialogFragment dialogFragment, @Nullable Bundle arguments, String tag, boolean addToBackStack) {
+        ReusableUtil.loadDialogFragment(getFragmentManager(), dialogFragment, FitnessInputFragment.this, arguments, tag, addToBackStack);
     }
 
     /**

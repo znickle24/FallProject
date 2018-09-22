@@ -8,10 +8,11 @@
     >
 
     <TextView
+        android:id="@+id/tv_dialog_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="24dp"
-        android:text="@string/unhealthy_weight_goal_warning_lbs"
+        tools:text="@string/unhealthy_weight_goal_warning_lbs"
         android:textSize="24sp"
         android:fontFamily="sans-serif-condensed"
         android:textColor="@color/colorPureWhite" />
