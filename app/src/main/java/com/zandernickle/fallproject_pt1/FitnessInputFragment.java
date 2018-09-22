@@ -4,8 +4,8 @@ package com.zandernickle.fallproject_pt1;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import com.neovisionaries.i18n.CountryCode;
 
-import static com.zandernickle.fallproject_pt1.ReusableUtil.loadDialogFragment;
+import static com.zandernickle.fallproject_pt1.Key.FITNESS_INPUT_FRAGMENT;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.setOnClickListeners;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.setOnSeekBarChangeListeners;
 import static com.zandernickle.fallproject_pt1.UnitConversionUtil.insToCms;
@@ -27,9 +27,7 @@ import static com.zandernickle.fallproject_pt1.UnitConversionUtil.lbsToKgs;
  */
 public class FitnessInputFragment extends Fragment implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, WarningDialogFragment.OnWarningAcceptListener {
 
-    // TODO: Put these in Key.java FOR USE IN ONDATAPASS
-    private static final String SIGN_IN_FRAGMENT = "SIGN_IN_FRAGMENT";
-    private static final String FITNESS_INPUT_FRAGMENT = "FITNESS_INPUT_FRAGMENT";
+    private static final String UNHEALTHY_GOAL_DIALOG = "UNHEALTHY_GOAL_DIALOG";
 
     private static final String WELCOME = "WELCOME";
 
@@ -69,16 +67,20 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
     private RadioGroup mRgSex, mRgActivityLevel;
     private Button mBtnSubmit;
 
-    private Boolean mHasCompleteData = true;
     private CountryCode mCountryCode;
+    private Bundle mFitnessInputBundle; // required to communicate with dialog
 
     private OnDataPass mDataPasser;
-    private Bundle mFitnessInputBundle;
 
     public FitnessInputFragment() {
         // Required empty public constructor
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Attaches this Fragment's OnDataPass interface to the host Activity (Main).
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -92,36 +94,141 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Does the usual inflation stuff and sets up any action listeners.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View fragment = inflater.inflate(R.layout.fragment_fitness_input, container, false);
+        View thisFragment = inflater.inflate(R.layout.fragment_fitness_input, container, false);
 
-        mTvWelcome = fragment.findViewById(R.id.tv_welcome);
-
-        mTvHeightResult = fragment.findViewById(R.id.tv_height_result);
-        mTvWeightResult = fragment.findViewById(R.id.tv_weight_result);
-        mTvWeightDeltaNeg = fragment.findViewById(R.id.tv_weight_change_label_neg);
-        mTvWeightDeltaPos = fragment.findViewById(R.id.tv_weight_change_label_pos);
-        mTvWeightDeltaResult = fragment.findViewById(R.id.tv_weight_delta_result);
-
-        mSbHeight = fragment.findViewById(R.id.sb_height);
-        mSbWeight = fragment.findViewById(R.id.sb_weight);
-        mSbWeightDelta = fragment.findViewById(R.id.sb_weight_delta);
-
-        mRgSex = fragment.findViewById(R.id.rg_sex);
-        mRgActivityLevel = fragment.findViewById(R.id.rg_activity_level);
-
-        mBtnSubmit = fragment.findViewById(R.id.button_submit);
+        mTvWelcome = thisFragment.findViewById(R.id.tv_welcome);
+        mTvHeightResult = thisFragment.findViewById(R.id.tv_height_result);
+        mTvWeightResult = thisFragment.findViewById(R.id.tv_weight_result);
+        mTvWeightDeltaNeg = thisFragment.findViewById(R.id.tv_weight_change_label_neg);
+        mTvWeightDeltaPos = thisFragment.findViewById(R.id.tv_weight_change_label_pos);
+        mTvWeightDeltaResult = thisFragment.findViewById(R.id.tv_weight_delta_result);
+        mSbHeight = thisFragment.findViewById(R.id.sb_height);
+        mSbWeight = thisFragment.findViewById(R.id.sb_weight);
+        mSbWeightDelta = thisFragment.findViewById(R.id.sb_weight_delta);
+        mRgSex = thisFragment.findViewById(R.id.rg_sex);
+        mRgActivityLevel = thisFragment.findViewById(R.id.rg_activity_level);
+        mBtnSubmit = thisFragment.findViewById(R.id.button_submit);
 
         setOnSeekBarChangeListeners(FitnessInputFragment.this, mSbHeight, mSbWeight, mSbWeightDelta);
         setOnClickListeners(FitnessInputFragment.this, mBtnSubmit);
 
-        return fragment;
+        return thisFragment;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     *
+     *
+     */
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        Bundle signInBundle = getArguments();
+        String uppercaseName = signInBundle.getString(Key.NAME).toUpperCase();
+        mCountryCode = (CountryCode) signInBundle.getSerializable(Key.COUNTRY);
+
+        mTvWelcome.setText(WELCOME + " " + uppercaseName);
+
+        initializeUnitsToLocale(mCountryCode);
+        initializeSeekBars();
+        initializeSeekBarLabelValues();
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()) {
+            case R.id.button_submit:
+
+                int height = mSbHeight.getProgress();
+                int weight = mSbWeight.getProgress();
+
+                Sex sex = getRadioSelectedSex(mRgSex.getCheckedRadioButtonId());
+                ActivityLevel activityLevel = getRadioSelectedActivityLevel(
+                        mRgActivityLevel.getCheckedRadioButtonId());
+
+                int delta = mSbWeightDelta.getProgress();
+                if (isUnhealthyGoal(delta)) {
+                    /* The user's fitness data should not be updated if they select the dialog's back
+                     * button (as would happen if this condition did not break the switch statement.
+                     * Instead, the user should be able to update their weight goal and click the
+                     * submit button again.
+                     */
+                    displayDialog(UNHEALTHY_GOAL_DIALOG);
+                    break;
+                }
+
+                mFitnessInputBundle = new Bundle();
+
+                mFitnessInputBundle.putSerializable(Key.SEX, sex);
+                mFitnessInputBundle.putSerializable(Key.ACTIVITY_LEVEL, activityLevel);
+                mFitnessInputBundle.putInt(Key.HEIGHT, height);
+                mFitnessInputBundle.putInt(Key.WEIGHT, weight);
+                mFitnessInputBundle.putSerializable(Key.WEIGHT_GOAL, delta);
+
+                /* Important! onDataPass may also be called from onWarningAccepted. Control flow is
+                 * diverted to onWarningAccepted if the user's weight goal is unhealthy. The user is
+                 * then given the decision whether to proceed against the warning or return to change
+                 * their weight goal.
+                 */
+                mDataPasser.onDataPass(FITNESS_INPUT_FRAGMENT, mFitnessInputBundle);
+
+                break;
+        }
+    }
+
+    @Override
+    public void onWarningAccepted() {
+        mDataPasser.onDataPass(FITNESS_INPUT_FRAGMENT, mFitnessInputBundle);
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+        switch (seekBar.getId()) {
+            case R.id.sb_height:
+                mTvHeightResult.setText(seekBar.getProgress() + mUnitsHeight);
+                break;
+            case R.id.sb_weight:
+                mTvWeightResult.setText(seekBar.getProgress() + mUnitsWeight);
+                break;
+            case R.id.sb_weight_delta:
+                mTvWeightDeltaResult.setText(seekBar.getProgress() + " " + mUnitsWeight);
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+        // Do nothing.
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        // Do nothing.
+    }
+
+    /**
+     * An interface to communicate with this Fragment's host Activity.
+     */
+    public interface OnDataPass {
+        void onDataPass(String key, Bundle signInBundle);
     }
 
     // call this first
-    private void convertUnitsToLocale(CountryCode countryCode) {
+    private void initializeUnitsToLocale(CountryCode countryCode) {
         if (countryCode != CountryCode.US) {
             mMinHeight = insToCms(mMinHeight);
             mMaxHeight = insToCms(mMaxHeight);
@@ -157,149 +264,35 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
         mTvWeightDeltaPos.setText(POS + mMaxDelta + " " + mUnitsWeight);
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        Bundle signInBundle = getArguments();
-        String uppercaseName = signInBundle.getString(Key.NAME).toUpperCase();
-        mCountryCode = (CountryCode) signInBundle.getSerializable(Key.COUNTRY);
-
-        mTvWelcome.setText(WELCOME + " " + uppercaseName);
-
-        convertUnitsToLocale(mCountryCode);
-        initializeSeekBars();
-        initializeSeekBarLabelValues();
-    }
-
-    @Override
-    public void onClick(View v) {
-
-        switch (v.getId()) {
-            case R.id.button_submit:
-
-                Sex sex = getRadioSelectedSex(mRgSex.getCheckedRadioButtonId());
-                ActivityLevel activityLevel = getRadioSelectedActivityLevel(mRgActivityLevel.getCheckedRadioButtonId());
-
-                if (sex == null || activityLevel == null) {
-                    mHasCompleteData = false;
-                    // TODO: Show dialog
-                    break;
-                }
-
-                int height = mSbHeight.getProgress();
-                int weight = mSbWeight.getProgress();
-
-                int weightDelta = mSbWeightDelta.getProgress();
-                if (Math.abs(weightDelta) > mUnhealthyDelta) {
-                    // Show dialog but do not set complete to false -- the user may choose to proceed.
-                    loadDialogFragment(getFragmentManager(), new WarningDialogFragment(),
-                            FitnessInputFragment.this, "test", false);
-                }
-
-                Goal fitnessGoal = getFitnessGoalEnum(weightDelta);
-
-                // Nothing will be null at this point
-                mFitnessInputBundle = new Bundle();
-                mFitnessInputBundle.putSerializable(Key.SEX, sex);
-                mFitnessInputBundle.putSerializable(Key.ACTIVITY_LEVEL, activityLevel);
-                mFitnessInputBundle.putInt(Key.HEIGHT, height);
-                mFitnessInputBundle.putInt(Key.WEIGHT, weight);
-                // TODO: Technically, could just pass neg, 0, or pos as Key.WEIGHT_GOAL value.
-                // No essential need for Key.GOAL (implicit in value of Key.WEIGHT_GOAL.
-                mFitnessInputBundle.putSerializable(Key.GOAL, fitnessGoal);
-                mFitnessInputBundle.putSerializable(Key.WEIGHT_GOAL, weightDelta);
-
-                // Data can be passed here or on reception of data from warning dialog.
-                // Better way to avoid multiple exit points?
-                mDataPasser.onDataPass(FITNESS_INPUT_FRAGMENT, mFitnessInputBundle);
-                break;
-        }
-    }
-
-    @Override
-    public void onWarningAccepted() {
-        mDataPasser.onDataPass(FITNESS_INPUT_FRAGMENT, mFitnessInputBundle);
-        Log.d("Log", "SUCCESS"); // TODO: Interface with BMRFragment
-    }
-
-    @Override
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
-        switch (seekBar.getId()) {
-            case R.id.sb_height:
-                mTvHeightResult.setText(seekBar.getProgress() + mUnitsHeight);
-                break;
-            case R.id.sb_weight:
-                mTvWeightResult.setText(seekBar.getProgress() + mUnitsWeight);
-                break;
-            case R.id.sb_weight_delta:
-                mTvWeightDeltaResult.setText(seekBar.getProgress() + " " + mUnitsWeight);
-                break;
-            default:
-                break;
-        }
-    }
-
-    @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {
-
-    }
-
-    @Override
-    public void onStopTrackingTouch(SeekBar seekBar) {
-
-    }
-
-    @Nullable
+    // Current implementation there is a default button selected so no way for this to return null
     private Sex getRadioSelectedSex(int buttonId) {
-
-        Sex sex = null;
-        switch (buttonId) {
-            case R.id.rb_male:
-                sex = Sex.MALE;
-                break;
-            case R.id.rb_female:
-                sex = Sex.FEMALE;
-                break;
-            default:
-                break;
-        }
-        return sex;
+        return buttonId == R.id.rb_male ? Sex.MALE : Sex.FEMALE;
     }
 
-    @Nullable
+    // Current implementation there is a default button selected so no way for this to return null
     private ActivityLevel getRadioSelectedActivityLevel(int buttonId) {
 
-        ActivityLevel activityLevel = null;
-        switch (buttonId) {
-            case R.id.rb_sedentary:
-                activityLevel = ActivityLevel.SEDENTARY;
-                break;
-            case R.id.rb_moderately_active:
-                activityLevel = ActivityLevel.MODERATELY_ACTIVE;
-                break;
-            case R.id.rb_active:
-                activityLevel = ActivityLevel.ACTIVE;
-                break;
-            default:
-                break;
-        }
+        ActivityLevel activityLevel = ActivityLevel.SEDENTARY;
+        if (buttonId == R.id.rb_moderately_active) {
+            activityLevel = ActivityLevel.MODERATELY_ACTIVE;
+        } else if (buttonId == R.id.rb_active) {
+            activityLevel = ActivityLevel.ACTIVE;
+        } // Additional activity levels may be added in the future.
+
         return activityLevel;
     }
 
-    // Can be negative too, should not be null
-    private Goal getFitnessGoalEnum(int weightDelta) {
-        Goal weightGoal = Goal.MAINTAIN_WEIGHT;
-        if (weightDelta < 0) {
-            weightGoal = Goal.LOSE_WEIGHT;
-        } else if (weightDelta > 0) {
-            weightGoal = Goal.GAIN_WEIGHT;
-        }
-        return weightGoal;
+    private boolean isUnhealthyGoal(int weightDelta) {
+        return Math.abs(weightDelta) > mUnhealthyDelta;
     }
 
-    public interface OnDataPass {
-        void onDataPass(String key, Bundle signInBundle);
+    private void displayDialog(String tag) {
+        if (tag == UNHEALTHY_GOAL_DIALOG) {
+            loadDialogFragment(new WarningDialogFragment(), UNHEALTHY_GOAL_DIALOG, false);
+        }
+    }
+
+    private void loadDialogFragment(DialogFragment dialogFragment, String tag, boolean addToBackStack) {
+        ReusableUtil.loadDialogFragment(getFragmentManager(), dialogFragment, FitnessInputFragment.this, tag, addToBackStack);
     }
 }
