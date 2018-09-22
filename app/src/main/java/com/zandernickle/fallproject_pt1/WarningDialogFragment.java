@@ -54,6 +54,7 @@ public class WarningDialogFragment extends DialogFragment implements View.OnClic
         if (viewId == R.id.button_neg) {
             dismiss();
         } else if (viewId == R.id.button_pos) {
+            dismiss(); // Must dismiss or this DialogFragment will appear atop the next loaded Fragment.
             mWarningAcceptListener.onWarningAccepted();
         }
     }
