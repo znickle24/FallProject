@@ -5,6 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
 import static com.zandernickle.fallproject_pt1.Key.FITNESS_INPUT_FRAGMENT;
+import static com.zandernickle.fallproject_pt1.Key.MENU_BAR_FRAGMENT_MENU_PRESSED;
+import static com.zandernickle.fallproject_pt1.Key.MENU_BAR_FRAGMENT_PROFILE_PRESSED;
 import static com.zandernickle.fallproject_pt1.Key.SIGN_IN_FRAGMENT;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.loadFragment;
 
@@ -95,10 +97,10 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
 
                 break;
 
-            case Key.MENU_BAR_FRAGMENT_MENU_PRESSED:
+            case MENU_BAR_FRAGMENT_MENU_PRESSED: // Ignore the Bundle, its null
                 ReusableUtil.toast(this, "Load the RecyclerView");
                 break;
-            case Key.MENU_BAR_FRAGMENT_PROFILE_PRESSED:
+            case MENU_BAR_FRAGMENT_PROFILE_PRESSED: // Ignore the Bundle, its null
                 ReusableUtil.toast(this, "Load the UpdateProfileFragment");
                 break;
         }
