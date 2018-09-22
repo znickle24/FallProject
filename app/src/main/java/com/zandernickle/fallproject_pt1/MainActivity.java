@@ -25,8 +25,9 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
      * Create XML layout resources for every phone screen's landscape mode. How do we ensure the landscape fragment is
      * not rendered when a tablet is in landscape orientation?
      *
-     *
-     *
+     * (Sydney)
+     * Decide whether to pass the CountryCode to the weather and hike Fragments for conversion to Celsius where
+     * appropriate (maybe this is already taken care of based on GPS).
      */
 
     private DatabaseService database = new DatabaseService(); // A placeholder for a real database.
@@ -106,7 +107,6 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
                 Bundle testBundle = new Bundle();
                 testBundle.putSerializable(Key.MODULE, Module.HEALTH);
                 testBundle.putByteArray(Key.PROFILE_IMAGE, mUser.getProfileImage());
-
                 testBundle.putBoolean(Key.IS_TABLET, mIsTablet);
 
                 Fragment prevFitnessInputFragment = mFragmentManager.findFragmentByTag(FITNESS_INPUT_FRAGMENT);
@@ -121,6 +121,19 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
 
             case MENU_BAR_FRAGMENT_MENU_PRESSED: // Ignore the Bundle, its null
                 ReusableUtil.toast(this, "Load the RecyclerView");
+
+                // Test HikesFragment
+                Bundle testHikeBundle = new Bundle();
+                testHikeBundle.putSerializable(Key.MODULE, Module.HIKES);
+                testHikeBundle.putByteArray(Key.PROFILE_IMAGE, mUser.getProfileImage());
+                testHikeBundle.putBoolean(Key.IS_TABLET, mIsTablet);
+
+                Fragment prevFragment = mFragmentManager.findFragmentByTag("TEST");
+                Fragment hikesFragment = new HikesFragment();
+                hikesFragment.setArguments(testHikeBundle);
+
+                loadFragment(mFragmentManager, prevFragment.getId(), hikesFragment, "HIKES", false);
+
                 break;
             case MENU_BAR_FRAGMENT_PROFILE_PRESSED: // Ignore the Bundle, its null
                 ReusableUtil.toast(this, "Load the UpdateProfileFragment");

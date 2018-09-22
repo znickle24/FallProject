@@ -29,6 +29,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.Locale;
 
+import static com.zandernickle.fallproject_pt1.ReusableUtil.loadMenuBarFragment;
+
 
 public class HikesFragment extends Fragment implements View.OnClickListener, LocationListener{
 
@@ -37,8 +39,6 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
 
     //Variables for the other UI elements
     private Button mButtonSearch;
-    private ImageView mIvProfilePic;
-    private Spinner mSpinner;
 
     //Variables that hold the current location's latitude and longitude
     private double mLatitude, mLongitude;
@@ -48,11 +48,9 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
 
     private WeatherData mWeatherData;
     Context mContext;
-    OnDataPass mDataPasser;
 
     //Used to find current location
     protected LocationManager locationManager;
-
 
     /**
      * Constructor for HikesFragment
@@ -61,31 +59,26 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
         // Required empty public constructor
     }
 
-
-    //Callback interface
-    public interface OnDataPass{
-        public void onDataPass(String data);
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context; //added; MIGHT NOT NEED
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //Inflate the HikesFragment layout view
         View view = inflater.inflate(R.layout.fragment_hikes, container, false);
 
-        //Set Spinner (Master List) to an onClickListener
-        mSpinner = (Spinner) view.findViewById(R.id.spinner);
-        mSpinner.setOnClickListener(this);
-
         //Get hike search button and set it to an onClickListener
-        mButtonSearch = (Button) view.findViewById(R.id.button_hike_search);
+        mButtonSearch = (Button) view.findViewById(R.id.btn_search_hikes);
         mButtonSearch.setOnClickListener(this);
 
         //Get the TextViews to display the temperature and humidity
-        mTvTemp = (TextView) view.findViewById(R.id.tv_temp_data);
+        mTvTemp = (TextView) view.findViewById(R.id.tv_current_temp_data);
         mTvHighTemp = (TextView) view.findViewById(R.id.tv_high_temp_data);
         mTvLowTemp = (TextView) view.findViewById(R.id.tv_low_temp_data);
-        mTvPrecip = (TextView) view.findViewById(R.id.tv_precip_data);
+        mTvPrecip = (TextView) view.findViewById(R.id.tv_precipitation_data);
 
         //Get the current latitude, longitude, city name, and country name for display
         mLatitude = GPSTracker.getLatitude();
@@ -93,28 +86,12 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
         String currentCityCountry = getCityAndCountry(mLatitude, mLongitude);
         loadWeatherData(currentCityCountry); //used to get current weather info
 
-        //Set the ImageView with the profile pic
-        Bundle picBundle = getArguments();
-        Bitmap thumbnailImage = ReusableUtil.bitmapFromBundle(picBundle, Key.PROFILE_IMAGE);
-        if(thumbnailImage != null){
-            mIvProfilePic.setImageBitmap(thumbnailImage);
-        }
+        Bundle arguments = getArguments();
+        // Extract any pertinent data here, then pass to the menu bar (profile image and module name)
 
-        ReusableUtil.loadMenuBarFragment(this.getActivity(), picBundle, R.id.fl_menu_bar_fragment_placeholder);
+        loadMenuBarFragment(HikesFragment.this.getActivity(), arguments, R.id.fl_menu_bar_fragment_placeholder);
+
         return view;
-    }
-
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        mContext = context; //added; MIGHT NOT NEED
-
-        try{
-            mDataPasser = (HikesFragment.OnDataPass) context;
-        }catch(ClassCastException e){
-            throw new ClassCastException(context.toString() + " must implement OnDataPass");
-        }
     }
 
 
@@ -133,7 +110,7 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.button_hike_search: {
+            case R.id.btn_search_hikes: {
 
                 //Get current location
                 locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
@@ -177,10 +154,7 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
                 }
                 break;
             }
-            case R.id.spinner: {
-                mDataPasser.onDataPass(Key.HIKES_FRAGMENT);
-            }
-            break;
+
         }
     } //end of onClick function
 
