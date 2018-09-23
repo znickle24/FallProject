@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,7 +64,8 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+        //checkPermission();
+        //setRetainInstance(true); //ORIGINAL
     }
 
     @Override
@@ -87,10 +89,14 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
         mTvLowTemp = (TextView) view.findViewById(R.id.tv_low_temp_data);
         mTvPrecip = (TextView) view.findViewById(R.id.tv_precipitation_data);
 
-        //Get the current latitude, longitude, city name, and country name for display
-        mLatitude = GPSTracker.getLatitude();
-        mLongitude = GPSTracker.getLongitude();
-        String currentCityCountry = getCityAndCountry(mLatitude, mLongitude);
+
+        getLatLong();
+
+//        //Get the current latitude, longitude, city name, and country name for display
+//        mLatitude = GPSTracker.getLatitude();
+//        mLongitude = GPSTracker.getLongitude();
+        //String currentCityCountry = getCityAndCountry(mLatitude, mLongitude);
+        String currentCityCountry = "Sandy&USA";
         loadWeatherData(currentCityCountry); //used to get current weather info
 
         Bundle arguments = getArguments();
@@ -108,6 +114,39 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
     }
 
 
+    public void getLatLong(){
+
+        if (ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
+        }
+
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+
+        LocationManager locManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+
+        boolean network_enabled = locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        Location location;
+
+        if (network_enabled) {
+
+            location = locManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+            if (location != null) {
+                mLatitude = location.getLatitude();
+                Log.d("mLatitude: ", Double.toString(mLatitude));
+                mLongitude = location.getLongitude();
+                Log.d("mLongitude: ", Double.toString(mLongitude));
+
+            }
+        }
+
+    }
+
+
     /**
      * Handles clicks for the hike search button
      * Finds the user's current location
@@ -119,38 +158,8 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
         switch (view.getId()) {
             case R.id.btn_search_hikes: {
 
-                //Get current location
-                locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-
-                if (ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                        && ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(getActivity(), "First enable LOCATION ACCESS in settings.", Toast.LENGTH_LONG).show();
-                    return;
-                }
-                //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 1, listener);
-
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-
-                LocationManager locManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-
-                boolean network_enabled = locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-                Location location;
-
-                if (network_enabled) {
-
-                    location = locManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
-                    if (location != null) {
-                        mLatitude = location.getLatitude();
-                        Log.d("mLatitude: ", Double.toString(mLatitude));
-                        mLongitude = location.getLongitude();
-                        Log.d("mLongitude: ", Double.toString(mLongitude));
-
-                    }
-                }
-
                 Uri searchUri = Uri.parse("geo:" + Double.toString(mLatitude) + "," + Double.toString(mLongitude) + "?q=" + "hikes");
+                Log.d("searchUri string: ", searchUri.toString());
 
                 //Create the implicit intent for Google Maps
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, searchUri);
@@ -183,8 +192,9 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
         String cityName = "";
         String countryName = "";
 
-        Geocoder geoCoder = new Geocoder(mContext, Locale.getDefault());
+        Geocoder geoCoder = new Geocoder(getContext(), Locale.getDefault());
         try {
+            Log.d("HERE: ", "HERE");
             List<Address> addresses = geoCoder.getFromLocation(latitude, longitude, 1);
             if (addresses.size() > 0) {
                 cityName = addresses.get(0).getLocality().toString(); //get city name
@@ -196,7 +206,9 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
 
         //Set member variable city name and country name variables
         mCityName = cityName;
+        Log.d("mCityName in getCityAndCountry: ", mCityName);
         mCountryName = countryName;
+        Log.d("mCountryName in getCityAndCountry: ", mCountryName);
 
         //Create city name and country name String
         cityCountryString = cityName + "&" + countryName;
@@ -245,11 +257,11 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.d("HikesFragment.java: ", "in onLocationChanged() in HikesFragment.java");
-        mLatitude = location.getLatitude();
-        Log.d("mLatitude: ", Double.toString(mLatitude));
-        mLongitude = location.getLongitude();
-        Log.d("mLongitude: ", Double.toString(mLongitude));
+//        Log.d("HikesFragment.java: ", "in onLocationChanged() in HikesFragment.java");
+//        mLatitude = location.getLatitude();
+//        Log.d("mLatitude: ", Double.toString(mLatitude));
+//        mLongitude = location.getLongitude();
+//        Log.d("mLongitude: ", Double.toString(mLongitude));
     }
 
 
