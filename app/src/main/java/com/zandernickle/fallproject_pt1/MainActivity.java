@@ -144,7 +144,7 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
                  * added when the BMR fragment returns its data.
                  */
 
-                if (isTablet()) {
+                if (isTablet()) { // Sets up MasterView on the left for the remainder of the experience
                     loadFragment(mFragmentManager, R.id.fl_fragment_placeholder_tablet_left, new MasterListFragment(), "TEST", false);
                 }
 
@@ -168,6 +168,11 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
 
             case MENU_BAR_FRAGMENT_MENU_PRESSED: // Ignore the Bundle, its null
 //                ReusableUtil.toast(this, "Load the RecyclerView");
+
+//                Fragment frag = mFragmentManager.findFragmentByTag(mCurrentFragmentTag);
+//                Fragment master = new MasterListFragment();
+//                mCurrentFragmentTag = "test";
+//                loadFragment(mFragmentManager, frag.getId(), master, mCurrentFragmentTag, false);
 
                 // Test HikesFragment
                 Bundle testHikeBundle = new Bundle();
