@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/colorPrimary"
+    android:background="@color/colorMenuBarBackground"
     android:orientation="horizontal"
     tools:context=".MainActivity">
 
@@ -19,10 +19,9 @@
             android:layout_height="match_parent">
 
             <ImageView
-                android:id="@+id/iv_fragment_placeholder_tablet_left"
+                android:id="@+id/iv_app_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_launcher_foreground"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -34,12 +33,12 @@
                 android:layout_gravity="center"
                 android:fontFamily="sans-serif-condensed"
                 android:gravity="center"
-                android:text="HIKE / FITNESS APP"
+                android:text="AWESOME FITNESS APP"
                 android:textColor="@color/colorPureWhite"
                 android:textSize="32dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/iv_fragment_placeholder_tablet_left" />
+                app:layout_constraintTop_toBottomOf="@+id/iv_app_icon" />
 
         </android.support.constraint.ConstraintLayout>
 
@@ -47,6 +46,7 @@
 
     <FrameLayout
         android:id="@+id/fl_fragment_placeholder_tablet_right"
+        android:background="@color/colorPrimary"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"/>

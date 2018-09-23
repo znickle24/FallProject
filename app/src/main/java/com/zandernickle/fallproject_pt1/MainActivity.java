@@ -11,7 +11,7 @@ import static com.zandernickle.fallproject_pt1.Key.SIGN_IN_FRAGMENT;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.loadFragment;
 
 public class MainActivity extends CustomAppCompatActivity implements SignInFragment.OnDataPass,
-        FitnessInputFragment.OnDataPass, MenuBarFragment.OnDataPass {
+        FitnessInputFragment.OnDataPass, MenuBarFragment.OnDataPass, RVAdapter.OnDataPass {
 
     public static final String CURRENT_FRAGMENT_TAG = "CURRENT_FRAGMENT_TAG";
     public static final String PLAYGROUND_TAG = "PLAYGROUND_TAG";
@@ -34,6 +34,9 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
      * (Sydney)
      * Decide whether to pass the CountryCode to the weather and hike Fragments for conversion to Celsius where
      * appropriate (maybe this is already taken care of based on GPS).
+     *
+     * (Matt)
+     * Keep state when leaving the app and returning. Come back to same fragment if possible.
      */
 
     private static final DatabaseService database = new DatabaseService(); // A placeholder for a real database.
@@ -141,6 +144,9 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
                  * added when the BMR fragment returns its data.
                  */
 
+                if (isTablet()) {
+                    loadFragment(mFragmentManager, R.id.fl_fragment_placeholder_tablet_left, new MasterListFragment(), "TEST", false);
+                }
 
                 // TESTS ........
 
@@ -199,6 +205,5 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
 
         // Track previous fragment here.
     }
-
 }
 

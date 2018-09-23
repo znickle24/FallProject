@@ -1,0 +1,29 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MasterListFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorMenuBarBackground">
+
+        <fragment
+            android:name="com.zandernickle.fallproject_pt1.MasterListHeaderFragment"
+            android:id="@+id/frag_master_list_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_master_list_header">
+        </fragment>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_master_list_fragment_placeholder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            android:layout_below="@id/frag_master_list_header"/>
+
+    </RelativeLayout>
+
+</FrameLayout>
