@@ -1,16 +1,32 @@
 package com.zandernickle.fallproject_pt1;
 
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class User {
+import com.neovisionaries.i18n.CountryCode;
+
+public class User implements Parcelable {
+
+    public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
+
+        @Override
+        public User createFromParcel(Parcel source) {
+            return new User(source);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 
     private int id;
     private String name;
     private byte[] profileImage;
-
     private int age;
     private int postalCode;
-    private String countryCode;
+    private CountryCode countryCode;
 
     private int height;
     private int weight;
@@ -18,11 +34,48 @@ public class User {
     private ActivityLevel activityLevel;
     private int weightGoal; // neg, 0, or pos
 
-    public User() {
+    private User(Parcel in) {
+        id = in.readInt();
+        name = in.readString();
+        in.readByteArray(profileImage);
+        age = in.readInt();
+        postalCode = in.readInt();
+        countryCode = (CountryCode) in.readSerializable();
 
+        height = in.readInt();
+        weight = in.readInt();
+        sex = (Sex) in.readSerializable();
+        activityLevel = (ActivityLevel) in.readSerializable();
+        weightGoal = in.readInt();
     }
 
-    public User(String name, byte[] profileImage, int age, int postalCode, String countryCode) {
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
+        dest.writeInt(id);
+        dest.writeString(name);
+        dest.writeByteArray(profileImage);
+        dest.writeInt(age);
+        dest.writeInt(postalCode);
+        dest.writeSerializable(countryCode);
+
+        dest.writeInt(height);
+        dest.writeInt(weight);
+        dest.writeSerializable(sex);
+        dest.writeSerializable(activityLevel);
+        dest.writeInt(weightGoal);
+    }
+
+    public User() {
+        // Not currently in use.
+    }
+
+    public User(String name, byte[] profileImage, int age, int postalCode, CountryCode countryCode) {
         this.name = name;
         this.profileImage = profileImage;
         this.age = age;
@@ -35,7 +88,7 @@ public class User {
         this.profileImage = signInBundle.getByteArray(Key.PROFILE_IMAGE);
         this.age = signInBundle.getInt(Key.AGE);
         this.postalCode = signInBundle.getInt(Key.POSTAL_CODE);
-        this.countryCode = signInBundle.getString(Key.COUNTRY);
+        this.countryCode = (CountryCode) signInBundle.getSerializable(Key.COUNTRY);
     }
 
     public void updateFitnessData(Bundle fitnessInputBundle) {
@@ -45,6 +98,8 @@ public class User {
         this.activityLevel = (ActivityLevel) fitnessInputBundle.getSerializable(Key.ACTIVITY_LEVEL);
         this.weightGoal = fitnessInputBundle.getInt(Key.GOAL);
     }
+
+
 
     public int getId() {
         return id;
@@ -86,11 +141,11 @@ public class User {
         this.postalCode = postalCode;
     }
 
-    public String getCountryCode() {
+    public CountryCode getCountryCode() {
         return countryCode;
     }
 
-    public void setCountryCode(String countryCode) {
+    public void setCountryCode(CountryCode countryCode) {
         this.countryCode = countryCode;
     }
 
@@ -125,4 +180,6 @@ public class User {
     public void setActivityLevel(ActivityLevel activityLevel) {
         this.activityLevel = activityLevel;
     }
+
+
 }
