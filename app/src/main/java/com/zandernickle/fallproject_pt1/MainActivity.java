@@ -13,6 +13,12 @@ import static com.zandernickle.fallproject_pt1.ReusableUtil.loadFragment;
 public class MainActivity extends CustomAppCompatActivity implements SignInFragment.OnDataPass,
         FitnessInputFragment.OnDataPass, MenuBarFragment.OnDataPass {
 
+    public static final String CURRENT_FRAGMENT_TAG = "CURRENT_FRAGMENT_TAG";
+    public static final String PLAYGROUND_TAG = "PLAYGROUND_TAG";
+    public static final String HIKES_TAG = "HIKES_TAG";
+    public static final String WEATHER_TAG = "WEATHER_TAG";
+    public static final String USER = "USER";
+
     /* TODO
      *
      * (Zander)
@@ -30,10 +36,13 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
      * appropriate (maybe this is already taken care of based on GPS).
      */
 
-    private DatabaseService database = new DatabaseService(); // A placeholder for a real database.
+    private static final DatabaseService database = new DatabaseService(); // A placeholder for a real database.
+
     private FragmentManager mFragmentManager = getSupportFragmentManager(); // Reusable throughout the application.
     private User mUser; // The current user (kind of like a Cookie).
     private boolean mIsTablet;
+
+    private String mCurrentFragmentTag;
 
     /**
      * {@inheritDoc}
@@ -51,7 +60,37 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
         int viewId = mIsTablet ? R.id.fl_fragment_placeholder_tablet_right :
                 R.id.fl_fragment_placeholder_phone;
 
-        loadFragment(mFragmentManager, viewId, new SignInFragment(), SIGN_IN_FRAGMENT, false);
+        if (savedInstanceState == null) {
+
+            mCurrentFragmentTag = SIGN_IN_FRAGMENT;
+            loadFragment(mFragmentManager, viewId, new SignInFragment(), mCurrentFragmentTag, false);
+
+        } else {
+
+            mUser = savedInstanceState.getParcelable(USER);
+
+            mCurrentFragmentTag = savedInstanceState.getString(CURRENT_FRAGMENT_TAG);
+            Fragment currentFragment = mFragmentManager.findFragmentByTag(mCurrentFragmentTag);
+            loadFragment(mFragmentManager, viewId, currentFragment, mCurrentFragmentTag, false);
+
+        }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        // TODO: Why won't the code in onCreate work here?
+        // There are no errors but no Fragment is rendered (blank screen).
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable(USER, mUser);
+        outState.putString(CURRENT_FRAGMENT_TAG, mCurrentFragmentTag);
+
     }
 
     /**
@@ -63,9 +102,9 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
      * method signature.
      */
     @Override
-    public void onDataPass(String key, Bundle bundle) {
+    public void onDataPass(String key, Bundle bundle) { // could implement this without the key but then we have to unpack a bundle every time we tap on the menu icon (check if menu icon or profile)
 
-        // TODO: Decide how often to update the database.
+        // TODO: Decide how often to update the database. // onPause?
 
         switch (key) {
 
@@ -86,7 +125,8 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
                 Fragment fitnessInputFragment = new FitnessInputFragment();
                 fitnessInputFragment.setArguments(bundle);
 
-                loadFragment(mFragmentManager, signInFragment.getId(), fitnessInputFragment, FITNESS_INPUT_FRAGMENT, false);
+                mCurrentFragmentTag = FITNESS_INPUT_FRAGMENT;
+                loadFragment(mFragmentManager, signInFragment.getId(), fitnessInputFragment, mCurrentFragmentTag, false);
 
                 break;
 
@@ -113,14 +153,15 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
                 Fragment playgroundFragment = new PlaygroundFragment();
                 playgroundFragment.setArguments(testBundle);
 
-                loadFragment(mFragmentManager, prevFitnessInputFragment.getId(), playgroundFragment, "TEST", false);
+                mCurrentFragmentTag = PLAYGROUND_TAG;
+                loadFragment(mFragmentManager, prevFitnessInputFragment.getId(), playgroundFragment, mCurrentFragmentTag, false);
 
                 // End tests ........
 
                 break;
 
             case MENU_BAR_FRAGMENT_MENU_PRESSED: // Ignore the Bundle, its null
-                ReusableUtil.toast(this, "Load the RecyclerView");
+//                ReusableUtil.toast(this, "Load the RecyclerView");
 
                 // Test HikesFragment
                 Bundle testHikeBundle = new Bundle();
@@ -128,17 +169,35 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
                 testHikeBundle.putByteArray(Key.PROFILE_IMAGE, mUser.getProfileImage());
                 testHikeBundle.putBoolean(Key.IS_TABLET, mIsTablet);
 
-                Fragment prevFragment = mFragmentManager.findFragmentByTag("TEST");
+                Fragment prevFragment = mFragmentManager.findFragmentByTag(mCurrentFragmentTag);
                 Fragment hikesFragment = new HikesFragment();
                 hikesFragment.setArguments(testHikeBundle);
 
-                loadFragment(mFragmentManager, prevFragment.getId(), hikesFragment, "HIKES", false);
+                mCurrentFragmentTag = HIKES_TAG;
+                loadFragment(mFragmentManager, prevFragment.getId(), hikesFragment, mCurrentFragmentTag, false);
 
                 break;
+
             case MENU_BAR_FRAGMENT_PROFILE_PRESSED: // Ignore the Bundle, its null
-                ReusableUtil.toast(this, "Load the UpdateProfileFragment");
+//                ReusableUtil.toast(this, "Load the UpdateProfileFragment");
+
+                // Test WeatherFragment
+                Bundle testWeatherBundle = new Bundle();
+                testWeatherBundle.putSerializable(Key.MODULE, Module.WEATHER);
+                testWeatherBundle.putByteArray(Key.PROFILE_IMAGE, mUser.getProfileImage());
+                testWeatherBundle.putBoolean(Key.IS_TABLET, mIsTablet);
+
+                Fragment prevFragment2 = mFragmentManager.findFragmentByTag(mCurrentFragmentTag);
+                Fragment weatherFragment = new WeatherFragment();
+                weatherFragment.setArguments(testWeatherBundle);
+
+                mCurrentFragmentTag = WEATHER_TAG;
+                loadFragment(mFragmentManager, prevFragment2.getId(), weatherFragment, mCurrentFragmentTag, false);
+
                 break;
         }
+
+        // Track previous fragment here.
     }
 
 }
