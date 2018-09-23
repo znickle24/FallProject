@@ -232,19 +232,19 @@ public class ReusableUtil {
      * size as saved to the values/layout resources), the MenuBarTabletFragment (a subclass of
      * MenuBarFragment) is automatically loaded.
      *
-     * @param fragmentActivity the FragmentActivity from which to load the MenuBarFragment. This
+     * @param fragment the FragmentActivity from which to load the MenuBarFragment. This
      *                         will be the Fragment whose xml contains the placeholder.
      * @param arguments the bundle containing the data to be passed to the MenuBarFragment. This
      *                  bundle should contain a boolean specifying whether the device is a tablet.
      * @param replaceableId the id of the xml element to be replaced by the MenuBarFragment.
      */
-    public static void loadMenuBarFragment(FragmentActivity fragmentActivity, Bundle arguments, int replaceableId) {
+    public static void loadMenuBarFragment(Fragment fragment, Bundle arguments, int replaceableId) {
 
         boolean isTablet = arguments.getBoolean(Key.IS_TABLET);
         Fragment menuBarFragment = isTablet ? new MenuBarTabletFragment() : new MenuBarFragment();
 
         menuBarFragment.setArguments(arguments);
-        loadFragment(fragmentActivity.getSupportFragmentManager(), replaceableId, menuBarFragment, Key.MENU_BAR_FRAGMENT, false);
+        loadFragment(fragment.getChildFragmentManager(), replaceableId, menuBarFragment, Key.MENU_BAR_FRAGMENT, false);
     }
 
     /**

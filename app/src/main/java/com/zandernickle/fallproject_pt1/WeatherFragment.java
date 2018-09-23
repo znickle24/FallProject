@@ -6,6 +6,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,16 +20,14 @@ import java.net.URL;
 import java.util.List;
 import java.util.Locale;
 
+import static com.zandernickle.fallproject_pt1.ReusableUtil.loadMenuBarFragment;
 
-public class WeatherFragment extends Fragment implements View.OnClickListener{
+
+public class WeatherFragment extends Fragment {
 
     //Variables for TextViews displaying location and weather data
     private TextView mTvLocation, mTvTemp, mTvHighTemp, mTvLowTemp,
             mTvPrecip, mTvPressure, mTvHumid;
-
-    //Variables for other UI elements (Master List and Profile Pic)
-    private Spinner mSpinner;
-    private ImageView mIvProfilePic;
 
     //Variables holding current latitude and longitude
     private double mLatitude, mLongitude;
@@ -39,40 +38,30 @@ public class WeatherFragment extends Fragment implements View.OnClickListener{
     private WeatherData mWeatherData;
     private Context mContext;
 
-    OnDataPass mDataPasser;
-
 
     //WeatherFragment Constructor
     public WeatherFragment() {
     }
 
-
-    //Callback interface
-    public interface OnDataPass{
-        public void onDataPass(String data);
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //Inflate the HikesFragment layout view
         View view = inflater.inflate(R.layout.fragment_weather, container, false);
 
-        //Set Spinner (Master List) to an onClickListener
-        mSpinner = (Spinner) view.findViewById(R.id.spinner);
-        mSpinner.setOnClickListener(this);
-
-        //Get the ImageView to set the profile pic in
-        mIvProfilePic = (ImageView) view.findViewById(R.id.iv_pic);
-
         //Get the TextViews to display location and weather data
         mTvLocation = (TextView) view.findViewById(R.id.tv_location_data);
-        mTvTemp = (TextView) view.findViewById(R.id.tv_temp_data);
+        mTvTemp = (TextView) view.findViewById(R.id.tv_current_temp_data);
         mTvHighTemp = (TextView) view.findViewById(R.id.tv_high_temp_data);
         mTvLowTemp = (TextView) view.findViewById(R.id.tv_low_temp_data);
-        mTvPrecip = (TextView) view.findViewById(R.id.tv_precip_data);
+        mTvPrecip = (TextView) view.findViewById(R.id.tv_precipitation_data);
         mTvPressure = (TextView) view.findViewById(R.id.tv_pressure_data);
-        mTvHumid = (TextView) view.findViewById(R.id.tv_humid_data);
+        mTvHumid = (TextView) view.findViewById(R.id.tv_humidity_data);
 
         //Get the current latitude, longitude, city name, and country name
         mLatitude = GPSTracker.getLatitude();
@@ -80,28 +69,18 @@ public class WeatherFragment extends Fragment implements View.OnClickListener{
         String currentCityCountry = getCityAndCountry(mLatitude, mLongitude);
         loadWeatherData(currentCityCountry); //used to get current weather info
 
-        //Set the ImageView with the profile pic
-        Bundle picBundle = getArguments();
-        Bitmap thumbnailImage = ReusableUtil.bitmapFromBundle(picBundle, Key.PROFILE_IMAGE);
-        if (thumbnailImage != null) {
-            mIvProfilePic.setImageBitmap(thumbnailImage);
-        }
+        Bundle arguments = getArguments();
+        // Extract any pertinent data here, then pass to the menu bar (profile image and module name)
 
-        ReusableUtil.loadMenuBarFragment(this.getActivity(), picBundle, R.id.fl_menu_bar_fragment_placeholder);
+        loadMenuBarFragment(WeatherFragment.this, arguments, R.id.fl_menu_bar_fragment_placeholder);
+
         return view;
     }
-
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         this.mContext = context;
-
-        try{
-            mDataPasser = (OnDataPass) context;
-        }catch(ClassCastException e){
-            throw new ClassCastException(context.toString() + " must implement OnDataPass");
-        }
     }
 
 
@@ -152,7 +131,6 @@ public class WeatherFragment extends Fragment implements View.OnClickListener{
         return cityCountryString;
     }
 
-
     private class FetchWeatherTask extends AsyncTask<String, Void, String> {
 
         @Override
@@ -192,18 +170,6 @@ public class WeatherFragment extends Fragment implements View.OnClickListener{
                     mTvHumid.setText("" + mWeatherData.getCurrentCondition().getHumidity() + "%");
                 }
             }
-        }
-    }
-
-
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.spinner: {
-                mDataPasser.onDataPass(Key.WEATHER_FRAGMENT);
-            }
-            break;
         }
     }
 
