@@ -44,7 +44,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.ViewHolder> {
             @Override
             public void onClick(View view) {
 
-//                mDataPasser.passData(position);
+                
             }
         };
 
