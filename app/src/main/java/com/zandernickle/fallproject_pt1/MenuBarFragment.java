@@ -32,6 +32,12 @@ public class MenuBarFragment extends Fragment implements View.OnClickListener {
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true); // Profile image
+    }
+
     /**
      * {@inheritDoc}
      *

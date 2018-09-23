@@ -61,15 +61,15 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        mContext = context; //added; MIGHT NOT NEED
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context; //added; MIGHT NOT NEED
     }
 
     @Override

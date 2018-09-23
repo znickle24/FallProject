@@ -64,6 +64,12 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
+
     /**
      * {@inheritDoc}
      *

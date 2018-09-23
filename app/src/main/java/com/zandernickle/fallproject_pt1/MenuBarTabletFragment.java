@@ -20,13 +20,6 @@ public class MenuBarTabletFragment extends MenuBarFragment {
         // Required empty public constructor
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-    }
-
-
     /**
      * {@inheritDoc}
      *
