@@ -1,19 +1,18 @@
 package com.zandernickle.fallproject_pt1;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
+import com.neovisionaries.i18n.CountryCode;
 import org.json.JSONException;
 import java.io.IOException;
 import java.net.URL;
@@ -38,10 +37,15 @@ public class WeatherFragment extends Fragment {
     private WeatherData mWeatherData;
     private Context mContext;
 
+    //Used to determine which units to use when displaying weather data
+    private Bundle mArgsReceived;
+    private boolean mAmerican = false;
+
 
     //WeatherFragment Constructor
     public WeatherFragment() {
     }
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,6 +53,7 @@ public class WeatherFragment extends Fragment {
         setRetainInstance(true);
     }
 
+    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //Inflate the HikesFragment layout view
@@ -63,16 +68,27 @@ public class WeatherFragment extends Fragment {
         mTvPressure = (TextView) view.findViewById(R.id.tv_pressure_data);
         mTvHumid = (TextView) view.findViewById(R.id.tv_humidity_data);
 
-        //Get the current latitude, longitude, city name, and country name
-        mLatitude = GPSTracker.getLatitude();
-        mLongitude = GPSTracker.getLongitude();
-        String currentCityCountry = getCityAndCountry(mLatitude, mLongitude);
+        //HikesFragment.getLatLong();
+
+        //Get the current city name and country name for display
+        //String currentCityCountry = getCityAndCountry(mLatitude, mLongitude); //NOT WORKING BECAUSE OF GEOCODER
+
+        //Extract any pertinent data here
+        mArgsReceived = getArguments();
+//        String city = mArgsReceived.getString("CITY");
+//        String country = mArgsReceived.getString("COUNTRY");
+//        String currentCityCountry = city + "&" + country;
+
+        String currentCityCountry = "Sandy&US";
+        //mTvLocation.setText("" + getCityName() + ", " + getCountryName());
+        mTvLocation.setText("" + "Sandy" + ", " + "US");
         loadWeatherData(currentCityCountry); //used to get current weather info
 
-        Bundle arguments = getArguments();
-        // Extract any pertinent data here, then pass to the menu bar (profile image and module name)
+        if(mArgsReceived.get(Key.COUNTRY) == CountryCode.US) {
+            mAmerican = true; //determines which units are displayed with weather data
+        }
 
-        loadMenuBarFragment(WeatherFragment.this, arguments, R.id.fl_menu_bar_fragment_placeholder);
+        loadMenuBarFragment(WeatherFragment.this, mArgsReceived, R.id.fl_menu_bar_fragment_placeholder);
 
         return view;
     }
@@ -156,16 +172,21 @@ public class WeatherFragment extends Fragment {
                     e.printStackTrace();
                 }
                 //Set location data and weather info to TextViews
+
                 if (mWeatherData != null) {
-                    mTvLocation.setText("" + getCityName() + ", " + getCountryName());
-                    mTvTemp.setText("" + Math.round(mWeatherData.getTemperature().getTemp() - 273.15) + " C");
-                    mTvHighTemp.setText("" + Math.round(mWeatherData.getTemperature().getMaxTemp() - 273.15) + " C");
-                    mTvLowTemp.setText("" + Math.round(mWeatherData.getTemperature().getMinTemp() - 273.15) + " C");
-
-                    //WILL HAVE TO DO MORE PROCESSING OF RAIN AND SNOW FOR PRECIPITATION POSSIBLY
                     double precipAmount = mWeatherData.getRain().getAmount() + mWeatherData.getSnow().getAmount();
-                    mTvPrecip.setText("" +  precipAmount + "in"); //MAY NEED TO CHANGE UNITS
-
+                    Log.d("precipAmount: ", Double.toString(precipAmount));
+                    if(mAmerican) {
+                        mTvTemp.setText("" + Math.round((9/5)*(mWeatherData.getTemperature().getTemp() - 273.15) + 32) + " F");
+                        mTvHighTemp.setText("" + Math.round((9/5)*(mWeatherData.getTemperature().getMaxTemp() - 273.15) + 32) + " F");
+                        mTvLowTemp.setText("" + Math.round((9/5)*(mWeatherData.getTemperature().getMinTemp() - 273.15) + 32) + " F");
+                        mTvPrecip.setText("" +  precipAmount + " in");
+                    } else {
+                        mTvTemp.setText("" + Math.round(mWeatherData.getTemperature().getTemp() - 273.15) + " C");
+                        mTvHighTemp.setText("" + Math.round(mWeatherData.getTemperature().getMaxTemp() - 273.15) + " C");
+                        mTvLowTemp.setText("" + Math.round(mWeatherData.getTemperature().getMinTemp() - 273.15) + " C");
+                        mTvPrecip.setText("" +  precipAmount*25.4 + " mm");
+                    }
                     mTvPressure.setText("" + mWeatherData.getCurrentCondition().getPressure() + " hPa");
                     mTvHumid.setText("" + mWeatherData.getCurrentCondition().getHumidity() + "%");
                 }
