@@ -25,7 +25,7 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
     private boolean mLoseWeight = false;
     private static double BMR = -1.0; //value calculated based on age, sex, height, & weight
     private int mCalorieIntake; //the number of calories an individual needs to eat to meet their goal
-    private double mBMI = -1.0; //value calculated based on height, weight (metric or imperial) set to -1 if the user hasn't calculated it before.
+    private static double mBMI = -1.0; //value calculated based on height, weight (metric or imperial) set to -1 if the user hasn't calculated it before.
     private static int mWeight = -1; //value in lbs (imperial) or kgs (metric)
     private int mWeightGoal = -1; //represents the number of lbs a user wants to lose or gain/week
     private View mFr_view; //view to be returned from onCreateView
@@ -43,26 +43,67 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
     private static final String mObese = "Obese";
     @Override
     public void onSaveInstanceState (Bundle savedInstanceState) {
-        if (BMR != -1) {
-            savedInstanceState.putDouble(Key.BMI, BMR);
+        if (savedInstanceState != null) {
+            if (BMR != -1) {
+                savedInstanceState.putDouble(Key.BMR, BMR);
+            }
+            if (mBMI != -1) {
+                savedInstanceState.putDouble(Key.BMI, mBMI);
+            }
+            if (mWeight != -1) {
+                savedInstanceState.putInt(Key.WEIGHT, mWeight);
+            }
+            if (mWeightGoal != -1) {
+                savedInstanceState.putInt(Key.GOAL, mWeightGoal);
+            }
+            if (mInches != -1) {
+                savedInstanceState.putInt("INCHES", mInches);
+            }
+            if (mAge != -1) {
+                savedInstanceState.putInt(Key.AGE, mAge);
+            }
+            if (mHeight != null) {
+                savedInstanceState.putString(Key.HEIGHT, mHeight);
+            }
+            if (mCalorieIntake != -1) {
+                savedInstanceState.putInt("CalorieIntake", mCalorieIntake);
+            }
         }
-        if (mBMI != -1) {
-            savedInstanceState.putDouble(Key.BMI, mBMI);
-        }
-        if (mWeight != -1) {
-            savedInstanceState.putInt(Key.WEIGHT, mWeight);
-        }
-        if (mInches != -1) {
-            savedInstanceState.putInt("INCHES", mInches);
-        }
-        if (mAge != -1) {
-            savedInstanceState.putInt(Key.AGE, mAge);
-        }
-        if (mHeight != null) {
-            savedInstanceState.putString(Key.HEIGHT, mHeight);
-        }
-
         super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onViewStateRestored(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            if (BMR != -1) {
+                BMR = savedInstanceState.getDouble(Key.BMR);
+                mTv_BMR.setText("You need " + BMR + " Calories in order to meet your weight goal");
+            }
+            if (mBMI != -1) {
+                mBMI = savedInstanceState.getDouble(Key.BMI);
+                mTv_BMI_data = mFr_view.findViewById(R.id.tv_calculate_bmi_data);
+                mTv_BMI_data.setText(String.valueOf("Your BMI is: " + mBMI));
+            }
+            if (mWeight != -1) {
+                mWeight = savedInstanceState.getInt(Key.WEIGHT);
+            }
+            if (mWeightGoal != -1) {
+                savedInstanceState.getInt(Key.GOAL);
+            }
+            if (mInches != -1) {
+                mInches = savedInstanceState.getInt("INCHES");
+            }
+            if (mAge != -1) {
+                mAge = savedInstanceState.getInt(Key.AGE);
+            }
+            if (mHeight != null) {
+                mHeight = savedInstanceState.getString(Key.HEIGHT);
+            }
+            if (mCalorieIntake != -1) {
+                mCalorieIntake = savedInstanceState.getInt("CalorieIntake");
+            }
+        }
+        super.onViewStateRestored(savedInstanceState);
     }
 
     public BMRFragment() {
@@ -105,7 +146,24 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
         if (mAmerican) {
             bmi = (mWeight * 703)/mInches;
         } else {
-            double heightInMeters = Double.parseDouble(mHeight)/100;
+            //need to take the cm out of mHeight then should work
+            double numberOfMeters = 0.0;
+            double additionalCM = 0.0;
+            if (mInches > 100) {
+                if (mInches > 200) {
+                    //unlikely, but plenty of people surpass this
+                    numberOfMeters = 2;
+                    additionalCM = mInches - 200;
+                } else {
+                    //regular case
+                    numberOfMeters = 1;
+                    additionalCM = mInches - 100;
+                }
+            } else {
+                numberOfMeters = 0;
+            }
+            additionalCM = additionalCM/100.0;
+            double heightInMeters = numberOfMeters + additionalCM;
             bmi = mWeight / Math.pow(heightInMeters, 2);
         }
         return bmi;
@@ -113,7 +171,7 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
 
     /*
     * Returns a double representing the number of calories a day you need in order to maintain your
-    * current weight. Made static for testing. 
+    * current weight. Made static for testing.
      */
     public static double calculateBMR() {
         //formulas differ depending on whether you're a male or female
@@ -167,69 +225,74 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
         mTv_BMI_data = mFr_view.findViewById(R.id.tv_calculate_bmi_data);
         mButton_BMI_calculator = mFr_view.findViewById(R.id.button_calculate_bmi);
 
+        mButton_BMI_calculator.setOnClickListener(this);
+
         //null check to make sure that the previous activity/fragment sent over the information
         if (getArguments() != null) {
             mArgsReceived = getArguments();
         }
-        //set the variables needed in calculating BMR and BMI
-        mWeight = mArgsReceived.getInt(Key.WEIGHT);
-        mAge = mArgsReceived.getInt(Key.AGE);
-        mInches = mArgsReceived.getInt(Key.HEIGHT);
-        mWeightGoal = mArgsReceived.getInt(Key.GOAL);
-        BMR = mArgsReceived.getInt(Key.BMR);
-        mBMI = mArgsReceived.getInt(Key.BMI);
+        if (savedInstanceState == null) {
+            //set the variables needed in calculating BMR and BMI
+            mWeight = mArgsReceived.getInt(Key.WEIGHT);
+            mAge = mArgsReceived.getInt(Key.AGE);
+            mInches = mArgsReceived.getInt(Key.HEIGHT);
+            mWeightGoal = mArgsReceived.getInt(Key.GOAL);
+            BMR = mArgsReceived.getInt(Key.BMR);
+            mBMI = mArgsReceived.getInt(Key.BMI);
 
-        if (mArgsReceived.get(Key.COUNTRY) == CountryCode.US) {
-            mAmerican = true;
-        }
+            if (mArgsReceived.get(Key.COUNTRY) == CountryCode.US) {
+                mAmerican = true;
+            }
 
-        if (mAmerican) {
-            mHeight = getHeightAmerican(mInches);
-        } else {//is any other nationality
-            mHeight = getHeightNonAmerican(mInches);
-        }
+            if (mAmerican) {
+                mHeight = getHeightAmerican(mInches);
+            } else {//is any other nationality
+                mHeight = getHeightNonAmerican(mInches);
+            }
 
-        BMR = calculateBMR();
+            BMR = calculateBMR();
 
-        /*
-        * Calorie intake is based on their goal. Depending on if they're American or not, calc will be different.
-        * Per lb lost/gained, suggested calorie discount/increase per week is 500
-        * Per kg lost/gained, suggested kCal discount/increase per week is 1,100
-         */
-        if (mWeightGoal < 0) {
-            mLoseWeight = true;
-        }
+            /*
+            * Calorie intake is based on their goal. Depending on if they're American or not, calc will be different.
+            * Per lb lost/gained, suggested calorie discount/increase per week is 500
+            * Per kg lost/gained, suggested kCal discount/increase per week is 1,100
+             */
+            if (mWeightGoal < 0) {
+                mLoseWeight = true;
+            }
 
-        mCalorieIntake = (int) BMR;
-        if (mAmerican) {
-            //values are either positive, negative or 0. They represent lbs for Americans
-            mWeightGoal *= 500;
-            mCalorieIntake += mWeightGoal;
-            if (mLoseWeight) {
-                if (Sex.MALE != null && mCalorieIntake < 1200) {
-                    Toast.makeText(getActivity(), "You are running a health risk by consuming below 1200 Calories a day",
-                            Toast.LENGTH_SHORT).show();
-                } else if (Sex.FEMALE != null && mCalorieIntake < 1000) {
-                    Toast.makeText(getActivity(), "You are running a health risk by consuming below 1000 Calories a day",
-                            Toast.LENGTH_SHORT).show();
+            mCalorieIntake = (int) BMR;
+            if (mAmerican) {
+                //values are either positive, negative or 0. They represent lbs for Americans
+                mWeightGoal *= 500;
+                mCalorieIntake += mWeightGoal;
+                if (mLoseWeight) {
+                    if (Sex.MALE != null && mCalorieIntake < 1200) {
+                        Toast.makeText(getActivity(), "You are running a health risk by consuming below 1200 Calories a day",
+                                Toast.LENGTH_SHORT).show();
+                    } else if (Sex.FEMALE != null && mCalorieIntake < 1000) {
+                        Toast.makeText(getActivity(), "You are running a health risk by consuming below 1000 Calories a day",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }
+            } else { //not American
+                //values are either positive, negative, or 0. They represents kg for non-Americans
+                mWeightGoal *= 1100;
+                mCalorieIntake += mWeightGoal;
+                if (mLoseWeight) {
+                    if (Sex.MALE != null && mCalorieIntake < 1200) {
+                        Toast.makeText(getActivity(), "You are running a health risk by consuming below 1200 Calories a day",
+                                Toast.LENGTH_SHORT).show();
+                    } else if (Sex.FEMALE != null && mCalorieIntake < 1000) {
+                        Toast.makeText(getActivity(), "You are running a health risk by consuming below 1000 Calories a day",
+                                Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
-        } else { //not American
-            //values are either positive, negative, or 0. They represents kg for non-Americans
-            mWeightGoal *= 1100;
-            mCalorieIntake += mWeightGoal;
-            if (mLoseWeight) {
-                if (Sex.MALE != null && mCalorieIntake < 1200) {
-                    Toast.makeText(getActivity(), "You are running a health risk by consuming below 1200 Calories a day",
-                            Toast.LENGTH_SHORT).show();
-                } else if (Sex.FEMALE != null && mCalorieIntake < 1000) {
-                    Toast.makeText(getActivity(), "You are running a health risk by consuming below 1000 Calories a day",
-                            Toast.LENGTH_SHORT).show();
-                }
-            }
+            mTv_BMR.setText("BMR: ");
+            mTv_BMR_data.setText("You need " + mCalorieIntake + " Calories in order to meet your weight goal.");
+
         }
-        mTv_BMR.setText("BMR: ");
-        mTv_BMR_data.setText("You need " + mCalorieIntake + "to meet your weight goal.");
 
         /*
         Values for BMR, Calorie Intake, Activity Level, Weight, Height, Nationality have all been calculated
@@ -250,10 +313,10 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.button_calculate_bmi:
+            case R.id.button_calculate_bmi: {
                 System.out.println("You clicked the button");
                 //check to see if they've already calculated the BMI in the past
-
+                Toast.makeText(getActivity(), "You clicked the button", Toast.LENGTH_SHORT).show();
                 if (mBMI != -1) {
                     //They've calculated this before. Check to see if they've improved their BMI.
                     double oldBMI = mBMI;
@@ -281,6 +344,7 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
                                         "You may consider visiting a physician due to health risks.",
                                 Toast.LENGTH_SHORT).show();
                 }
+            }
             default:
                 break;
         }

@@ -54,6 +54,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@+id/tv_bmr"
+            app:layout_constraintLeft_toRightOf="@+id/button_calculate_bmi"
             android:layout_marginTop="16dp"
             android:layout_marginLeft="16dp"
             />
