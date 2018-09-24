@@ -28,9 +28,6 @@ public class WeatherFragment extends Fragment {
     private TextView mTvLocation, mTvTemp, mTvHighTemp, mTvLowTemp,
             mTvPrecip, mTvPressure, mTvHumid;
 
-    //Variables holding current latitude and longitude
-    private double mLatitude, mLongitude;
-
     //Variables holding city name and country name Strings
     private String mCityName, mCountryName;
 
@@ -53,7 +50,7 @@ public class WeatherFragment extends Fragment {
         setRetainInstance(true);
     }
 
-    
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //Inflate the HikesFragment layout view
