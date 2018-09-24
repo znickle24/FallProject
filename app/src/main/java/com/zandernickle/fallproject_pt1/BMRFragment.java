@@ -22,9 +22,7 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
     private TextView mTv_BMR_data;
     private Button mButton_BMI_calculator;
     private TextView mTv_BMI_data;
-    private boolean mGainWeight = false;
     private boolean mLoseWeight = false;
-    private boolean mMaintainWeight = false;
     private double BMR = -1.0; //value calculated based on age, sex, height, & weight
     private int mCalorieIntake; //the number of calories an individual needs to eat to meet their goal
     private double mBMI = -1.0; //value calculated based on height, weight (metric or imperial) set to -1 if the user hasn't calculated it before.
@@ -76,16 +74,6 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
         super.onCreate(savedInstanceState);
     }
 
-    //Set the correct bool to true for the participants goal
-    public void getGoal() {
-        if (Goal.GAIN_WEIGHT != null) {
-            mGainWeight = true;
-        } else if (Goal.LOSE_WEIGHT != null) {
-            mLoseWeight = true;
-        } else {
-            mMaintainWeight = true;
-        }
-    }
     //Design decision was to make anyone in the US show height in feet/inches instead of cm
     public String getHeightAmerican(int numberOfInches) {
         String height = "";
@@ -165,8 +153,6 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
         mInches = mArgsReceived.getInt(Key.HEIGHT);
         mWeightGoal = mArgsReceived.getInt(Key.GOAL);
 
-        getGoal();;
-
         if (mArgsReceived.get(Key.COUNTRY) == CountryCode.US) {
             mAmerican = true;
         }
@@ -201,11 +187,8 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
          */
         if (mWeightGoal < 0) {
             mLoseWeight = true;
-        } else if (mWeightGoal == 0) {
-            mMaintainWeight = true;
-        } else {
-            mGainWeight = true;
         }
+
         mCalorieIntake = (int) BMR;
         if (mAmerican) {
             //values are either positive, negative or 0. They represent lbs for Americans
