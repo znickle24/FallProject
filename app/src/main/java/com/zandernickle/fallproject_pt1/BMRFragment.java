@@ -26,10 +26,10 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
     private boolean mLoseWeight = false;
     private boolean mMaintainWeight = false;
     private double BMR; //value calculated based on age, sex, height, & weight
+    private int mCalorieIntake; //the number of calories an individual needs to eat to meet their goal
     private double mBMI = -1.0; //value calculated based on height, weight (metric or imperial) set to -1 if the user hasn't calculated it before.
     private int mWeight; //value in lbs (imperial) or kgs (metric)
     private int mWeightGoal; //represents the number of lbs a user wants to lose or gain/week
-    private int mCalorieIntake; //the number of calories an individual needs to eat to meet their goal
     private View mFr_view; //view to be returned from onCreateView
     private boolean mAmerican = false; //used to determine metric or imperial calculation
     private static final int mFeet = 12; //used to calculate height in Amerians
@@ -180,10 +180,52 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
         }
 
         /*
-        Values for BMR, Activity Level, Weight, Height, Nationality have all been calculated
+        * Calorie intake is based on their goal. Depending on if they're American or not, calc will be different.
+        * Per lb lost/gained, suggested calorie discount/increase per week is 500
+        * Per kg lost/gained, suggested kCal discount/increase per week is 1,100
+         */
+        if (mWeightGoal < 0) {
+            mLoseWeight = true;
+        } else if (mWeightGoal == 0) {
+            mMaintainWeight = true;
+        } else {
+            mGainWeight = true;
+        }
+        mCalorieIntake = (int) BMR;
+        if (mAmerican) {
+            //values are either positive, negative or 0. They represent lbs for Americans
+            mWeightGoal *= 500;
+            mCalorieIntake += mWeightGoal;
+            if (mLoseWeight) {
+                if (Sex.MALE != null && mCalorieIntake < 1200) {
+                    Toast.makeText(getActivity(), "You are running a health risk by consuming below 1200 Calories a day",
+                            Toast.LENGTH_SHORT).show();
+                } else if (Sex.FEMALE != null && mCalorieIntake < 1000) {
+                    Toast.makeText(getActivity(), "You are running a health risk by consuming below 1000 Calories a day",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        } else { //not American
+            //values are either positive, negative, or 0. They represents kg for non-Americans
+            mWeightGoal *= 1100;
+            mCalorieIntake += mWeightGoal;
+            if (mLoseWeight) {
+                if (Sex.MALE != null && mCalorieIntake < 1200) {
+                    Toast.makeText(getActivity(), "You are running a health risk by consuming below 1200 Calories a day",
+                            Toast.LENGTH_SHORT).show();
+                } else if (Sex.FEMALE != null && mCalorieIntake < 1000) {
+                    Toast.makeText(getActivity(), "You are running a health risk by consuming below 1000 Calories a day",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+        mTv_BMR.setText("BMR: ");
+        mTv_BMR_data.setText("You need " + mCalorieIntake + "to meet your weight goal.");
+
+        /*
+        Values for BMR, Calorie Intake, Activity Level, Weight, Height, Nationality have all been calculated
         Return the view
          */
-
 
         return mFr_view;
     }
@@ -211,7 +253,7 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
                     mBMI = calculateBMI();
                 }
                 String weightStatus = determineBMICategory(mBMI);
-                mTv_BMI_data.setText(String.valueOf(mBMI));
+                mTv_BMI_data.setText(String.valueOf("Your BMI is: " + mBMI));
                 switch (weightStatus) {
                     case mUnderweight:
                         Toast.makeText(getActivity(), "You appear to be underweight, may want to consume more calories",
