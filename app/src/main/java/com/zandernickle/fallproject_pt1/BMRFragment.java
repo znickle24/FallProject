@@ -242,6 +242,9 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button_calculate_bmi:
+                System.out.println("You clicked the button");
+                //check to see if they've already calculated the BMI in the past
+
                 if (mBMI != -1) {
                     //They've calculated this before. Check to see if they've improved their BMI.
                     double oldBMI = mBMI;
