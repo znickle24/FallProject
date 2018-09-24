@@ -164,7 +164,9 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
                  */
 
                 if (isTablet()) { // Sets up MasterView on the left for the remainder of the experience
-                    loadFragment(mFragmentManager, R.id.fl_fragment_placeholder_tablet_left, new MasterListFragment(), "TEST", false);
+                    Fragment masterListFragment = new MasterListFragment();
+                    masterListFragment.setArguments(mBundle);
+                    loadFragment(mFragmentManager, R.id.fl_fragment_placeholder_tablet_left, masterListFragment, "TEST", false);
                 }
 
                 break;
