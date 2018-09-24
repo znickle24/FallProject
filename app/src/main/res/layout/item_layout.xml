@@ -2,12 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:paddingLeft="24dp"
+    android:paddingRight="24dp">
 
     <!-- tv_item_full_name has been given a weight of 1
          as opposed to a width of "match_parent" for
          ease of adding additional Views (such as a
          profile image. -->
+
+    <ImageView
+        android:id="@+id/iv_module_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent" />
 
     <TextView
         android:id="@+id/tv_module_name"
@@ -16,7 +23,7 @@
         android:layout_weight="1"
         android:gravity="center_vertical"
         android:paddingLeft="32dp"
-        android:paddingRight="32dp"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:textColor="@color/colorPureWhite"/>
 
 </LinearLayout>

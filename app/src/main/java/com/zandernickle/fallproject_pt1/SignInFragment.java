@@ -160,7 +160,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
                     signInBundle.putInt(Key.POSTAL_CODE, Integer.parseInt(postalCode));
                     signInBundle.putSerializable(Key.COUNTRY, countryCode);
 
-                    mDataPasser.onDataPass(Key.SIGN_IN_FRAGMENT, signInBundle); // SignInFragment -> MainActivity
+                    mDataPasser.onDataPass(Module.FITNESS_INPUT, signInBundle); // SignInFragment -> MainActivity
                 }
 
                 break;
@@ -258,7 +258,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
      * An interface to communicate with this Fragment's host Activity.
      */
     public interface OnDataPass {
-        void onDataPass(String key, Bundle signInBundle);
+        void onDataPass(Module moduleToLoad, Bundle signInBundle);
     }
 
     /**

@@ -201,7 +201,7 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
                      * then given the decision whether to proceed against the warning or return to change
                      * their weight goal.
                      */
-                    mDataPasser.onDataPass(FITNESS_INPUT_FRAGMENT, mFitnessInputBundle);
+                    mDataPasser.onDataPass(Module.PLAYGROUND, mFitnessInputBundle);
                 }
 
                 break;
@@ -218,7 +218,7 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
     @Override
     public void onWarningAccepted() {
         //
-        mDataPasser.onDataPass(FITNESS_INPUT_FRAGMENT, mFitnessInputBundle);
+        mDataPasser.onDataPass(Module.PLAYGROUND, mFitnessInputBundle);
     }
 
     /**
@@ -264,7 +264,7 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
      * An interface to communicate with this Fragment's host Activity.
      */
     public interface OnDataPass {
-        void onDataPass(String key, Bundle signInBundle);
+        void onDataPass(Module moduleToLoad, Bundle signInBundle);
     }
 
     /**

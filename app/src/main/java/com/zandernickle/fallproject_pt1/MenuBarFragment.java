@@ -91,15 +91,15 @@ public class MenuBarFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_menu_icon:
-                mDataPasser.onDataPass(MENU_BAR_FRAGMENT_MENU_PRESSED, null);
+                mDataPasser.onDataPass(Module.MASTER_LIST, null);
                 break;
             case R.id.civ_profile_image:
-                mDataPasser.onDataPass(MENU_BAR_FRAGMENT_PROFILE_PRESSED, null);
+                mDataPasser.onDataPass(Module.WEATHER, null);
                 break;
         }
     }
 
     public interface OnDataPass {
-        void onDataPass(String key, @Nullable Bundle bundle);
+        void onDataPass(Module moduleToLoad, @Nullable Bundle bundle);
     }
 }

@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.neovisionaries.i18n.CountryCode;
+
 
 /**
  * A simple {@link android.support.v4.app.Fragment} subclass.
@@ -150,7 +152,7 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
 
         getGoal();;
 
-        if (mArgsReceived.getString(Key.COUNTRY) == "US") {
+        if (mArgsReceived.get(Key.COUNTRY) == CountryCode.US) {
             mAmerican = true;
         }
 
