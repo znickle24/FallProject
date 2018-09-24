@@ -1,5 +1,7 @@
 package com.zandernickle.fallproject_pt1;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -10,7 +12,9 @@ import java.util.Scanner;
 public class Network {
     private static String BASE_URL = "http://api.openweathermap.org/data/2.5/weather?q=";
     private static String APPIDQUERY = "&appid=";
-    private static final String app_id="99ea8382701bd7481e5ea568772f739a";
+    //private static final String app_id="99ea8382701bd7481e5ea568772f739a";
+    private static final String app_id = "2f0c2eee1a7802a82ad45d5849e59d6a";
+    //private static final String app_id = "com.zandernickle.fallproject_pt1";
 
     /**
      *
@@ -21,6 +25,7 @@ public class Network {
         URL myURL = null;
         try {
             myURL = new URL(BASE_URL + location + APPIDQUERY + app_id);
+            Log.d("myURL in buildURLFromString: ", myURL.toString());
         } catch(MalformedURLException e) {
             e.printStackTrace();
         }

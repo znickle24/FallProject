@@ -96,7 +96,8 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
 //        mLatitude = GPSTracker.getLatitude();
 //        mLongitude = GPSTracker.getLongitude();
         //String currentCityCountry = getCityAndCountry(mLatitude, mLongitude);
-        String currentCityCountry = "Sandy&USA";
+        //String currentCityCountry = "Sandy,US";
+        String currentCityCountry = "Sandy&US";
         loadWeatherData(currentCityCountry); //used to get current weather info
 
         Bundle arguments = getArguments();
@@ -123,17 +124,23 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
 
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
+        //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+
+        //LocationManager locManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
 
-        LocationManager locManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        //boolean network_enabled = locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-        boolean network_enabled = locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        boolean network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
         Location location;
 
         if (network_enabled) {
 
-            location = locManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            //location = locManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
             if (location != null) {
                 mLatitude = location.getLatitude();
@@ -257,11 +264,11 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
 
     @Override
     public void onLocationChanged(Location location) {
-//        Log.d("HikesFragment.java: ", "in onLocationChanged() in HikesFragment.java");
-//        mLatitude = location.getLatitude();
-//        Log.d("mLatitude: ", Double.toString(mLatitude));
-//        mLongitude = location.getLongitude();
-//        Log.d("mLongitude: ", Double.toString(mLongitude));
+        Log.d("HikesFragment.java: ", "in onLocationChanged() in HikesFragment.java");
+        mLatitude = location.getLatitude();
+        Log.d("mLatitude: ", Double.toString(mLatitude));
+        mLongitude = location.getLongitude();
+        Log.d("mLongitude: ", Double.toString(mLongitude));
     }
 
 
