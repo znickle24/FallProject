@@ -31,12 +31,14 @@ public class WeatherFragment extends Fragment {
     //Variables holding city name and country name Strings
     private String mCityName, mCountryName;
 
+    //Variable holding weather data for display
     private WeatherData mWeatherData;
-    private Context mContext;
 
-    //Used to determine which units to use when displaying weather data
+    //Variables used to determine which units to use when displaying weather data
     private Bundle mArgsReceived;
     private boolean mAmerican = false;
+
+    private Context mContext;
 
 
     //WeatherFragment Constructor
@@ -53,7 +55,7 @@ public class WeatherFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        //Inflate the HikesFragment layout view
+        //Inflate the WeatherFragment layout view
         View view = inflater.inflate(R.layout.fragment_weather, container, false);
 
         //Get the TextViews to display location and weather data
@@ -65,20 +67,20 @@ public class WeatherFragment extends Fragment {
         mTvPressure = (TextView) view.findViewById(R.id.tv_pressure_data);
         mTvHumid = (TextView) view.findViewById(R.id.tv_humidity_data);
 
-        //HikesFragment.getLatLong();
-
         //Get the current city name and country name for display
+        //HikesFragment.getLatLong();
         //String currentCityCountry = getCityAndCountry(mLatitude, mLongitude); //NOT WORKING BECAUSE OF GEOCODER
 
-        //Extract any pertinent data here
+        //Extract any pertinent data here from SignInActivity
         mArgsReceived = getArguments();
-//        String city = mArgsReceived.getString("CITY");
-//        String country = mArgsReceived.getString("COUNTRY");
-//        String currentCityCountry = city + "&" + country;
+//        mCityName = mArgsReceived.getString("CITY"); //NEED TO CHANGE KEY???
+//        mCountryName = mArgsReceived.getString("COUNTRY"); //NEED TO CHANGE KEY???
+//        String currentCityCountry = mCityName + "&" + mCountryName;
 
-        String currentCityCountry = "Sandy&US";
+        String currentCityCountry = "Salt Lake City&US";
         //mTvLocation.setText("" + getCityName() + ", " + getCountryName());
-        mTvLocation.setText("" + "Sandy" + ", " + "US");
+        //mTvLocation.setText("" + mCityName + ", " + mCountryName);
+        mTvLocation.setText("" + "Salt Lake City" + ", " + "US");
         loadWeatherData(currentCityCountry); //used to get current weather info
 
         if(mArgsReceived.get(Key.COUNTRY) == CountryCode.US) {
@@ -114,6 +116,7 @@ public class WeatherFragment extends Fragment {
 
 
     /**
+     * NOT WORKING BECAUSE OF GEOCODER
      * Returns a city name and country name String used to find weather info
      * @param latitude
      * @param longitude
@@ -168,8 +171,7 @@ public class WeatherFragment extends Fragment {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                //Set location data and weather info to TextViews
-
+                //Set weather info to TextViews
                 if (mWeatherData != null) {
                     double precipAmount = mWeatherData.getRain().getAmount() + mWeatherData.getSnow().getAmount();
                     Log.d("precipAmount: ", Double.toString(precipAmount));

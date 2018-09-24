@@ -44,8 +44,8 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
     //Variables holding city name and country name Strings
     private String mCityName, mCountryName;
 
+    //Variable holding the current weather data
     private WeatherData mWeatherData;
-    Context mContext;
 
     //Used to find current location
     protected LocationManager locationManager;
@@ -54,12 +54,11 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
     private Bundle mArgsReceived;
     private boolean mAmerican = false;
 
+    Context mContext;
 
-    /**
-     * Constructor for HikesFragment
-     */
+
+    //HikesFragment constructor
     public HikesFragment() {
-        // Required empty public constructor
     }
 
 
@@ -68,6 +67,7 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
         super.onAttach(context);
         mContext = context;
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -78,24 +78,24 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
         mButtonSearch = (Button) view.findViewById(R.id.btn_search_hikes);
         mButtonSearch.setOnClickListener(this);
 
-        //Get the TextViews to display the temperature and humidity
+        //Get the TextViews to display the temperature and precipitation
         mTvTemp = (TextView) view.findViewById(R.id.tv_current_temp_data);
         mTvHighTemp = (TextView) view.findViewById(R.id.tv_high_temp_data);
         mTvLowTemp = (TextView) view.findViewById(R.id.tv_low_temp_data);
         mTvPrecip = (TextView) view.findViewById(R.id.tv_precipitation_data);
 
-        getLatLong();
+        getLatLong(); //get current latitude and longitude
 
         //Get the current city name and country name for display
         //String currentCityCountry = getCityAndCountry(mLatitude, mLongitude); //NOT WORKING BECAUSE OF GEOCODER
 
-        //Extract any pertinent data here
+        //Extract any pertinent data here from SignIn Activity
         mArgsReceived = getArguments();
-//        String city = mArgsReceived.getString("CITY");
-//        String country = mArgsReceived.getString("COUNTRY");
-//        String currentCityCountry = city + "&" + country;
+//        mCityName = mArgsReceived.getString("CITY"); //NEED TO CHANGE KEY???
+//        mCountryName = mArgsReceived.getString("COUNTRY"); //NEED TO CHANGE KEY???
+//        String currentCityCountry = mCityName + "&" + mCountryName;
 
-        String currentCityCountry = "Sandy&US";
+        String currentCityCountry = "Salt Lake City&US";
         loadWeatherData(currentCityCountry); //used to get current weather info
 
         if(mArgsReceived.get(Key.COUNTRY) == CountryCode.US) {
@@ -141,7 +141,7 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
     /**
      * Handles clicks for the hike search button
      * Finds the user's current location
-     * Presents the user with hikes near their current location
+     * Presents the user with hikes near their current location using Google Maps
      * @param view
      */
     @Override
@@ -173,6 +173,7 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
 
 
     /**
+     * NOT WORKING BECAUSE OF GEOCODER
      * Returns a city name and country name String used to find weather info
      * @param latitude
      * @param longitude

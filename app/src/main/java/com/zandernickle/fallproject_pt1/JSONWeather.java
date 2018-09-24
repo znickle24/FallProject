@@ -23,7 +23,7 @@ public class JSONWeather {
         currentCondition.setPressure(jsonMain.getInt("pressure"));
         weatherData.setCurrentCondition(currentCondition);
 
-        //Get temp, wind, and cloud data
+        //Get temp, wind, cloud, rain, and snow data
         WeatherData.Temperature temperature = weatherData.getTemperature();
         WeatherData.Wind wind = weatherData.getWind();
         WeatherData.Clouds clouds = weatherData.getClouds();

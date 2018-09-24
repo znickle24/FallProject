@@ -152,7 +152,6 @@ public class WeatherData {
         public long getPerc() {
             return mPerc;
         }
-
         public void setPerc(long perc) {
             mPerc = perc;
         }

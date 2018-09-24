@@ -279,6 +279,7 @@ public class ReusableUtil {
         }};
     }
 
+    // Class instead of fragment in case we need to add an Activity.
     public static HashMap<Module, Class<?>> mapModuleList() {
         return new HashMap<Module, Class<?>>() {{
            put(Module.HEALTH, BMRFragment.class);

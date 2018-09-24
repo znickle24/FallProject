@@ -1,6 +1,7 @@
 package com.zandernickle.fallproject_pt1;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
@@ -20,25 +21,7 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
     public static final String WEATHER_TAG = "WEATHER_TAG";
     public static final String USER = "USER";
 
-    /* TODO
-     *
-     * (Zander)
-     * BMRFragment should expect a CountryCode rather than a String. This is a safer approach and the Key documentation
-     * has already been changed to reflect this.
-     * Simply use CountryCode countryCode = (CountryCode) arguments.getSerializable(Key.COUNTRY) and then check whether
-     * countryCode == CountryCode.US.
-     *
-     * (Matt)
-     * Create XML layout resources for every phone screen's landscape mode. How do we ensure the landscape fragment is
-     * not rendered when a tablet is in landscape orientation?
-     *
-     * (Sydney)
-     * Decide whether to pass the CountryCode to the weather and hike Fragments for conversion to Celsius where
-     * appropriate (maybe this is already taken care of based on GPS).
-     *
-     * (Matt)
-     * Keep state when leaving the app and returning. Come back to same fragment if possible.
-     */
+
 
     private static final DatabaseService database = new DatabaseService(); // A placeholder for a real database.
 
@@ -46,6 +29,7 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
     private User mUser; // The current user (kind of like a Cookie).
     private boolean mIsTablet;
     private Bundle mBundle;
+    private HashMap<Module, Class<?>> mMappedModules = ReusableUtil.mapModuleList();
 
     private String mPrevFragmentTag;
 
@@ -101,21 +85,6 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
 
     }
 
-    private Fragment getNextFragmentToLoad(Module moduleToLoad) {
-        HashMap<Module, Class<?>> mappedModules = ReusableUtil.mapModuleList(); // get the class corresponding with the module (a fragment)
-        Fragment nextFragment = null;
-        try {
-            Class<?> moduleClass = mappedModules.get(moduleToLoad); // the class corresponding with the module (a fragment)
-            Constructor<?> constructor = Class.forName(moduleClass.getName()).getConstructor();
-            nextFragment = (Fragment) constructor.newInstance();
-        } catch (Exception e) {
-            log(e.getMessage());
-            log("Failed to retrieve next loadable fragment: " + moduleToLoad.toString());
-            e.printStackTrace();
-        }
-        return nextFragment; // nullable but should never return null?
-    }
-
     /**
      * {@inheritDoc}
      * <p>
@@ -125,22 +94,31 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
      * method signature.
      */
     @Override
-    public void onDataPass(Module moduleToLoad, Bundle bundle) { // could implement this without the key but then we have to unpack a bundle every time we tap on the menu icon (check if menu icon or profile)
+    public void onDataPass(Module moduleToLoad, Bundle bundle) {
 
         // TODO: Decide how often to update the database. // onPause?
 
-        // Create the next fragment but just keep adding things to the bundle (may need to store as member variable for lifecycle)
+        /*
+         * For purposes of extensibility, all data is stored in a single Bundle. This Bundle is passed from one
+         * module to the next, each extracting only the data it requires. Any Bundles passed into this interface
+         * are added to this "global bundle".
+         */
+
         if (bundle != null) {
+            /* Some modules will return a null Bundle. For example, MenuBarFragment only passes the Module which
+             * should next be loaded.
+             */
             mBundle.putAll(bundle);
-        } // some modules may return a null bundle (these just want you to know they're returning).
-        mBundle.putSerializable(Key.MODULE, moduleToLoad); // Pass the name of the next module to the menu bar
+        }
 
-        Fragment prevFragment = mFragmentManager.findFragmentByTag(mPrevFragmentTag); // replace hard-coded module
-        Fragment nextFragment = getNextFragmentToLoad(moduleToLoad); // replace hard-coded module
+        // Pass the name of the module to the MenuBarFragment (where implemented).
+        mBundle.putSerializable(Key.MODULE, moduleToLoad);
 
-        mPrevFragmentTag = moduleToLoad.toString(); // make sure this is placed after finding fragment by tag
+        Fragment prevFragment = mFragmentManager.findFragmentByTag(mPrevFragmentTag);
+        Fragment nextFragment = (Fragment) getNextModuleView(moduleToLoad);
 
-        // update mBundle and load new fragment within each individual case
+        // Ensure this statement is made AFTER finding the previous Fragment.
+        mPrevFragmentTag = moduleToLoad.toString();
 
         switch (moduleToLoad) {
 
@@ -149,7 +127,9 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
                 // Not implemented. This module is currently the entry point. See onCreate.
                 break;
 
-            case FITNESS_INPUT: // Returned from SignIn module
+            case FITNESS_INPUT:
+
+                // SignInFragment -> MainActivity -> FitnessInputFragment
 
                 mUser = new User(bundle);
                 database.addUser(mUser);
@@ -167,13 +147,14 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
 
             case PLAYGROUND:
 
+                // FitnessInputFragment -> MainActivity -> BMRFragment (health module)
+
                 mUser.updateFitnessData(bundle);
                 database.updateUser(mUser);
 
                 /*
-                 * At this point the user's profile has been updated with their basic fitness information (see the
-                 * User.updateFitnessData method). However, their BMI and BMR have yet to be calculated. These are
-                 * added when the BMR fragment returns its data.
+                 * The user's BMI and BMR data have yet to be added to the current User. This should occur
+                 * when this module returns its Bundle.
                  */
 
                 if (isTablet()) { // Sets up MasterView on the left for the remainder of the experience
@@ -200,6 +181,35 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
 
         nextFragment.setArguments(mBundle);
         loadFragment(mFragmentManager, prevFragment.getId(), nextFragment, mPrevFragmentTag, false);
+    }
+
+    /**
+     * Returns the Fragment associated with the provided Module. In other words, pass a Module
+     * and get back an instantiated Fragment representing that model.
+     *
+     * Important! The module being passed must exist in mMappedModules. It must also be a
+     * Fragment. This is an important distinction for future extensions where a
+     *
+     *
+     * ensure the module you are passing is a fragment, not an activity (extensibility)
+     *
+     * @param moduleToLoad
+     * @return
+     */
+    @NonNull
+    private Object getNextModuleView(Module moduleToLoad) {
+
+        Object nextModuleView = null;
+        try {
+            Class<?> moduleClass = mMappedModules.get(moduleToLoad);
+            Constructor<?> constructor = Class.forName(moduleClass.getName()).getConstructor();
+            nextModuleView = constructor.newInstance();
+        } catch (Exception e) {
+            // This is a very useful log when adding additional modules.
+            log("Failed to retrieve next loadable fragment: " + moduleToLoad.toString());
+            e.printStackTrace();
+        }
+        return nextModuleView; // Don't let this be null... you'll crash in onDataPass.
     }
 }
 
