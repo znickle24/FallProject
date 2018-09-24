@@ -44,7 +44,7 @@ public class MasterListFragment extends Fragment {
 
         List<Module> listItems = ReusableUtil.getModuleList();
 
-        mAdapter = new RVAdapter(listItems);
+        mAdapter = new RVAdapter(getContext(), listItems);
         mRecyclerView.setAdapter(mAdapter);
 
         Bundle arguments = getArguments();
