@@ -25,18 +25,19 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
     private boolean mGainWeight = false;
     private boolean mLoseWeight = false;
     private boolean mMaintainWeight = false;
-    private double BMR; //value calculated based on age, sex, height, & weight
+    private double BMR = -1.0; //value calculated based on age, sex, height, & weight
     private int mCalorieIntake; //the number of calories an individual needs to eat to meet their goal
     private double mBMI = -1.0; //value calculated based on height, weight (metric or imperial) set to -1 if the user hasn't calculated it before.
-    private int mWeight; //value in lbs (imperial) or kgs (metric)
-    private int mWeightGoal; //represents the number of lbs a user wants to lose or gain/week
+    private int mWeight = -1; //value in lbs (imperial) or kgs (metric)
+    private int mWeightGoal = -1; //represents the number of lbs a user wants to lose or gain/week
     private View mFr_view; //view to be returned from onCreateView
     private boolean mAmerican = false; //used to determine metric or imperial calculation
     private static final int mFeet = 12; //used to calculate height in Amerians
-    private int mInches; //value passed from Activity as Height
+    private int mInches = -1; //value passed from Activity as Height
     private String mHeight; //height presented in users national form
-    private int mAge;
+    private int mAge = -1;
     private Bundle mArgsReceived; //arguments passed from Activity
+    private User mUser;
     //values from bmi calculation
     private static final String mUnderweight = "Underweight";
     private static final String mNormalWeight = "Normal Weight";
@@ -44,11 +45,25 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
     private static final String mObese = "Obese";
     @Override
     public void onSaveInstanceState (Bundle savedInstanceState) {
-        savedInstanceState.putDouble("BMRFragment", BMR);
-        savedInstanceState.putInt(Key.WEIGHT, mWeight);
-        savedInstanceState.putInt("INCHES", mInches);
-        savedInstanceState.putInt(Key.AGE, mAge);
-        savedInstanceState.putString(Key.HEIGHT, mHeight);
+        if (BMR != -1) {
+            savedInstanceState.putDouble(Key.BMI, BMR);
+        }
+        if (mBMI != -1) {
+            savedInstanceState.putDouble(Key.BMI, mBMI);
+        }
+        if (mWeight != -1) {
+            savedInstanceState.putInt(Key.WEIGHT, mWeight);
+        }
+        if (mInches != -1) {
+            savedInstanceState.putInt("INCHES", mInches);
+        }
+        if (mAge != -1) {
+            savedInstanceState.putInt(Key.AGE, mAge);
+        }
+        if (mHeight != null) {
+            savedInstanceState.putString(Key.HEIGHT, mHeight);
+        }
+
         super.onSaveInstanceState(savedInstanceState);
     }
 

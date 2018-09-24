@@ -28,6 +28,9 @@ public class User implements Parcelable {
     private int postalCode;
     private CountryCode countryCode;
 
+    private int BMI;
+    private int BMR;
+    private int calorieIntake;
     private int height;
     private int weight;
     private Sex sex;
@@ -47,6 +50,13 @@ public class User implements Parcelable {
         sex = (Sex) in.readSerializable();
         activityLevel = (ActivityLevel) in.readSerializable();
         weightGoal = in.readInt();
+        BMR = in.readInt();
+        calorieIntake = in.readInt();
+        try {
+            BMI = in.readInt();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -69,6 +79,13 @@ public class User implements Parcelable {
         dest.writeSerializable(sex);
         dest.writeSerializable(activityLevel);
         dest.writeInt(weightGoal);
+        dest.writeInt(BMR);
+        dest.writeInt(calorieIntake);
+        try {
+            dest.writeInt(BMI);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public User() {
@@ -181,5 +198,16 @@ public class User implements Parcelable {
         this.activityLevel = activityLevel;
     }
 
+    public int getBMI() { return BMI; }
+
+    public void setBMI(int bmi) { this.BMI = bmi; }
+
+    public int getBMR() { return BMR; }
+
+    public void setBMR(int bmr) { this.BMR = bmr; }
+
+    public int getCalorieIntake() { return calorieIntake; }
+
+    public void setCalorieIntake(int calorieIntake) { this.calorieIntake = calorieIntake; }
 
 }
