@@ -23,17 +23,17 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
     private Button mButton_BMI_calculator;
     private TextView mTv_BMI_data;
     private boolean mLoseWeight = false;
-    private double BMR = -1.0; //value calculated based on age, sex, height, & weight
+    private static double BMR = -1.0; //value calculated based on age, sex, height, & weight
     private int mCalorieIntake; //the number of calories an individual needs to eat to meet their goal
     private double mBMI = -1.0; //value calculated based on height, weight (metric or imperial) set to -1 if the user hasn't calculated it before.
-    private int mWeight = -1; //value in lbs (imperial) or kgs (metric)
+    private static int mWeight = -1; //value in lbs (imperial) or kgs (metric)
     private int mWeightGoal = -1; //represents the number of lbs a user wants to lose or gain/week
     private View mFr_view; //view to be returned from onCreateView
-    private boolean mAmerican = false; //used to determine metric or imperial calculation
+    private static boolean mAmerican = false; //used to determine metric or imperial calculation
     private static final int mFeet = 12; //used to calculate height in Amerians
-    private int mInches = -1; //value passed from Activity as Height
-    private String mHeight; //height presented in users national form
-    private int mAge = -1;
+    private static int mInches = -1; //value passed from Activity as Height
+    private static String mHeight; //height presented in users national form
+    private static int mAge = -1;
     private Bundle mArgsReceived; //arguments passed from Activity
     private User mUser;
     //values from bmi calculation
@@ -75,7 +75,7 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
     }
 
     //Design decision was to make anyone in the US show height in feet/inches instead of cm
-    public String getHeightAmerican(int numberOfInches) {
+    public static String getHeightAmerican(int numberOfInches) {
         String height = "";
         int feet;
         if (numberOfInches % 12 == 0) {
@@ -91,7 +91,7 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
 
     //Design decision was to make anyone outside of the US show height in cm instead of feet/inches
     //Using traditional British form of showing height in cm
-    public String getHeightNonAmerican(int numberOfCm) {
+    public static String getHeightNonAmerican(int numberOfCm) {
         String height = String.valueOf(numberOfCm) + "cm.";
         return height;
     }
@@ -100,7 +100,7 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
     Returns a double based on weight and height. Works for metric and imperial depending on
     home country.
      */
-    public double calculateBMI() {
+    public static double calculateBMI() {
         double bmi;
         if (mAmerican) {
             bmi = (mWeight * 703)/mInches;
@@ -109,6 +109,30 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
             bmi = mWeight / Math.pow(heightInMeters, 2);
         }
         return bmi;
+    }
+
+    /*
+    * Returns a double representing the number of calories a day you need in order to maintain your
+    * current weight. Made static for testing. 
+     */
+    public static double calculateBMR() {
+        //formulas differ depending on whether you're a male or female
+        if (Sex.MALE != null) {
+            BMR = 66 + (6.23 * mWeight) + (12.7 * mInches) - (6.8 * mAge);
+        } else { //is female
+            BMR = 655 + ( 4.35 * mWeight) + ( 4.7 * mInches) - ( 4.7 * mAge);
+        }
+
+        //for BMRFragment to be accurate, you need to multiply it by your activity level
+        //may want to add different levels of activity
+        if (ActivityLevel.ACTIVE != null) {
+            BMR *= 1.725;
+        } else if (ActivityLevel.MODERATELY_ACTIVE != null) {
+            BMR *= 1.55;
+        }else { //is SEDENTARY
+            BMR *= 1.2;
+        }
+        return BMR;
     }
     /*
     Returns a string based on the bmi (double) passed in. The string is one of the following:
@@ -152,6 +176,8 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
         mAge = mArgsReceived.getInt(Key.AGE);
         mInches = mArgsReceived.getInt(Key.HEIGHT);
         mWeightGoal = mArgsReceived.getInt(Key.GOAL);
+        BMR = mArgsReceived.getInt(Key.BMR);
+        mBMI = mArgsReceived.getInt(Key.BMI);
 
         if (mArgsReceived.get(Key.COUNTRY) == CountryCode.US) {
             mAmerican = true;
@@ -163,22 +189,7 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
             mHeight = getHeightNonAmerican(mInches);
         }
 
-        //formulas differ depending on whether you're a male or female
-        if (Sex.MALE != null) {
-            BMR = 66 + (6.23 * mWeight) + (12.7 * mInches) - (6.8 * mAge);
-        } else { //is female
-            BMR = 655 + ( 4.35 * mWeight) + ( 4.7 * mInches) - ( 4.7 * mAge);
-        }
-
-        //for BMRFragment to be accurate, you need to multiply it by your activity level
-        //may want to add different levels of activity
-        if (ActivityLevel.ACTIVE != null) {
-            BMR *= 1.725;
-        } else if (ActivityLevel.MODERATELY_ACTIVE != null) {
-            BMR *= 1.55;
-        }else { //is SEDENTARY
-            BMR *= 1.2;
-        }
+        BMR = calculateBMR();
 
         /*
         * Calorie intake is based on their goal. Depending on if they're American or not, calc will be different.
