@@ -3,7 +3,6 @@ package com.zandernickle.fallproject_pt1;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -12,7 +11,6 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -21,10 +19,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
+import com.neovisionaries.i18n.CountryCode;
 import org.json.JSONException;
 import java.io.IOException;
 import java.net.URL;
@@ -39,7 +35,7 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
     //Create variables TextViews that hold the current weather data
     private TextView mTvTemp, mTvHighTemp, mTvLowTemp, mTvPrecip;
 
-    //Variables for the other UI elements
+    //Variables for the "Search for Hikes" button
     private Button mButtonSearch;
 
     //Variables that hold the current location's latitude and longitude
@@ -54,6 +50,11 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
     //Used to find current location
     protected LocationManager locationManager;
 
+    //Used to determine units used in weather data displayed
+    private Bundle mArgsReceived;
+    private boolean mAmerican = false;
+
+
     /**
      * Constructor for HikesFragment
      */
@@ -61,17 +62,11 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
         // Required empty public constructor
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //checkPermission();
-        //setRetainInstance(true); //ORIGINAL
-    }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mContext = context; //added; MIGHT NOT NEED
+        mContext = context;
     }
 
     @Override
@@ -89,64 +84,53 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
         mTvLowTemp = (TextView) view.findViewById(R.id.tv_low_temp_data);
         mTvPrecip = (TextView) view.findViewById(R.id.tv_precipitation_data);
 
-
         getLatLong();
 
-//        //Get the current latitude, longitude, city name, and country name for display
-//        mLatitude = GPSTracker.getLatitude();
-//        mLongitude = GPSTracker.getLongitude();
-        //String currentCityCountry = getCityAndCountry(mLatitude, mLongitude);
-        //String currentCityCountry = "Sandy,US";
+        //Get the current city name and country name for display
+        //String currentCityCountry = getCityAndCountry(mLatitude, mLongitude); //NOT WORKING BECAUSE OF GEOCODER
+
+        //Extract any pertinent data here
+        mArgsReceived = getArguments();
+//        String city = mArgsReceived.getString("CITY");
+//        String country = mArgsReceived.getString("COUNTRY");
+//        String currentCityCountry = city + "&" + country;
+
         String currentCityCountry = "Sandy&US";
         loadWeatherData(currentCityCountry); //used to get current weather info
 
-        Bundle arguments = getArguments();
-        // Extract any pertinent data here, then pass to the menu bar (profile image and module name)
+        if(mArgsReceived.get(Key.COUNTRY) == CountryCode.US) {
+            mAmerican = true; //determines which units are displayed with weather data
+        }
 
-        loadMenuBarFragment(HikesFragment.this, arguments, R.id.fl_menu_bar_fragment_placeholder);
+        loadMenuBarFragment(HikesFragment.this, mArgsReceived, R.id.fl_menu_bar_fragment_placeholder);
 
         return view;
     }
 
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
-
-
+    //Set mLatitude and mLongitude
     public void getLatLong(){
 
+        //Check permissions
         if (ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
         }
 
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-
-        //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-
-        //LocationManager locManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-
-        //boolean network_enabled = locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
         boolean network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
         Location location;
 
         if (network_enabled) {
-
-            //location = locManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
             location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
             if (location != null) {
                 mLatitude = location.getLatitude();
-                Log.d("mLatitude: ", Double.toString(mLatitude));
+                Log.d("mLatitude in getLatLong(): ", Double.toString(mLatitude));
                 mLongitude = location.getLongitude();
-                Log.d("mLongitude: ", Double.toString(mLongitude));
+                Log.d("mLongitude in getLatLong(): ", Double.toString(mLongitude));
 
             }
         }
@@ -248,14 +232,22 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
                     e.printStackTrace();
                 }
                 //Set location data and weather info to TextViews
+                //HikesFragment shows current temp, high temp, low temp, and precipitation
                 if (mWeatherData != null) {
-                    mTvTemp.setText("" + Math.round(mWeatherData.getTemperature().getTemp() - 273.15) + " C");
-                    mTvHighTemp.setText("" + Math.round(mWeatherData.getTemperature().getMaxTemp() - 273.15) + " C");
-                    mTvLowTemp.setText("" + Math.round(mWeatherData.getTemperature().getMinTemp() - 273.15) + " C");
-
-                    //WILL HAVE TO DO MORE PROCESSING OF RAIN AND SNOW FOR PRECIPITATION POSSIBLY
                     double precipAmount = mWeatherData.getRain().getAmount() + mWeatherData.getSnow().getAmount();
-                    mTvPrecip.setText("" +  precipAmount + "in"); //MAY NEED TO CHANGE UNITS
+                    Log.d("precipAmount: ", Double.toString(precipAmount));
+                    if(mAmerican) {
+                        mTvTemp.setText("" + Math.round((9/5)*(mWeatherData.getTemperature().getTemp() - 273.15) + 32) + " F");
+                        mTvHighTemp.setText("" + Math.round((9/5)*(mWeatherData.getTemperature().getMaxTemp() - 273.15) + 32) + " F");
+                        mTvLowTemp.setText("" + Math.round((9/5)*(mWeatherData.getTemperature().getMinTemp() - 273.15) + 32) + " F");
+                        mTvPrecip.setText("" +  precipAmount + " in");
+                    } else {
+                        mTvTemp.setText("" + Math.round(mWeatherData.getTemperature().getTemp() - 273.15) + " C");
+                        mTvHighTemp.setText("" + Math.round(mWeatherData.getTemperature().getMaxTemp() - 273.15) + " C");
+                        mTvLowTemp.setText("" + Math.round(mWeatherData.getTemperature().getMinTemp() - 273.15) + " C");
+                        mTvPrecip.setText("" +  precipAmount*25.4 + " mm");
+                    }
+
                 }
             }
         }
