@@ -30,15 +30,6 @@ public class MasterListFragment extends Fragment {
         // Required empty public constructor
     }
 
-    // TODO: Move to ReusableUtil?
-    private List<String> getModuleNames() {
-        List<String> modules = new ArrayList<>();
-        for (Module module : Module.values()) {
-            modules.add(module.toString());
-        }
-        return modules;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -51,10 +42,17 @@ public class MasterListFragment extends Fragment {
         layoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(layoutManager);
 
-        List<String> listItems = getModuleNames();
+        List<Module> listItems = ReusableUtil.getModuleList();
 
         mAdapter = new RVAdapter(listItems);
         mRecyclerView.setAdapter(mAdapter);
+
+        Bundle arguments = getArguments();
+        Fragment masterListHeaderFragment = new MasterListHeaderFragment();
+        masterListHeaderFragment.setArguments(arguments);
+
+        ReusableUtil.loadFragment(getChildFragmentManager(), R.id.fl_master_list_header_placeholder,
+                masterListHeaderFragment, "TEST", false);
 
         return thisFragment;
     }

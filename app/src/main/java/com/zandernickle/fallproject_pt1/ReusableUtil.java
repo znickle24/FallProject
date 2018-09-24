@@ -24,7 +24,10 @@ import android.widget.SeekBar;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -266,6 +269,25 @@ public class ReusableUtil {
      */
     public static void toast(Context context, String message) {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+    }
+
+    public static List<Module> getModuleList() {
+        return new ArrayList<Module>() {{
+            add(Module.HEALTH);
+            add(Module.WEATHER);
+            add(Module.HIKES);
+        }};
+    }
+
+    public static HashMap<Module, Class<?>> mapModuleList() {
+        return new HashMap<Module, Class<?>>() {{
+           put(Module.HEALTH, BMRFragment.class);
+           put(Module.HIKES, HikesFragment.class);
+           put(Module.WEATHER, WeatherFragment.class);
+           put(Module.FITNESS_INPUT, FitnessInputFragment.class);
+           put(Module.PLAYGROUND, PlaygroundFragment.class);
+           put(Module.MASTER_LIST, MasterListFragment.class);
+        }};
     }
 
 }

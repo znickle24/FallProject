@@ -2,9 +2,14 @@ package com.zandernickle.fallproject_pt1;
 
 public enum Module {
 
+    SIGN_IN("SIGN IN"),
+    FITNESS_INPUT("FITNESS_INPUT"),
+    MENU_BAR("MENU BAR"),
     WEATHER("WEATHER"),
     HIKES("HIKES"),
-    HEALTH("HEALTH");
+    HEALTH("HEALTH"),
+    PLAYGROUND("PLAYGROUND"),
+    MASTER_LIST("MASTER_LIST");
 
     private final String str;
 

@@ -13,10 +13,10 @@ import java.util.List;
 
 public class RVAdapter extends RecyclerView.Adapter<RVAdapter.ViewHolder> {
 
-    private List<String> mListItems; // Concatenated first and last names of each user
+    private List<Module> mListItems; // Concatenated first and last names of each user
     private OnDataPass mDataPasser; // Pass to MainActivity
 
-    public RVAdapter(List<String> listItems) { mListItems = listItems; }
+    public RVAdapter(List<Module> listItems) { mListItems = listItems; }
 
     @NonNull
     @Override
@@ -38,12 +38,14 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull final RVAdapter.ViewHolder viewHolder, final int position) {
 
-        viewHolder.tvModuleName.setText(mListItems.get(position));
+        viewHolder.tvModuleName.setText(mListItems.get(position).toString());
 
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
+                Module nextModuleToLoad = mListItems.get(position);
+                mDataPasser.onDataPass(nextModuleToLoad, null);
                 
             }
         };
@@ -57,7 +59,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.ViewHolder> {
     }
 
     public interface OnDataPass {
-        void onDataPass(String key, Bundle bundle);
+        void onDataPass(Module moduleToLoad, Bundle bundle);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
