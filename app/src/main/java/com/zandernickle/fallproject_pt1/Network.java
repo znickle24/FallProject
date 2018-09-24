@@ -12,9 +12,7 @@ import java.util.Scanner;
 public class Network {
     private static String BASE_URL = "http://api.openweathermap.org/data/2.5/weather?q=";
     private static String APPIDQUERY = "&appid=";
-    //private static final String app_id="99ea8382701bd7481e5ea568772f739a";
-    private static final String app_id = "2f0c2eee1a7802a82ad45d5849e59d6a";
-    //private static final String app_id = "com.zandernickle.fallproject_pt1";
+    private static final String app_id = "2f0c2eee1a7802a82ad45d5849e59d6a"; //OpenWeather API Key
 
     /**
      *
