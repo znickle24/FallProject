@@ -1,7 +1,6 @@
 package com.zandernickle.fallproject_pt1;
 
 import android.util.Log;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
