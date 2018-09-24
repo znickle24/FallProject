@@ -163,12 +163,6 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
                  * remove an account once it has been created (apart from destroying this Activity of course).
                  */
 
-                if (isTablet()) { // Sets up MasterView on the left for the remainder of the experience
-                    Fragment masterListFragment = new MasterListFragment();
-                    masterListFragment.setArguments(mBundle);
-                    loadFragment(mFragmentManager, R.id.fl_fragment_placeholder_tablet_left, masterListFragment, "TEST", false);
-                }
-
                 break;
 
             case PLAYGROUND:
@@ -181,6 +175,12 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
                  * User.updateFitnessData method). However, their BMI and BMR have yet to be calculated. These are
                  * added when the BMR fragment returns its data.
                  */
+
+                if (isTablet()) { // Sets up MasterView on the left for the remainder of the experience
+                    Fragment masterListFragment = new MasterListFragment();
+                    masterListFragment.setArguments(mBundle);
+                    loadFragment(mFragmentManager, R.id.fl_fragment_placeholder_tablet_left, masterListFragment, "TEST", false);
+                }
 
                 break;
 
