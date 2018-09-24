@@ -55,7 +55,7 @@ public class WeatherFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        //Inflate the HikesFragment layout view
+        //Inflate the WeatherFragment layout view
         View view = inflater.inflate(R.layout.fragment_weather, container, false);
 
         //Get the TextViews to display location and weather data
