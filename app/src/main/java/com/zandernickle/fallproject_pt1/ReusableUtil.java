@@ -7,12 +7,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextWatcher;
@@ -25,7 +23,6 @@ import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -36,10 +33,10 @@ public class ReusableUtil {
     /**
      * Attempts to access the device's camera and return the resulting Bitmap when the user chooses
      * to take a photo. Must be called within a Fragment class.
-     *
+     * <p>
      * Fails if camera access is denied.
      *
-     * @param fragment the Fragment from which to send the image capture intent.
+     * @param fragment    the Fragment from which to send the image capture intent.
      * @param requestCode the request code assigned to this intent.
      */
     public static void attemptImageCapture(Fragment fragment, int requestCode) {
@@ -54,22 +51,22 @@ public class ReusableUtil {
      * Returns the Bitmap from the onActivityResult callback. However, if the result code is
      * RESULT_CANCELLED, shows a default Toast message (unless otherwise indicated by the
      * errorMessage argument), and returns null.
-     *
+     * <p>
      * Call this method from within the onActivityResult callback after checking for the
      * appropriate request code. Intended for use with the ReusableUtil.attemptImageCapture method
      * but applicable anywhere an image capture intent was sent.
-     *
+     * <p>
      * The null return is useful for checking whether an image exists before starting a new
      * Activity, Fragment, or other task. Usually, the return value is stored as a member
      * variable within the Activity calling this method.
      *
-     * @param activity the Activity from which the image capture intent was sent.
-     * @param data the Intent expected to contain the Bitmap (passed from the onActivityResult
-     *             callback).
-     * @param resultCode the result code passed from the onActivityResult callback.
+     * @param activity     the Activity from which the image capture intent was sent.
+     * @param data         the Intent expected to contain the Bitmap (passed from the onActivityResult
+     *                     callback).
+     * @param resultCode   the result code passed from the onActivityResult callback.
      * @param errorMessage an optional error message to display via Toast.
      * @return the Bitmap from the image capture, if it exists; null otherwise.
-     *
+     * <p>
      * TODO: Update params docs (bitmap)
      */
     @Nullable
@@ -100,7 +97,7 @@ public class ReusableUtil {
      *
      * @param bundle the Bundle object to which to save the compressed Bitmap.
      * @param bitmap the Bitmap to compress (convert to ByteArray) and save to the Bundle.
-     * @param key the Key to access the compressed Bitmap from the Bundle.
+     * @param key    the Key to access the compressed Bitmap from the Bundle.
      */
     public static void bitmapToBundle(Bundle bundle, Bitmap bitmap, String key) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -114,13 +111,13 @@ public class ReusableUtil {
     /**
      * Extracts a compressed Bitmap from a Bundle. Intended for use with the
      * ReusableUtil.bitmapToBundle method or where the Bitmap is to be decoded from a ByteArray.
-     *
+     * <p>
      * This method will fail if attempting to extract a Bitmap directly from the Bundle. The
      * Bitmap must have been saved to the Bundle as a ByteArray. If the Bundle does not contain
      * the specified key, the returned Bitmap will be null.
      *
      * @param bundle the Bundle object from which to extract the compressed Bitmap.
-     * @param key the Key to access the compressed Bitmap from the Bundle.
+     * @param key    the Key to access the compressed Bitmap from the Bundle.
      * @return the Bitmap to decode and extract from the Bundle.
      */
     @Nullable
@@ -173,14 +170,14 @@ public class ReusableUtil {
     /**
      * Disables an active TextInputLayout error. Intended to be called from the
      * TextWatcher.onTextChanged callback.
-     *
+     * <p>
      * If used as intended, guarantees any active TextInputLayout passed as an argument will have
      * its error disabled.
      *
      * @param hashCode the hash code of the active EditText whose text has been changed (passed from
      *                 TextWatcher.onTextChanged).
-     * @param layouts any potentially active TextInputLayouts whose error state might be set to
-     *                true (in most cases, all of them).
+     * @param layouts  any potentially active TextInputLayouts whose error state might be set to
+     *                 true (in most cases, all of them).
      */
     public static void disableTILErrorOnTextChanged(int hashCode, CustomTextInputLayout... layouts) {
         for (CustomTextInputLayout l : layouts) {
@@ -193,16 +190,18 @@ public class ReusableUtil {
     /**
      * Replaces a View with another Fragment.
      *
-     * @param fragmentManager the FragmentManager used to manipulate the Views.
+     * @param fragmentManager   the FragmentManager used to manipulate the Views.
      * @param replaceableViewId the id of the View to be replaced.
-     * @param fragmentToLoad the Fragment to display.
-     * @param tag the tag to uniquely identify fragmentToLoad.
-     * @param addToBackStack whether to add fragmentToLoad to the Back Stack.
+     * @param fragmentToLoad    the Fragment to display.
+     * @param tag               the tag to uniquely identify fragmentToLoad.
+     * @param addToBackStack    whether to add fragmentToLoad to the Back Stack.
      */
     public static void loadFragment(FragmentManager fragmentManager, int replaceableViewId, Fragment fragmentToLoad, @Nullable String tag, boolean addToBackStack) {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(replaceableViewId, fragmentToLoad, tag);
-        if (addToBackStack) { transaction.addToBackStack(null); }
+        if (addToBackStack) {
+            transaction.addToBackStack(null);
+        }
         transaction.commit();
     }
 
@@ -213,7 +212,9 @@ public class ReusableUtil {
             // ensure no other instances are visible
             transaction.remove(previousInstance);
         }
-        if (addToBackStack) { transaction.addToBackStack(null); }
+        if (addToBackStack) {
+            transaction.addToBackStack(null);
+        }
         if (arguments != null) {
             dialogFragment.setArguments(arguments);
         }
@@ -235,10 +236,10 @@ public class ReusableUtil {
      * size as saved to the values/layout resources), the MenuBarTabletFragment (a subclass of
      * MenuBarFragment) is automatically loaded.
      *
-     * @param fragment the FragmentActivity from which to load the MenuBarFragment. This
-     *                         will be the Fragment whose xml contains the placeholder.
-     * @param arguments the bundle containing the data to be passed to the MenuBarFragment. This
-     *                  bundle should contain a boolean specifying whether the device is a tablet.
+     * @param fragment      the FragmentActivity from which to load the MenuBarFragment. This
+     *                      will be the Fragment whose xml contains the placeholder.
+     * @param arguments     the bundle containing the data to be passed to the MenuBarFragment. This
+     *                      bundle should contain a boolean specifying whether the device is a tablet.
      * @param replaceableId the id of the xml element to be replaced by the MenuBarFragment.
      */
     public static void loadMenuBarFragment(Fragment fragment, Bundle arguments, int replaceableId) {
@@ -282,13 +283,14 @@ public class ReusableUtil {
     // Class instead of fragment in case we need to add an Activity.
     public static HashMap<Module, Class<?>> mapModuleList() {
         return new HashMap<Module, Class<?>>() {{
-           put(Module.HEALTH, BMRFragment.class);
-           put(Module.HIKES, HikesFragment.class);
-           put(Module.WEATHER, WeatherFragment.class);
-           put(Module.FITNESS_INPUT, FitnessInputFragment.class);
-           put(Module.PLAYGROUND, PlaygroundFragment.class);
-           put(Module.MASTER_LIST, MasterListFragment.class);
-           put(Module.UPDATE_GOALS, FitnessInputFragment.class);
+            put(Module.SIGN_IN, SignInFragment.class);
+            put(Module.HEALTH, BMRFragment.class);
+            put(Module.HIKES, HikesFragment.class);
+            put(Module.WEATHER, WeatherFragment.class);
+            put(Module.FITNESS_INPUT, FitnessInputFragment.class);
+            put(Module.PLAYGROUND, PlaygroundFragment.class);
+            put(Module.MASTER_LIST, MasterListFragment.class);
+            put(Module.UPDATE_GOALS, FitnessInputFragment.class);
         }};
     }
 
