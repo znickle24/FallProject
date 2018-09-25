@@ -288,6 +288,7 @@ public class ReusableUtil {
            put(Module.FITNESS_INPUT, FitnessInputFragment.class);
            put(Module.PLAYGROUND, PlaygroundFragment.class);
            put(Module.MASTER_LIST, MasterListFragment.class);
+           put(Module.UPDATE_GOALS, FitnessInputFragment.class);
         }};
     }
 

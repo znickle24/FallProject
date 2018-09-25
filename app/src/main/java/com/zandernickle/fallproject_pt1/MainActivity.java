@@ -13,7 +13,7 @@ import static com.zandernickle.fallproject_pt1.ReusableUtil.loadFragment;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.log;
 
 public class MainActivity extends CustomAppCompatActivity implements SignInFragment.OnDataPass,
-        FitnessInputFragment.OnDataPass, MenuBarFragment.OnDataPass, RVAdapter.OnDataPass {
+        FitnessInputFragment.OnDataPass, MenuBarFragment.OnDataPass, RVAdapter.OnDataPass, BMRFragment.OnDataPass {
 
     public static final String PREV_FRAGMENT_TAG = "PREV_FRAGMENT_TAG";
     private static final DatabaseService database = new DatabaseService(); // A placeholder for a real database.
