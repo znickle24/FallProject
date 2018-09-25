@@ -121,7 +121,7 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
         int feet;
         if (numberOfInches % 12 == 0) {
             feet = numberOfInches/mFeet;
-            height = String.valueOf(feet) + "\"";
+            height = String.valueOf(feet) + "\'";
         } else {
             int inch = numberOfInches % 12;
             feet = numberOfInches/mFeet;
@@ -199,7 +199,7 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
     * Overweight
     * Obese
      */
-    public String determineBMICategory(double bmi) {
+    public static String determineBMICategory(double bmi) {
         String ret = "";
         if (bmi < 18.5) {
             ret = mUnderweight;
