@@ -144,7 +144,7 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
     public static double calculateBMI() {
         double bmi;
         if (mAmerican) {
-            bmi = (mWeight * 703)/mInches;
+            bmi = ((mWeight)/Math.pow(mInches, 2)) * 703;
         } else {
             //need to take the cm out of mHeight then should work
             double numberOfMeters = 0.0;
