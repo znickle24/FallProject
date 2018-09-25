@@ -9,7 +9,8 @@ public enum Module {
     HIKES("HIKES"),
     HEALTH("HEALTH"),
     PLAYGROUND("PLAYGROUND"),
-    MASTER_LIST("MASTER_LIST");
+    MASTER_LIST("MASTER_LIST"),
+    UPDATE_GOALS("UPDATE_GOALS");
 
     private final String str;
 
