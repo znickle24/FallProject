@@ -398,13 +398,10 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
                                         "You may consider visiting a physician due to health risks.",
                                 Toast.LENGTH_SHORT).show();
                 }
+                mDataPasser.onDataPass(Module.UPDATE_GOALS, null);
             }
-//            case R.id.add_to_profile: {
-//                Bundle fitnessUpdate = new Bundle();
-//                fitnessUpdate.putDouble(Key.BMR, BMR);
-//                fitnessUpdate.putDouble(Key.BMI, mBMI);
-//                //add the CalorieIntake to Key file then put that in the bundle
-//                mDataPasser.onDataPass(Module.PLAYGROUND, fitnessUpdate);
+//
+//
 //            }
             default:
                 break;
