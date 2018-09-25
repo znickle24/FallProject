@@ -35,6 +35,8 @@ public class Key {
     public static final String MENU_BAR_FRAGMENT_MENU_PRESSED = "MENU_BAR_FRAGMENT_MENU_PRESSED";
     public static final String MENU_BAR_FRAGMENT_PROFILE_PRESSED = "MENU_BAR_FRAGMENT_PROFILE_PRESSED";
     public static final String IS_TABLET = "IS_TABLET";
+    public static final String BUNDLE = "BUNDLE";
+    public static final String USER = "USER";
 
     // Modules
     public static final String MODULE = "MODULE"; // enum (Module)
