@@ -16,22 +16,13 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
         FitnessInputFragment.OnDataPass, MenuBarFragment.OnDataPass, RVAdapter.OnDataPass {
 
     public static final String PREV_FRAGMENT_TAG = "PREV_FRAGMENT_TAG";
-    public static final String PLAYGROUND_TAG = "PLAYGROUND_TAG";
-    public static final String HIKES_TAG = "HIKES_TAG";
-    public static final String WEATHER_TAG = "WEATHER_TAG";
-    public static final String USER = "USER";
-
-
-
     private static final DatabaseService database = new DatabaseService(); // A placeholder for a real database.
+    private static final HashMap<Module, Class<?>> mMappedModules = ReusableUtil.mapModuleList();
 
-    private FragmentManager mFragmentManager = getSupportFragmentManager(); // Reusable throughout the application.
-    private User mUser; // The current user (kind of like a Cookie).
-    private boolean mIsTablet;
-    private Bundle mBundle;
-    private HashMap<Module, Class<?>> mMappedModules = ReusableUtil.mapModuleList();
-
+    private FragmentManager mFragmentManager = getSupportFragmentManager();
     private String mPrevFragmentTag;
+    private User mUser;
+    private Bundle mBundle;
 
     /**
      * {@inheritDoc}
@@ -44,22 +35,22 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mIsTablet = isTablet(); // Pass to individual modules.
-
-        mBundle = new Bundle();
-        mBundle.putBoolean(Key.IS_TABLET, mIsTablet);
-
-        int viewId = mIsTablet ? R.id.fl_fragment_placeholder_tablet_right :
+        boolean isTablet = isTablet();
+        int viewId = isTablet ? R.id.fl_fragment_placeholder_tablet_right :
                 R.id.fl_fragment_placeholder_phone;
 
         if (savedInstanceState == null) {
+
+            mBundle = new Bundle();
+            mBundle.putBoolean(Key.IS_TABLET, isTablet);
 
             mPrevFragmentTag = SIGN_IN_FRAGMENT;
             loadFragment(mFragmentManager, viewId, new SignInFragment(), mPrevFragmentTag, false);
 
         } else {
 
-            mUser = savedInstanceState.getParcelable(USER);
+            mBundle = savedInstanceState.getBundle(Key.BUNDLE);
+            mUser = savedInstanceState.getParcelable(Key.USER);
 
             mPrevFragmentTag = savedInstanceState.getString(PREV_FRAGMENT_TAG);
             Fragment currentFragment = mFragmentManager.findFragmentByTag(mPrevFragmentTag);
@@ -80,7 +71,8 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putParcelable(USER, mUser);
+        outState.putBundle(Key.BUNDLE, mBundle);
+        outState.putParcelable(Key.USER, mUser);
         outState.putString(PREV_FRAGMENT_TAG, mPrevFragmentTag);
 
     }
@@ -131,7 +123,7 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
 
                 // SignInFragment -> MainActivity -> FitnessInputFragment
 
-                mUser = new User(bundle);
+                mUser = new User(mBundle);
                 database.addUser(mUser);
 
                 /*
@@ -145,11 +137,11 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
 
                 break;
 
-            case PLAYGROUND:
+            case HEALTH:
 
                 // FitnessInputFragment -> MainActivity -> BMRFragment (health module)
 
-                mUser.updateFitnessData(bundle);
+                mUser.updateFitnessData(mBundle);
                 database.updateUser(mUser);
 
                 /*
@@ -160,7 +152,8 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
                 if (isTablet()) { // Sets up MasterView on the left for the remainder of the experience
                     Fragment masterListFragment = new MasterListFragment();
                     masterListFragment.setArguments(mBundle);
-                    loadFragment(mFragmentManager, R.id.fl_fragment_placeholder_tablet_left, masterListFragment, "TEST", false);
+                    loadFragment(mFragmentManager, R.id.fl_fragment_placeholder_tablet_left,
+                            masterListFragment, "TEST", false);
                 }
 
                 break;
