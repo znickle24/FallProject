@@ -35,52 +35,31 @@ public class ExampleUnitTest {
     //BMRFragment.java
     @Test
     public void calculateBMI_Test() throws Exception {
-        BMRFragment bmr = new BMRFragment();
-        //boolean bmr.mAmerican = true;
         int mWeight = 200;
         int mInches = 72;
 
-        double result1 = BMRFragment.calculateBMI();
-        double expected1 = 27.1;
-        assertEquals(Double.toString(result1), Double.toString(expected1));
+        //test American BMI calculation
+        double bmiResult1 = Math.round(((mWeight)/Math.pow(mInches, 2)) * 703 * 10.0)/ 10.0;
+        double bmiExpected1 = 27.1;
+        assertEquals(Double.toString(bmiResult1), Double.toString(bmiExpected1));
+    }
 
+    //BMRFragment.java
+    @Test
+    public void calculateBMR_Test() throws Exception {
+        int mWeight = 200;
+        int mInches = 72;
+        int mAge = 25;
 
-        //mAmerican = false;
+        //Male BMR
+        double BMRResult1 = 66 + (6.23 * mWeight) + (12.7 * mInches) - (6.8 * mAge);
+        double BMRExpected1 = 2056.4;
+        assertEquals(Double.toString(BMRResult1), Double.toString(BMRExpected1));
 
-
-//    if (mAmerican) {
-//        bmi = (mWeight * 703)/mInches;
-//    } else {
-//        //need to take the cm out of mHeight then should work
-//        double numberOfMeters = 0.0;
-//        double additionalCM = 0.0;
-//        if (mInches > 100) {
-//            if (mInches > 200) {
-//                //unlikely, but plenty of people surpass this
-//                numberOfMeters = 2;
-//                additionalCM = mInches - 200;
-//            } else {
-//                //regular case
-//                numberOfMeters = 1;
-//                additionalCM = mInches - 100;
-//            }
-//        } else {
-//            numberOfMeters = 0;
-//        }
-//        additionalCM = additionalCM/100.0;
-//        double heightInMeters = numberOfMeters + additionalCM;
-//        bmi = mWeight / Math.pow(heightInMeters, 2);
-
-
-//        //BMRFragment myClass = new WeatherData();
-
-//
-//        assertEquals(result1, expected1);
-//
-//        double result2 = BMRFragment.calculateBMI();
-//        double expected2 = "5'6\"";'
-//        assertEquals(result2, expected2);
-//    }
+        //Female BMR
+        double BMRResult2 = 655 + (4.35 * mWeight) + (4.7 * mInches) - (4.7 * mAge);
+        double BMRExpected2 = 1745.9;
+        assertEquals(Double.toString(BMRResult2), Double.toString(BMRExpected2));
     }
 
     //BMRFragment.java
