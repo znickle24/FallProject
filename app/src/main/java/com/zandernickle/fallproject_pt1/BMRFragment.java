@@ -120,6 +120,9 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
             }
             if (mCalorieIntake != -1) {
                 mCalorieIntake = savedInstanceState.getInt("CalorieIntake");
+                mTv_weight_goal_to_label.setText("To gain 2 lbs per week, you must eat"); // TODO: Determine weight goal here (add, maintain, or lose);
+                mTv_weight_goal_data.setText(mCalorieIntake + " CAL"); // TODO: Confirm (was losing this data on orientation change).
+
             }
         }
         super.onViewStateRestored(savedInstanceState);
