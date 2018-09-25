@@ -41,6 +41,7 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
     private static final String mNormalWeight = "Normal Weight";
     private static final String mOverweight = "Overweight";
     private static final String mObese = "Obese";
+    private OnDataPass mDataPasser;
     @Override
     public void onSaveInstanceState (Bundle savedInstanceState) {
         if (savedInstanceState != null) {
@@ -212,10 +213,22 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
         }
         return ret;
     }
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
 
+        try {
+            mDataPasser = (BMRFragment.OnDataPass) context;
+        } catch (ClassCastException e) {
+            String message = context.toString() + " must implement " +
+                    FitnessInputFragment.class.toString() + ".OnDataPass";
+            throw new ClassCastException(message);
+        }
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         mFr_view = inflater.inflate(R.layout.fragment_bmr, container, false);
 
@@ -345,8 +358,21 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
                                 Toast.LENGTH_SHORT).show();
                 }
             }
+//            case R.id.add_to_profile: {
+//                Bundle fitnessUpdate = new Bundle();
+//                fitnessUpdate.putDouble(Key.BMR, BMR);
+//                fitnessUpdate.putDouble(Key.BMI, mBMI);
+//                //add the CalorieIntake to Key file then put that in the bundle
+//                mDataPasser.onDataPass(Module.PLAYGROUND, fitnessUpdate);
+//            }
             default:
                 break;
         }
+    }
+    /**
+     * An interface to communicate with this Fragment's host Activity.
+     */
+    public interface OnDataPass {
+        void onDataPass(Module moduleToLoad, Bundle fitnessBundle);
     }
 }
