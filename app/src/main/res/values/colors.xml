@@ -17,4 +17,14 @@
     <color name="colorDivider">#3e3e3f</color>
     <color name="colorDataBackground">#373740</color>
 
+    <!--<color name="colorPrimary">#3A3C45</color>-->
+    <!--<color name="colorPrimaryDark">#282A31</color>-->
+    <!--<color name="colorAccent">#04BA7E</color>-->
+    <!--<color name="colorWhite">#FFFFFF</color>-->
+
+
+
 </resources>
+
+<!-- change all colorBackgroundDark to colorPrimaryDark-->
+<!-- change all instances of pureWhite to colorWhite-->
