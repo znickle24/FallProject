@@ -331,6 +331,7 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
             mTv_BMI.setText(String.valueOf("Your BMI (Body Mass Index) is " + mBMI)); // TODO: Instead of toast, concatenate underweight/overweight/normal to string.
         }
 
+        // Don't change this -- the menu bar with functioning navigation
         loadMenuBarFragment(BMRFragment.this, mArgsReceived, R.id.fl_menu_bar_fragment_placeholder);
 
         /*
@@ -352,7 +353,7 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.button_update_goals: { // TODO: Changed this ...
+            case R.id.button_update_goals: { // TODO: Changed this ... should just need to send back .onDataPass(Module.UpdateGoals, null) which will then load a new fitnesInput fragment from Main and redirect to this fragment when finished
                 System.out.println("You clicked the button");
                 //check to see if they've already calculated the BMI in the past
                 Toast.makeText(getActivity(), "You clicked the button", Toast.LENGTH_SHORT).show();
