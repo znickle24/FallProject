@@ -3,62 +3,116 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.zandernickle.fallproject_pt1.BMRFragment">
-    <android.support.constraint.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        //PROFILE PIC ImageView (in top right corner)
-        <ImageView
-            android:layout_width="wrap_content"
+        <FrameLayout
+            android:id="@+id/fl_menu_bar_fragment_placeholder"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:id="@+id/iv_prof_pic"/>
+            ></FrameLayout>
 
-        <TextView
-            android:id="@+id/tv_bmr"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/ll_health_data"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/iv_prof_pic"
-            android:layout_marginTop="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            />
-        <TextView
-            android:id="@+id/tv_bmr_data"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginLeft="16dp"
-            app:layout_constraintTop_toBottomOf="@id/iv_prof_pic"
-            app:layout_constraintLeft_toRightOf="@+id/tv_bmr"
-            />
-        <Button
-            android:id="@+id/button_calculate_bmi"
-            android:text="Calculate BMI"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/tv_bmr"
-            android:layout_marginTop="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            />
-        <TextView
-            android:id="@+id/tv_calculate_bmi_data"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/tv_bmr"
-            app:layout_constraintLeft_toRightOf="@+id/button_calculate_bmi"
-            android:layout_marginTop="16dp"
-            android:layout_marginLeft="16dp"
-            />
+            android:orientation="vertical"
+            android:layout_below="@id/fl_menu_bar_fragment_placeholder"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginTop="16dp">
 
-    </android.support.constraint.ConstraintLayout>
+            <TextView
+                android:id="@+id/tv_bmr"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:textSize="14sp"
+                android:background="@color/colorDataBackground"
+                android:textColor="@color/colorPureWhite"
+                android:fontFamily="sans-serif-condensed"
+                tools:text="Your BMR (Basal Metabolic Rate) is\n 2057 calories / day"/>
+
+            <RelativeLayout
+                android:id="@+id/rl_calorie_goal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:padding="8dp"
+                android:background="@color/colorDataBackground">
+
+                <TextView
+                    android:id="@+id/tv_weight_goal_top_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPureWhite"
+                    android:textSize="14sp"
+                    android:fontFamily="sans-serif-condensed"
+                    tools:text="To gain 2 lbs per week, you must eat"/>
+
+                <TextView
+                    android:id="@+id/tv_weight_goal_data"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="48sp"
+                    android:layout_below="@id/tv_weight_goal_top_label"
+                    android:textColor="@color/colorPureWhite"
+                    android:fontFamily="sans-serif-condensed"
+                    tools:text="2600 CAL"
+                    android:textStyle="bold"
+                    />
+
+                <TextView
+                    android:id="@+id/tv_weight_goal_bottom_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_weight_goal_data"
+                    android:text="per day"
+                    android:textColor="@color/colorPureWhite"
+                    android:fontFamily="sans-serif-condensed"
+                    />
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/tv_bmi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:padding="8dp"
+                android:background="@color/colorDataBackground"
+                android:textColor="@color/colorPureWhite"
+                android:fontFamily="sans-serif-condensed"
+                android:textSize="14sp"
+                tools:text="Your BMI (Body Mass Index) is 23.2, which is considered normal"
+                />
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="24dp">
+
+            <Button
+                android:id="@+id/button_update_goals"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ll_health_data"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:text="UPDATE GOALS"
+                android:background="@drawable/button"
+                android:textColor="@color/colorBackgroundDark"
+                android:fontFamily="sans-serif-condensed"
+                android:textSize="14sp"
+                />
+
+        </FrameLayout>
+
+
+    </RelativeLayout>
 </FrameLayout>

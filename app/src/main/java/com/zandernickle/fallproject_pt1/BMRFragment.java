@@ -13,15 +13,24 @@ import android.widget.Toast;
 
 import com.neovisionaries.i18n.CountryCode;
 
+import static com.zandernickle.fallproject_pt1.ReusableUtil.loadMenuBarFragment;
+
 
 /**
  * A simple {@link android.support.v4.app.Fragment} subclass.
  */
 public class BMRFragment extends android.support.v4.app.Fragment implements View.OnClickListener {
-    private TextView mTv_BMR;
-    private TextView mTv_BMR_data;
-    private Button mButton_BMI_calculator;
-    private TextView mTv_BMI_data;
+
+
+    // TODO: Confirm
+    private TextView mTv_BMR, mTv_weight_goal_to_label, mTv_weight_goal_data, mTv_BMI;
+    private Button mBtn_update_goals;
+
+    // TODO Confirm
+//    private TextView mTv_BMR;
+//    private TextView mTv_BMR_data;
+//    private Button mButton_BMI_calculator;
+//    private TextView mTv_BMI_data;
     private boolean mLoseWeight = false;
     private static double BMR = -1.0; //value calculated based on age, sex, height, & weight
     private int mCalorieIntake; //the number of calories an individual needs to eat to meet their goal
@@ -41,7 +50,14 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
     private static final String mNormalWeight = "Normal Weight";
     private static final String mOverweight = "Overweight";
     private static final String mObese = "Obese";
+<<<<<<< HEAD
     private OnDataPass mDataPasser;
+=======
+
+
+
+
+>>>>>>> b597e3772d8d91b149e3cb98485086d91f4b66f4
     @Override
     public void onSaveInstanceState (Bundle savedInstanceState) {
         if (savedInstanceState != null) {
@@ -77,13 +93,19 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
     public void onViewStateRestored(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             if (BMR != -1) {
-                BMR = savedInstanceState.getDouble(Key.BMR);
-                mTv_BMR.setText("You need " + BMR + " Calories in order to meet your weight goal");
+//                BMR = savedInstanceState.getDouble(Key.BMR);
+//                mTv_BMR.setText("You need " + BMR + " Calories in order to meet your weight goal");
+                mTv_BMR = mFr_view.findViewById(R.id.tv_bmr);
+                mTv_BMR.setText("Your BMR (Basal Metabolic Rate) is " + mCalorieIntake + " calories / day");
             }
             if (mBMI != -1) {
                 mBMI = savedInstanceState.getDouble(Key.BMI);
-                mTv_BMI_data = mFr_view.findViewById(R.id.tv_calculate_bmi_data);
-                mTv_BMI_data.setText(String.valueOf("Your BMI is: " + mBMI));
+//                mTv_BMI_data = mFr_view.findViewById(R.id.tv_calculate_bmi_data);
+//                mTv_BMI_data.setText(String.valueOf("Your BMI is: " + mBMI));
+
+                mTv_BMI = mFr_view.findViewById(R.id.tv_bmi);
+                mTv_BMI.setText(String.valueOf("Your BMI (Body Mass Index) is " + mBMI)); // TODO: Instead of toast, concatenate underweight/overweight/normal to string.
+
             }
             if (mWeight != -1) {
                 mWeight = savedInstanceState.getInt(Key.WEIGHT);
@@ -102,6 +124,9 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
             }
             if (mCalorieIntake != -1) {
                 mCalorieIntake = savedInstanceState.getInt("CalorieIntake");
+                mTv_weight_goal_to_label.setText("To gain 2 lbs per week, you must eat"); // TODO: Determine weight goal here (add, maintain, or lose);
+                mTv_weight_goal_data.setText(mCalorieIntake + " CAL"); // TODO: Confirm (was losing this data on orientation change).
+
             }
         }
         super.onViewStateRestored(savedInstanceState);
@@ -114,6 +139,7 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true); // TODO: Shouldn't need to worry about all the lifecycle stuff
     }
 
     //Design decision was to make anyone in the US show height in feet/inches instead of cm
@@ -234,11 +260,22 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
 
         //grab each of the views that will be filled with the information
         mTv_BMR = mFr_view.findViewById(R.id.tv_bmr);
-        mTv_BMR_data = mFr_view.findViewById(R.id.tv_bmr_data);
-        mTv_BMI_data = mFr_view.findViewById(R.id.tv_calculate_bmi_data);
-        mButton_BMI_calculator = mFr_view.findViewById(R.id.button_calculate_bmi);
+//        mTv_BMR_data = mFr_view.findViewById(R.id.tv_bmr_data);
+//        mTv_BMI_data = mFr_view.findViewById(R.id.tv_calculate_bmi_data);
+//        mButton_BMI_calculator = mFr_view.findViewById(R.id.button_calculate_bmi);
 
-        mButton_BMI_calculator.setOnClickListener(this);
+
+        // TODO: Confirm
+        mTv_BMR = mFr_view.findViewById(R.id.tv_bmr);
+        mTv_BMI = mFr_view.findViewById(R.id.tv_bmi);
+        mTv_weight_goal_to_label = mFr_view.findViewById(R.id.tv_weight_goal_top_label);
+        mTv_weight_goal_data = mFr_view.findViewById(R.id.tv_weight_goal_data);
+        mBtn_update_goals = mFr_view.findViewById(R.id.button_update_goals);
+
+
+
+        mBtn_update_goals.setOnClickListener(this); // TODO: Changed this ...
+
 
         //null check to make sure that the previous activity/fragment sent over the information
         if (getArguments() != null) {
@@ -302,10 +339,19 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
                     }
                 }
             }
-            mTv_BMR.setText("BMR: ");
-            mTv_BMR_data.setText("You need " + mCalorieIntake + " Calories in order to meet your weight goal.");
+//            mTv_BMR.setText("BMR: ");
+//            mTv_BMR_data.setText("You need " + mCalorieIntake + " Calories in order to meet your weight goal.");
 
+            mTv_BMR.setText("Your BMR (Basal Metabolic Rate) is " + mCalorieIntake + " calories / day");
+            mTv_weight_goal_to_label.setText("To gain 2 lbs per week, you must eat"); // TODO: Determine weight goal here (add, maintain, or lose);
+            mTv_weight_goal_data.setText(mCalorieIntake + " CAL");
+            // TODO: Confirm
+            mBMI = calculateBMI();
+            mTv_BMI.setText(String.valueOf("Your BMI (Body Mass Index) is " + mBMI)); // TODO: Instead of toast, concatenate underweight/overweight/normal to string.
         }
+
+        // Don't change this -- the menu bar with functioning navigation
+        loadMenuBarFragment(BMRFragment.this, mArgsReceived, R.id.fl_menu_bar_fragment_placeholder);
 
         /*
         Values for BMR, Calorie Intake, Activity Level, Weight, Height, Nationality have all been calculated
@@ -326,7 +372,7 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.button_calculate_bmi: {
+            case R.id.button_update_goals: { // TODO: Changed this ... should just need to send back .onDataPass(Module.UpdateGoals, null) which will then load a new fitnesInput fragment from Main and redirect to this fragment when finished
                 System.out.println("You clicked the button");
                 //check to see if they've already calculated the BMI in the past
                 Toast.makeText(getActivity(), "You clicked the button", Toast.LENGTH_SHORT).show();
@@ -341,7 +387,7 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
                     mBMI = calculateBMI();
                 }
                 String weightStatus = determineBMICategory(mBMI);
-                mTv_BMI_data.setText(String.valueOf("Your BMI is: " + mBMI));
+                mTv_BMI.setText(String.valueOf("Your BMI (Body Mass Index) is " + mBMI)); // TODO: Instead of toast, concatenate underweight/overweight/normal to string.
                 switch (weightStatus) {
                     case mUnderweight:
                         Toast.makeText(getActivity(), "You appear to be underweight, may want to consume more calories",
