@@ -94,7 +94,7 @@ public class MenuBarFragment extends Fragment implements View.OnClickListener {
                 mDataPasser.onDataPass(Module.MASTER_LIST, null);
                 break;
             case R.id.civ_profile_image:
-                mDataPasser.onDataPass(Module.WEATHER, null);
+                mDataPasser.onDataPass(Module.SIGN_IN, null);
                 break;
         }
     }
