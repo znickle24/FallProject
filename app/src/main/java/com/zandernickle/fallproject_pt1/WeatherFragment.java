@@ -177,9 +177,9 @@ public class WeatherFragment extends Fragment {
                     Log.d("precipAmount: ", Double.toString(precipAmount));
                     double converter = 9/5;
                     if(mAmerican) {
-                        mTvTemp.setText("" + Math.round(((converter)*(mWeatherData.getTemperature().getTemp() - 273.15)) + 32) + " F");
-                        mTvHighTemp.setText("" + Math.round(((converter)*(mWeatherData.getTemperature().getMaxTemp() - 273.15)) + 32) + " F");
-                        mTvLowTemp.setText("" + Math.round(((converter)*(mWeatherData.getTemperature().getMinTemp() - 273.15)) + 32) + " F");
+                        mTvTemp.setText("" + Math.round(((converter)*(mWeatherData.getTemperature().getTemp() - 273.15))) + 32 + " F");
+                        mTvHighTemp.setText("" + Math.round(((converter)*(mWeatherData.getTemperature().getMaxTemp() - 273.15))) + 32 + " F");
+                        mTvLowTemp.setText("" + Math.round(((converter)*(mWeatherData.getTemperature().getMinTemp() - 273.15))) + 32 + " F");
                         mTvPrecip.setText("" +  precipAmount + " in");
                     } else {
                         mTvTemp.setText("" + Math.round(mWeatherData.getTemperature().getTemp() - 273.15) + " C");
