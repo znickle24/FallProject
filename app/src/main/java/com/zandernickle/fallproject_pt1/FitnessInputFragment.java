@@ -201,7 +201,7 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
                      * then given the decision whether to proceed against the warning or return to change
                      * their weight goal.
                      */
-                    mDataPasser.onDataPass(Module.PLAYGROUND, mFitnessInputBundle);
+                    mDataPasser.onDataPass(Module.HEALTH, mFitnessInputBundle);
                 }
 
                 break;
@@ -217,8 +217,7 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
      */
     @Override
     public void onWarningAccepted() {
-        //
-        mDataPasser.onDataPass(Module.PLAYGROUND, mFitnessInputBundle);
+        mDataPasser.onDataPass(Module.HEALTH, mFitnessInputBundle);
     }
 
     /**
