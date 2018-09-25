@@ -28,14 +28,14 @@ public class User implements Parcelable {
     private int postalCode;
     private CountryCode countryCode;
 
-    private int BMI;
-    private int BMR;
-    private int calorieIntake;
-    private int height;
-    private int weight;
-    private Sex sex;
-    private ActivityLevel activityLevel;
-    private int weightGoal; // neg, 0, or pos
+    private int BMI = -1;
+    private int BMR = -1;
+    private int calorieIntake = -1;
+    private int height = -1;
+    private int weight = -1;
+    private Sex sex = null;
+    private ActivityLevel activityLevel = null;
+    private int weightGoal = -1; // neg, 0, or pos
 
     private User(Parcel in) {
         id = in.readInt();
@@ -114,6 +114,10 @@ public class User implements Parcelable {
         this.sex = (Sex) fitnessInputBundle.getSerializable(Key.SEX);
         this.activityLevel = (ActivityLevel) fitnessInputBundle.getSerializable(Key.ACTIVITY_LEVEL);
         this.weightGoal = fitnessInputBundle.getInt(Key.GOAL);
+    }
+
+    public void updateHealthData(Bundle BMRBundle) {
+
     }
 
 
