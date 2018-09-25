@@ -50,14 +50,8 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
     private static final String mNormalWeight = "Normal Weight";
     private static final String mOverweight = "Overweight";
     private static final String mObese = "Obese";
-<<<<<<< HEAD
     private OnDataPass mDataPasser;
-=======
 
-
-
-
->>>>>>> b597e3772d8d91b149e3cb98485086d91f4b66f4
     @Override
     public void onSaveInstanceState (Bundle savedInstanceState) {
         if (savedInstanceState != null) {
@@ -343,6 +337,7 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
 //            mTv_BMR_data.setText("You need " + mCalorieIntake + " Calories in order to meet your weight goal.");
 
             mTv_BMR.setText("Your BMR (Basal Metabolic Rate) is " + mCalorieIntake + " calories / day");
+
             mTv_weight_goal_to_label.setText("To gain 2 lbs per week, you must eat"); // TODO: Determine weight goal here (add, maintain, or lose);
             mTv_weight_goal_data.setText(mCalorieIntake + " CAL");
             // TODO: Confirm
