@@ -35,16 +35,17 @@ public class ExampleUnitTest {
     //BMRFragment.java
     @Test
     public void calculateBMI_Test() throws Exception {
-        boolean mAmerican = true;
+        BMRFragment bmr = new BMRFragment();
+        //boolean bmr.mAmerican = true;
         int mWeight = 200;
         int mInches = 72;
 
         double result1 = BMRFragment.calculateBMI();
-        //double expected1 = "5'";
-        //assertEquals(result1, expected1);
+        double expected1 = 27.1;
+        assertEquals(Double.toString(result1), Double.toString(expected1));
 
 
-        mAmerican = false;
+        //mAmerican = false;
 
 
 //    if (mAmerican) {
