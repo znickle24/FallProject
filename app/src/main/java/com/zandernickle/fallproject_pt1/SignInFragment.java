@@ -1,10 +1,13 @@
 package com.zandernickle.fallproject_pt1;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
@@ -113,8 +116,11 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
         setTextChangedListeners(SignInFragment.this, mTilName.getEditText(), mTilPostalCode.getEditText());
         setOnItemSelectedListeners(SignInFragment.this, mSpinAge, mSpinCountry);
 
+        ReusableUtil.setPortraitOnly(getActivity(), getArguments().getBoolean(Key.IS_TABLET));
+
         return thisFragment;
     }
+
 
     /**
      * {@inheritDoc}
@@ -128,6 +134,16 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
 
         mTextInputLayoutMap = mapTextInputLayouts(mTilName, mTilPostalCode);
         initializeSpinners();
+
+        if (savedInstanceState != null) {
+            mTilPostalCode.getEditText().setText(savedInstanceState.getString(Key.POSTAL_CODE));
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(Key.POSTAL_CODE, mTilPostalCode.getTextString());
     }
 
     /**
@@ -253,6 +269,25 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
     public void onNothingSelected(AdapterView<?> parent) {
         // Do nothing
     }
+
+//    /**
+//     * {@inheritDoc}
+//     *
+//     * Locks this Fragment to portrait orientation. There is too much to display with the current designs to
+//     * make landscape mode reasonable.
+//     *
+//     * https://stackoverflow.com/questions/20370636/how-to-lock-fragment-orientation-without-locking-activity-orientation
+//     */
+//    @Override
+//    public void setUserVisibleHint(boolean isVisibleToUser) {
+//        super.setUserVisibleHint(isVisibleToUser);
+//        if(isVisibleToUser) {
+//            Activity hostActivity = getActivity();
+//            if (hostActivity != null) {
+//                hostActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+//            }
+//        }
+//    }
 
     /**
      * An interface to communicate with this Fragment's host Activity.

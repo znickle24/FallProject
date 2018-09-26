@@ -2,6 +2,7 @@ package com.zandernickle.fallproject_pt1;
 
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -129,6 +130,8 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
 
         setOnSeekBarChangeListeners(FitnessInputFragment.this, mSbHeight, mSbWeight, mSbWeightDelta);
         setOnClickListeners(FitnessInputFragment.this, mBtnSubmit);
+
+        ReusableUtil.setPortraitOnly(getActivity(), getArguments().getBoolean(Key.IS_TABLET));
 
         return thisFragment;
     }

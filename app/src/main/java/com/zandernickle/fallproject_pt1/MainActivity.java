@@ -1,5 +1,6 @@
 package com.zandernickle.fallproject_pt1;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -44,7 +45,9 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
             mBundle.putBoolean(Key.IS_TABLET, isTablet);
 
             mPrevFragmentTag = SIGN_IN_FRAGMENT;
-            loadFragment(mFragmentManager, viewId, new SignInFragment(), mPrevFragmentTag, false);
+            Fragment signInFragment = new SignInFragment();
+            signInFragment.setArguments(mBundle);
+            loadFragment(mFragmentManager, viewId, signInFragment, mPrevFragmentTag, false);
 
         } else {
 
@@ -137,6 +140,16 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
                 break;
 
             case HEALTH:
+
+                /* TODO
+                 *
+                 * This is a temporary line of code corresponding with the temporary code inside the
+                 * SignIn and FitnessInput Fragments. See Reusable.setPortraitOnly.
+                 *
+                 * Only the first two sign in screens have their orientation locked (sign in data). All
+                 * others will be unlocked here.
+                 */
+                MainActivity.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
 
                 // FitnessInputFragment -> MainActivity -> BMRFragment (health module)
 

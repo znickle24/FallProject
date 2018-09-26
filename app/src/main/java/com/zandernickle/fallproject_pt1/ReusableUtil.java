@@ -3,6 +3,7 @@ package com.zandernickle.fallproject_pt1;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -270,6 +271,21 @@ public class ReusableUtil {
      */
     public static void toast(Context context, String message) {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+    }
+
+    // Temporary
+    public static void setPortraitOnly(Activity hostActivity, boolean isTablet) {
+        /* TODO
+         *
+         * This is a potentially temporary fix for both sign-in and fitness input. There is too much
+         * data on each screen to effectively present in landscape mode. The on-boarding may
+         * need a redesign before removing this statement.
+         */
+        if (isTablet) {
+            hostActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
+        } else {
+            hostActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
     }
 
 }
