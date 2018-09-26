@@ -272,26 +272,4 @@ public class ReusableUtil {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
 
-    public static List<Module> getModuleList() {
-        return new ArrayList<Module>() {{
-            add(Module.HEALTH);
-            add(Module.WEATHER);
-            add(Module.HIKES);
-        }};
-    }
-
-    // Class instead of fragment in case we need to add an Activity.
-    public static HashMap<Module, Class<?>> mapModuleList() {
-        return new HashMap<Module, Class<?>>() {{
-            put(Module.SIGN_IN, SignInFragment.class);
-            put(Module.HEALTH, BMRFragment.class);
-            put(Module.HIKES, HikesFragment.class);
-            put(Module.WEATHER, WeatherFragment.class);
-            put(Module.FITNESS_INPUT, FitnessInputFragment.class);
-            put(Module.PLAYGROUND, PlaygroundFragment.class);
-            put(Module.MASTER_LIST, MasterListFragment.class);
-            put(Module.UPDATE_GOALS, FitnessInputFragment.class);
-        }};
-    }
-
 }

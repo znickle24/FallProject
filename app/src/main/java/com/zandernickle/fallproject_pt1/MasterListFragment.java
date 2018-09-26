@@ -42,7 +42,7 @@ public class MasterListFragment extends Fragment {
         layoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(layoutManager);
 
-        List<Module> listItems = ReusableUtil.getModuleList();
+        List<Module> listItems = ModuleUtil.getVisibleModuleList();
 
         mAdapter = new RVAdapter(getContext(), listItems);
         mRecyclerView.setAdapter(mAdapter);

@@ -12,24 +12,23 @@ import static com.zandernickle.fallproject_pt1.Key.SIGN_IN_FRAGMENT;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.loadFragment;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.log;
 
+/**
+ * This application's entry point. Use this class to pass data from one Fragment (or Activity) to the next. Register
+ * additional modules in ModuleUtil.
+ */
 public class MainActivity extends CustomAppCompatActivity implements SignInFragment.OnDataPass,
         FitnessInputFragment.OnDataPass, MenuBarFragment.OnDataPass, RVAdapter.OnDataPass, BMRFragment.OnDataPass {
 
     public static final String PREV_FRAGMENT_TAG = "PREV_FRAGMENT_TAG";
     private static final DatabaseService database = new DatabaseService(); // A placeholder for a real database.
-    private static final HashMap<Module, Class<?>> mMappedModules = ReusableUtil.mapModuleList();
+    private static final HashMap<Module, Class<?>> mMappedModules = ModuleUtil.mapModuleList();
 
     private FragmentManager mFragmentManager = getSupportFragmentManager();
     private String mPrevFragmentTag;
     private User mUser;
     private Bundle mBundle;
 
-    /**
-     * {@inheritDoc}
-     * <p>
-     * The entry point for this application. Loads a new SignInFragment which then starts a
-     * cascade of information exchange between additional Fragments and this Activity.
-     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
