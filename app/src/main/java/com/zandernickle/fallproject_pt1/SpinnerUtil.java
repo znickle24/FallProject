@@ -47,7 +47,6 @@ public class SpinnerUtil {
      * @return the array of country codes.
      */
     public static String[] getSpinnerCountryData() {
-        CountryCode[] codes = CountryCode.values();
 
         ArrayList<String> countries = new ArrayList<>();
         countries.add(Key.COUNTRY_SPINNER_LABEL);

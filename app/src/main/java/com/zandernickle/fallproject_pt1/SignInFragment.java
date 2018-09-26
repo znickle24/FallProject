@@ -274,13 +274,13 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
         String[] spinnerAgeData = SpinnerUtil.getSpinnerAgeData(MIN_AGE, MAX_AGE);
         ArrayAdapter<String> ageAdapter = new ArrayAdapter<>(SignInFragment.this.getActivity(),
                 R.layout.spinner_item, spinnerAgeData);
-        // Set dropdown View resource here.
+        // TODO: Set dropdown View resource here.
         mSpinAge.setAdapter(ageAdapter);
 
         String[] spinnerCountryData = SpinnerUtil.getSpinnerCountryData();
         ArrayAdapter<String> countryAdapter = new ArrayAdapter<>(SignInFragment.this.getActivity(),
                 R.layout.spinner_item, spinnerCountryData);
-        // Set dropdown View resource here.
+        // TODO: Set dropdown View resource here.
         mSpinCountry.setAdapter(countryAdapter);
     }
 
