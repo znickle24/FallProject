@@ -368,9 +368,7 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button_update_goals: { // TODO: Changed this ... should just need to send back .onDataPass(Module.UpdateGoals, null) which will then load a new fitnesInput fragment from Main and redirect to this fragment when finished
-                System.out.println("You clicked the button");
                 //check to see if they've already calculated the BMI in the past
-                Toast.makeText(getActivity(), "You clicked the button", Toast.LENGTH_SHORT).show();
                 if (mBMI != -1) {
                     //They've calculated this before. Check to see if they've improved their BMI.
                     double oldBMI = mBMI;
@@ -383,21 +381,21 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
                 }
                 String weightStatus = determineBMICategory(mBMI);
                 mTv_BMI.setText(String.valueOf("Your BMI (Body Mass Index) is " + mBMI)); // TODO: Instead of toast, concatenate underweight/overweight/normal to string.
-                switch (weightStatus) {
-                    case mUnderweight:
-                        Toast.makeText(getActivity(), "You appear to be underweight, may want to consume more calories",
-                                Toast.LENGTH_SHORT).show();
-                    case mNormalWeight:
-                        Toast.makeText(getActivity(), "Great! You are in the normal range for BMI",
-                                Toast.LENGTH_SHORT).show();
-                    case mOverweight:
-                        Toast.makeText(getActivity(), "You appear to be overweight, may want to cut some calories",
-                                Toast.LENGTH_SHORT).show();
-                    case mObese:
-                        Toast.makeText(getActivity(), "You fall in the obese rage for this metric." +
-                                        "You may consider visiting a physician due to health risks.",
-                                Toast.LENGTH_SHORT).show();
-                }
+//                switch (weightStatus) {
+//                    case mUnderweight:
+//                        Toast.makeText(getActivity(), "You appear to be underweight, may want to consume more calories",
+//                                Toast.LENGTH_SHORT).show();
+//                    case mNormalWeight:
+//                        Toast.makeText(getActivity(), "Great! You are in the normal range for BMI",
+//                                Toast.LENGTH_SHORT).show();
+//                    case mOverweight:
+//                        Toast.makeText(getActivity(), "You appear to be overweight, may want to cut some calories",
+//                                Toast.LENGTH_SHORT).show();
+//                    case mObese:
+//                        Toast.makeText(getActivity(), "You fall in the obese rage for this metric." +
+//                                        "You may consider visiting a physician due to health risks.",
+//                                Toast.LENGTH_SHORT).show();
+//                }
                 mDataPasser.onDataPass(Module.UPDATE_GOALS, null);
             }
 //
