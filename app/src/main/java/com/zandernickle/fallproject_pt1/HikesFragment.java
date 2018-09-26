@@ -88,6 +88,7 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
 
         //Get the current city name and country name for display
         //String currentCityCountry = getCityAndCountry(mLatitude, mLongitude); //NOT WORKING BECAUSE OF GEOCODER
+        //Log.d("currentCityCountry in HikesFragment.java: ", currentCityCountry);
 
         //Extract any pertinent data here from SignIn Activity
         mArgsReceived = getArguments();
@@ -184,7 +185,7 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
         String cityName = "";
         String countryName = "";
 
-        Geocoder geoCoder = new Geocoder(getContext(), Locale.getDefault());
+        Geocoder geoCoder = new Geocoder(mContext, Locale.getDefault());
         try {
             Log.d("HERE: ", "HERE");
             List<Address> addresses = geoCoder.getFromLocation(latitude, longitude, 1);
