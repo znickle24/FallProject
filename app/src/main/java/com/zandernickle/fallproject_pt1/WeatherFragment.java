@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Locale;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 
 import static com.zandernickle.fallproject_pt1.ReusableUtil.loadMenuBarFragment;
 
@@ -33,6 +35,12 @@ public class WeatherFragment extends Fragment {
 
     //Variable holding weather data for display
     private WeatherData mWeatherData;
+
+
+
+    private WeatherViewModel mWeatherViewModel; //ADDED for VM
+
+
 
     //Variables used to determine which units to use when displaying weather data
     private Bundle mArgsReceived;
@@ -89,6 +97,18 @@ public class WeatherFragment extends Fragment {
 
         loadMenuBarFragment(WeatherFragment.this, mArgsReceived, R.id.fl_menu_bar_fragment_placeholder);
 
+
+
+    //ADDED for VM//////////////////
+        //Create the view model
+        mWeatherViewModel = ViewModelProviders.of(this).get(WeatherViewModel.class);
+
+        //Set the observer
+        mWeatherViewModel.getData().observe(this,nameObserver);
+        //ADDED for VM/////////////////////
+
+
+
         return view;
     }
 
@@ -110,8 +130,15 @@ public class WeatherFragment extends Fragment {
 
 
     //Used to get current weather info
-    private void loadWeatherData(String location) {
-        new FetchWeatherTask().execute(location);
+    //private void loadWeatherData(String location) {
+        //new FetchWeatherTask().execute(location);
+    //}
+
+
+    //ADDED for VM/////////////////////////////////
+    void loadWeatherData(String location){
+        //pass the location in to the view model
+        mWeatherViewModel.setLocation(location);
     }
 
 
@@ -147,51 +174,68 @@ public class WeatherFragment extends Fragment {
         return cityCountryString;
     }
 
-    private class FetchWeatherTask extends AsyncTask<String, Void, String> {
 
+
+    //create an observer that watches the LiveData<WeatherData> object
+    final Observer<WeatherData> nameObserver  = new Observer<WeatherData>() {
         @Override
-        protected String doInBackground(String... inputStringArray) {
-            String location = inputStringArray[0];
-            URL weatherDataURL = Network.buildURLFromString(location);
-            String jsonWeatherData = null;
-            try {
-                jsonWeatherData = Network.getDataFromURL(weatherDataURL);
-                return jsonWeatherData;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
+        public void onChanged(@Nullable final WeatherData weatherData) {
+            // Update the UI if this data variable changes
+            if(weatherData!=null) {
+                mTvTemp.setText("" + Math.round(weatherData.getTemperature().getTemp() - 273.15) + " C");
+                //mTvHum.setText("" + weatherData.getCurrentCondition().getHumidity() + "%");
+                //mTvPress.setText("" + weatherData.getCurrentCondition().getPressure() + " hPa");
             }
         }
+    };
 
-        @Override
-        protected void onPostExecute(String jsonWeatherData) {
-            if (jsonWeatherData != null) {
-                try {
-                    mWeatherData = JSONWeather.getWeatherData(jsonWeatherData);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                //Set weather info to TextViews
-                if (mWeatherData != null) {
-                    double precipAmount = mWeatherData.getRain().getAmount() + mWeatherData.getSnow().getAmount();
-                    Log.d("precipAmount: ", Double.toString(precipAmount));
-                    double converter = 9.0/5.0;
-                    if(mAmerican) {
-                        mTvTemp.setText("" + Math.round(((converter)*(mWeatherData.getTemperature().getTemp() - 273.15)) + 32.0) + " F");
-                        mTvHighTemp.setText("" + Math.round(((converter)*(mWeatherData.getTemperature().getMaxTemp() - 273.15)) + 32.0) + " F");
-                        mTvLowTemp.setText("" + Math.round(((converter)*(mWeatherData.getTemperature().getMinTemp() - 273.15)) + 32.0) + " F");
-                        mTvPrecip.setText("" +  precipAmount + " in");
-                    } else {
-                        mTvTemp.setText("" + Math.round(mWeatherData.getTemperature().getTemp() - 273.15) + " C");
-                        mTvHighTemp.setText("" + Math.round(mWeatherData.getTemperature().getMaxTemp() - 273.15) + " C");
-                        mTvLowTemp.setText("" + Math.round(mWeatherData.getTemperature().getMinTemp() - 273.15) + " C");
-                        mTvPrecip.setText("" +  precipAmount*25.4 + " mm");
-                    }
-                    mTvPressure.setText("" + mWeatherData.getCurrentCondition().getPressure() + " hPa");
-                    mTvHumid.setText("" + mWeatherData.getCurrentCondition().getHumidity() + "%");
-                }
-            }
-        }
-    }
+
+
+//    private class FetchWeatherTask extends AsyncTask<String, Void, String> {
+//
+//        @Override
+//        protected String doInBackground(String... inputStringArray) {
+//            String location = inputStringArray[0];
+//            URL weatherDataURL = Network.buildURLFromString(location);
+//            String jsonWeatherData = null;
+//            try {
+//                jsonWeatherData = Network.getDataFromURL(weatherDataURL);
+//                return jsonWeatherData;
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                return null;
+//            }
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String jsonWeatherData) {
+//            if (jsonWeatherData != null) {
+//                try {
+//                    mWeatherData = JSONWeather.getWeatherData(jsonWeatherData);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//                //Set weather info to TextViews
+//                if (mWeatherData != null) {
+//                    double precipAmount = mWeatherData.getRain().getAmount() + mWeatherData.getSnow().getAmount();
+//                    Log.d("precipAmount: ", Double.toString(precipAmount));
+//                    double converter = 9.0/5.0;
+//                    if(mAmerican) {
+//                        mTvTemp.setText("" + Math.round(((converter)*(mWeatherData.getTemperature().getTemp() - 273.15)) + 32.0) + " F");
+//                        mTvHighTemp.setText("" + Math.round(((converter)*(mWeatherData.getTemperature().getMaxTemp() - 273.15)) + 32.0) + " F");
+//                        mTvLowTemp.setText("" + Math.round(((converter)*(mWeatherData.getTemperature().getMinTemp() - 273.15)) + 32.0) + " F");
+//                        mTvPrecip.setText("" +  precipAmount + " in");
+//                    } else {
+//                        mTvTemp.setText("" + Math.round(mWeatherData.getTemperature().getTemp() - 273.15) + " C");
+//                        mTvHighTemp.setText("" + Math.round(mWeatherData.getTemperature().getMaxTemp() - 273.15) + " C");
+//                        mTvLowTemp.setText("" + Math.round(mWeatherData.getTemperature().getMinTemp() - 273.15) + " C");
+//                        mTvPrecip.setText("" +  precipAmount*25.4 + " mm");
+//                    }
+//                    mTvPressure.setText("" + mWeatherData.getCurrentCondition().getPressure() + " hPa");
+//                    mTvHumid.setText("" + mWeatherData.getCurrentCondition().getHumidity() + "%");
+//                }
+//            }
+//        }
+//    }
 
 }
