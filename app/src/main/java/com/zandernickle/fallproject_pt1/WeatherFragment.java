@@ -85,6 +85,17 @@ public class WeatherFragment extends Fragment {
 //        mCountryName = mArgsReceived.getString("COUNTRY"); //NEED TO CHANGE KEY???
 //        String currentCityCountry = mCityName + "&" + mCountryName;
 
+
+        //ADDED for VM//////////////////
+        //Create the view model
+        mWeatherViewModel = ViewModelProviders.of(this).get(WeatherViewModel.class);
+
+        //Set the observer
+        mWeatherViewModel.getData().observe(this,nameObserver);
+        //ADDED for VM/////////////////////
+
+
+
         String currentCityCountry = "Salt Lake City&US";
         //mTvLocation.setText("" + getCityName() + ", " + getCountryName());
         //mTvLocation.setText("" + mCityName + ", " + mCountryName);
@@ -99,13 +110,7 @@ public class WeatherFragment extends Fragment {
 
 
 
-    //ADDED for VM//////////////////
-        //Create the view model
-        mWeatherViewModel = ViewModelProviders.of(this).get(WeatherViewModel.class);
 
-        //Set the observer
-        mWeatherViewModel.getData().observe(this,nameObserver);
-        //ADDED for VM/////////////////////
 
 
 

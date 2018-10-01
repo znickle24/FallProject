@@ -23,8 +23,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".FitnessInputActivity" />
-        <activity android:name=".WeatherViewModel" />
-        <activity android:name=".WeatherRepository"></activity>
     </application>
 
 </manifest>
