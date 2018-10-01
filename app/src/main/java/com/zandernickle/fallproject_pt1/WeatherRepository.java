@@ -3,6 +3,8 @@ package com.zandernickle.fallproject_pt1;
 import android.app.Application;
 import android.arch.lifecycle.MutableLiveData;
 import android.os.AsyncTask;
+import android.util.Log;
+
 import org.json.JSONException;
 import java.io.IOException;
 import java.net.URL;
@@ -16,6 +18,8 @@ public class WeatherRepository {
     }
 
     public void setLocation(String location){
+        Log.d("In setLocation in WeatherRepository.java", "");
+        Log.d("location in setLocation in WeatherRepository.java: ", location);
         mLocation = location;
         loadData();
     }
@@ -44,10 +48,12 @@ public class WeatherRepository {
 
             @Override
             protected void onPostExecute(String s) {
-                try {
-                    jsonData.setValue(JSONWeather.getWeatherData(s));
-                }catch(JSONException e){
-                    e.printStackTrace();
+                if(s != null) {
+                    try {
+                        jsonData.setValue(JSONWeather.getWeatherData(s));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
 
             }
