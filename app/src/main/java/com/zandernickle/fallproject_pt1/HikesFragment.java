@@ -1,5 +1,7 @@
 package com.zandernickle.fallproject_pt1;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,6 +13,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -46,6 +49,14 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
 
     //Variable holding the current weather data
     private WeatherData mWeatherData;
+
+
+
+
+    private WeatherViewModel mWeatherViewModel; //ADDED for VM
+
+
+
 
     //Used to find current location
     protected LocationManager locationManager;
@@ -95,6 +106,17 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
 //        mCityName = mArgsReceived.getString("CITY"); //NEED TO CHANGE KEY???
 //        mCountryName = mArgsReceived.getString("COUNTRY"); //NEED TO CHANGE KEY???
 //        String currentCityCountry = mCityName + "&" + mCountryName;
+
+
+
+        //ADDED for VM//////////////////
+        //Create the view model
+        mWeatherViewModel = ViewModelProviders.of(this).get(WeatherViewModel.class);
+
+        //Set the observer
+        mWeatherViewModel.getData().observe(this,nameObserver);
+        //ADDED for VM/////////////////////
+
 
         String currentCityCountry = "Salt Lake City&US";
         loadWeatherData(currentCityCountry); //used to get current weather info
@@ -167,10 +189,19 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
     } //end of onClick function
 
 
-    //Used to get current weather info
-    private void loadWeatherData(String location) {
-        new HikesFragment.FetchWeatherTask().execute(location);
+//    //Used to get current weather info
+//    private void loadWeatherData(String location) {
+//        new HikesFragment.FetchWeatherTask().execute(location);
+//    }
+
+
+
+    //ADDED for VM/////////////////////////////////
+    void loadWeatherData(String location){
+        //pass the location in to the view model
+        mWeatherViewModel.setLocation(location);
     }
+
 
 
     /**
@@ -209,52 +240,73 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
     }
 
 
-    private class FetchWeatherTask extends AsyncTask<String, Void, String> {
 
+
+
+
+    //create an observer that watches the LiveData<WeatherData> object
+    final Observer<WeatherData> nameObserver  = new Observer<WeatherData>() {
         @Override
-        protected String doInBackground(String... inputStringArray) {
-            String location = inputStringArray[0];
-            URL weatherDataURL = Network.buildURLFromString(location);
-            String jsonWeatherData = null;
-            try {
-                jsonWeatherData = Network.getDataFromURL(weatherDataURL);
-                return jsonWeatherData;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
+        public void onChanged(@Nullable final WeatherData weatherData) {
+            // Update the UI if this data variable changes
+            if(weatherData!=null) {
+                mTvTemp.setText("" + Math.round(weatherData.getTemperature().getTemp() - 273.15) + " C");
+                //mTvHum.setText("" + weatherData.getCurrentCondition().getHumidity() + "%");
+                //mTvPress.setText("" + weatherData.getCurrentCondition().getPressure() + " hPa");
             }
         }
+    };
 
-        @Override
-        protected void onPostExecute(String jsonWeatherData) {
-            if (jsonWeatherData != null) {
-                try {
-                    mWeatherData = JSONWeather.getWeatherData(jsonWeatherData);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                //Set location data and weather info to TextViews
-                //HikesFragment shows current temp, high temp, low temp, and precipitation
-                if (mWeatherData != null) {
-                    double precipAmount = mWeatherData.getRain().getAmount() + mWeatherData.getSnow().getAmount();
-                    Log.d("precipAmount: ", Double.toString(precipAmount));
-                    double converter = 9.0/5.0;
-                    if(mAmerican) {
-                        mTvTemp.setText("" + Math.round(((converter)*(mWeatherData.getTemperature().getTemp() - 273.15)) + 32.0) + " F");
-                        mTvHighTemp.setText("" + Math.round(((converter)*(mWeatherData.getTemperature().getMaxTemp() - 273.15)) + 32.0) + " F");
-                        mTvLowTemp.setText("" + Math.round(((converter)*(mWeatherData.getTemperature().getMinTemp() - 273.15)) + 32.0) + " F");
-                        mTvPrecip.setText("" +  precipAmount + " in");
-                    } else {
-                        mTvTemp.setText("" + Math.round(mWeatherData.getTemperature().getTemp() - 273.15) + " C");
-                        mTvHighTemp.setText("" + Math.round(mWeatherData.getTemperature().getMaxTemp() - 273.15) + " C");
-                        mTvLowTemp.setText("" + Math.round(mWeatherData.getTemperature().getMinTemp() - 273.15) + " C");
-                        mTvPrecip.setText("" +  precipAmount*25.4 + " mm");
-                    }
 
-                }
-            }
-        }
-    }
+
+
+
+//    private class FetchWeatherTask extends AsyncTask<String, Void, String> {
+//
+//        @Override
+//        protected String doInBackground(String... inputStringArray) {
+//            String location = inputStringArray[0];
+//            URL weatherDataURL = Network.buildURLFromString(location);
+//            String jsonWeatherData = null;
+//            try {
+//                jsonWeatherData = Network.getDataFromURL(weatherDataURL);
+//                return jsonWeatherData;
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                return null;
+//            }
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String jsonWeatherData) {
+//            if (jsonWeatherData != null) {
+//                try {
+//                    mWeatherData = JSONWeather.getWeatherData(jsonWeatherData);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//                //Set location data and weather info to TextViews
+//                //HikesFragment shows current temp, high temp, low temp, and precipitation
+//                if (mWeatherData != null) {
+//                    double precipAmount = mWeatherData.getRain().getAmount() + mWeatherData.getSnow().getAmount();
+//                    Log.d("precipAmount: ", Double.toString(precipAmount));
+//                    double converter = 9.0/5.0;
+//                    if(mAmerican) {
+//                        mTvTemp.setText("" + Math.round(((converter)*(mWeatherData.getTemperature().getTemp() - 273.15)) + 32.0) + " F");
+//                        mTvHighTemp.setText("" + Math.round(((converter)*(mWeatherData.getTemperature().getMaxTemp() - 273.15)) + 32.0) + " F");
+//                        mTvLowTemp.setText("" + Math.round(((converter)*(mWeatherData.getTemperature().getMinTemp() - 273.15)) + 32.0) + " F");
+//                        mTvPrecip.setText("" +  precipAmount + " in");
+//                    } else {
+//                        mTvTemp.setText("" + Math.round(mWeatherData.getTemperature().getTemp() - 273.15) + " C");
+//                        mTvHighTemp.setText("" + Math.round(mWeatherData.getTemperature().getMaxTemp() - 273.15) + " C");
+//                        mTvLowTemp.setText("" + Math.round(mWeatherData.getTemperature().getMinTemp() - 273.15) + " C");
+//                        mTvPrecip.setText("" +  precipAmount*25.4 + " mm");
+//                    }
+//
+//                }
+//            }
+//        }
+//    }
 
 
     @Override

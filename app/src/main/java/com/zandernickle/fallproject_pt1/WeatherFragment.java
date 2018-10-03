@@ -186,11 +186,26 @@ public class WeatherFragment extends Fragment {
         @Override
         public void onChanged(@Nullable final WeatherData weatherData) {
             // Update the UI if this data variable changes
-            if(weatherData!=null) {
-                mTvTemp.setText("" + Math.round(weatherData.getTemperature().getTemp() - 273.15) + " C");
-                //mTvHum.setText("" + weatherData.getCurrentCondition().getHumidity() + "%");
-                //mTvPress.setText("" + weatherData.getCurrentCondition().getPressure() + " hPa");
-            }
+            //Set weather info to TextViews
+                if (weatherData != null) {
+                    double precipAmount = weatherData.getRain().getAmount() + weatherData.getSnow().getAmount();
+                    Log.d("precipAmount: ", Double.toString(precipAmount));
+                    double converter = 9.0/5.0;
+                    if(mAmerican) {
+                        mTvTemp.setText("" + Math.round(((converter)*(weatherData.getTemperature().getTemp() - 273.15)) + 32.0) + " F");
+                        mTvHighTemp.setText("" + Math.round(((converter)*(weatherData.getTemperature().getMaxTemp() - 273.15)) + 32.0) + " F");
+                        mTvLowTemp.setText("" + Math.round(((converter)*(weatherData.getTemperature().getMinTemp() - 273.15)) + 32.0) + " F");
+                        mTvPrecip.setText("" +  precipAmount + " in");
+                    } else {
+                        mTvTemp.setText("" + Math.round(weatherData.getTemperature().getTemp() - 273.15) + " C");
+                        mTvHighTemp.setText("" + Math.round(weatherData.getTemperature().getMaxTemp() - 273.15) + " C");
+                        mTvLowTemp.setText("" + Math.round(weatherData.getTemperature().getMinTemp() - 273.15) + " C");
+                        mTvPrecip.setText("" +  precipAmount*25.4 + " mm");
+                    }
+                    mTvPressure.setText("" + weatherData.getCurrentCondition().getPressure() + " hPa");
+                    mTvHumid.setText("" + weatherData.getCurrentCondition().getHumidity() + "%");
+                }
+
         }
     };
 
