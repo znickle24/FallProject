@@ -1,5 +1,6 @@
 package com.zandernickle.fallproject_pt1;
 
+
 public class WeatherData {
 
     //Variable holding location data
@@ -59,8 +60,8 @@ public class WeatherData {
         }
     }
 
-    public class Temperature {
 
+    public class Temperature {
         //Variables holding temp data
         private double mTemp, mMinTemp, mMaxTemp;
 
@@ -82,11 +83,10 @@ public class WeatherData {
         public void setMaxTemp(double maxTemp) {
             mMaxTemp = maxTemp;
         }
-
     }
 
-    public class Wind {
 
+    public class Wind {
         //Variables holding wind data
         private double mSpeed, mDeg;
 
@@ -104,8 +104,8 @@ public class WeatherData {
         }
     }
 
-    public class Rain {
 
+    public class Rain {
         //Variables holding rain data
         private String mTime;
         private double mAmount;
@@ -124,8 +124,8 @@ public class WeatherData {
         }
     }
 
-    public class Snow {
 
+    public class Snow {
         //Variables holding snow data
         private String mTime;
         private double mAmount;
@@ -144,8 +144,8 @@ public class WeatherData {
         }
     }
 
-    public class Clouds {
 
+    public class Clouds {
         //Variables holding cloud data
         private long mPerc;
 
@@ -155,7 +155,6 @@ public class WeatherData {
         public void setPerc(long perc) {
             mPerc = perc;
         }
-
     }
 
     //Setters and Getters
@@ -169,6 +168,7 @@ public class WeatherData {
     public void setCurrentCondition(CurrentCondition currentCondition){
         mCurrentCondition = currentCondition;
     }
+
     public CurrentCondition getCurrentCondition(){
         return mCurrentCondition;
     }

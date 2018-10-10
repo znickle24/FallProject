@@ -9,6 +9,8 @@ import android.arch.lifecycle.MutableLiveData;
 public class WeatherViewModel extends AndroidViewModel {
 
     private MutableLiveData<WeatherData> jsonData;
+
+    //Variable used for the Weather Repository
     private WeatherRepository mWeatherRepository;
 
     public WeatherViewModel(Application application){
@@ -17,6 +19,7 @@ public class WeatherViewModel extends AndroidViewModel {
         jsonData = mWeatherRepository.getData();
     }
 
+    //Pass location string to the Weather Repository
     public void setLocation(String location){
         mWeatherRepository.setLocation(location);
     }

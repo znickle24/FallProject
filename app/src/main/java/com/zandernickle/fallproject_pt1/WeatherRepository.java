@@ -10,13 +10,17 @@ import java.net.URL;
 
 public class WeatherRepository {
 
-    private final MutableLiveData<WeatherData> jsonData = new MutableLiveData<WeatherData>();
+    private final MutableLiveData<WeatherData> jsonData = new MutableLiveData<>();
+
+    //Variable holding the location for the weather
     private String mLocation;
 
     WeatherRepository(Application application){
         loadData();
     }
 
+
+    //Sets the location to get the weather
     public void setLocation(String location){
         mLocation = location;
         loadData();
