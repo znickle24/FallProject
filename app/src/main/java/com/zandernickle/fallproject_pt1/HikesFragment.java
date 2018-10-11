@@ -1,5 +1,6 @@
 package com.zandernickle.fallproject_pt1;
 
+import android.Manifest;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -132,29 +133,28 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
 
 
     //Set mLatitude and mLongitude
-    public void getLatLong(){
+    public void getLatLong() {
 
         //Check permissions
-        if (ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
-        }
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            return;
+        } else {
+            locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+            boolean network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-        boolean network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            Location location;
 
-        Location location;
+            if (network_enabled) {
+                location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
-        if (network_enabled) {
-            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
-            if (location != null) {
-                mLatitude = location.getLatitude();
-                Log.d("mLatitude in getLatLong(): ", Double.toString(mLatitude));
-                mLongitude = location.getLongitude();
-                Log.d("mLongitude in getLatLong(): ", Double.toString(mLongitude));
-
+                if (location != null) {
+                    mLatitude = location.getLatitude();
+                    Log.d("mLatitude in getLatLong(): ", Double.toString(mLatitude));
+                    mLongitude = location.getLongitude();
+                    Log.d("mLongitude in getLatLong(): ", Double.toString(mLongitude));
+                }
             }
         }
 
@@ -171,6 +171,10 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_search_hikes: {
+                if(mLatitude == 0.0 && mLongitude == 0.0) {
+                    mLatitude = 40.7678;
+                    mLongitude = -111.8452;
+                }
 
                 Uri searchUri = Uri.parse("geo:" + Double.toString(mLatitude) + "," + Double.toString(mLongitude) + "?q=" + "hikes");
                 Log.d("searchUri string: ", searchUri.toString());
@@ -182,7 +186,6 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
                 if (mapIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                     startActivity(mapIntent);
                 }
-                break;
             }
 
         }
