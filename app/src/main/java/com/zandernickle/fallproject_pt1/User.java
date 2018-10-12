@@ -1,11 +1,16 @@
 package com.zandernickle.fallproject_pt1;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import com.neovisionaries.i18n.CountryCode;
 
+@Entity(tableName = "user_table")
 public class User implements Parcelable {
 
     public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
@@ -21,11 +26,18 @@ public class User implements Parcelable {
         }
     };
 
+    @NonNull
+    @PrimaryKey(autoGenerate = true)
     private int id;
+    @NonNull
     private String name;
+    @NonNull
     private byte[] profileImage;
+    @NonNull
     private int age;
+    @NonNull
     private int postalCode;
+    @NonNull
     private CountryCode countryCode;
 
     private int BMI = -1;
@@ -35,6 +47,7 @@ public class User implements Parcelable {
     private int weight = -1;
     private Sex sex = null;
     private ActivityLevel activityLevel = null;
+
     private int weightGoal = -1; // neg, 0, or pos
 
     private User(Parcel in) {
@@ -88,8 +101,8 @@ public class User implements Parcelable {
         }
     }
 
-    public User() {
-        // Not currently in use.
+    public User(@NonNull User user) {
+
     }
 
     public User(String name, byte[] profileImage, int age, int postalCode, CountryCode countryCode) {
@@ -213,5 +226,13 @@ public class User implements Parcelable {
     public int getCalorieIntake() { return calorieIntake; }
 
     public void setCalorieIntake(int calorieIntake) { this.calorieIntake = calorieIntake; }
+
+    public void setProfileImage(@NonNull byte[] profileImage) {
+        this.profileImage = profileImage;
+    }
+
+    public void setWeightGoal(int weightGoal) {
+        this.weightGoal = weightGoal;
+    }
 
 }
