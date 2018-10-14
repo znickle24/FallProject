@@ -23,6 +23,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".FitnessInputActivity" />
+        <activity android:name=".HikesViewModel" />
+        <activity android:name=".HikesRepository"></activity>
     </application>
 
 </manifest>
