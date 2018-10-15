@@ -6,22 +6,22 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 
 
-public class WeatherViewModel extends AndroidViewModel {
+public class HikesViewModel extends AndroidViewModel {
 
     private MutableLiveData<WeatherData> jsonData;
 
-    //Variable used for the Weather Repository
-    private WeatherRepository mWeatherRepository;
+    //Variable used for the Hikes Repository
+    private HikesRepository mHikesRepository;
 
-    public WeatherViewModel(Application application){
+    public HikesViewModel(Application application){
         super(application);
-        mWeatherRepository = new WeatherRepository(application);
-        jsonData = mWeatherRepository.getData();
+        mHikesRepository = new HikesRepository(application);
+        jsonData = mHikesRepository.getData();
     }
 
-    //Pass location string to the Weather Repository
+    //Pass location string to the Hikes Repository
     public void setLocation(String location){
-        mWeatherRepository.setLocation(location);
+        mHikesRepository.setLocation(location);
     }
 
     public LiveData<WeatherData> getData(){

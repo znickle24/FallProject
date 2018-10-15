@@ -8,14 +8,14 @@ import java.io.IOException;
 import java.net.URL;
 
 
-public class WeatherRepository {
+public class HikesRepository {
 
     private final MutableLiveData<WeatherData> jsonData = new MutableLiveData<>();
 
     //Variable holding the location for the weather
     private String mLocation;
 
-    WeatherRepository(Application application){
+    HikesRepository(Application application){
         loadData();
     }
 
@@ -29,6 +29,7 @@ public class WeatherRepository {
     public MutableLiveData<WeatherData> getData() {
         return jsonData;
     }
+
 
     private void loadData(){
         new AsyncTask<String,Void,String>(){

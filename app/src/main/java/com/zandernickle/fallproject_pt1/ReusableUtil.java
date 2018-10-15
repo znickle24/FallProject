@@ -109,6 +109,16 @@ public class ReusableUtil {
         bundle.putByteArray(key, compressedImage);
     }
 
+    public static byte[] bitmapToByteArray(Bitmap bitmap) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+        return outputStream.toByteArray();
+    }
+
+    public static Bitmap byteArrayToBitmap(byte[] byteArray) {
+        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+    }
+
     /**
      * Extracts a compressed Bitmap from a Bundle. Intended for use with the
      * ReusableUtil.bitmapToBundle method or where the Bitmap is to be decoded from a ByteArray.
