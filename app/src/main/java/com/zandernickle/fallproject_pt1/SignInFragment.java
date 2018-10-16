@@ -1,10 +1,11 @@
 package com.zandernickle.fallproject_pt1;
 
 
-import android.app.Activity;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -20,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -32,12 +34,15 @@ import java.util.HashMap;
 
 import static com.zandernickle.fallproject_pt1.ReusableUtil.attemptImageCapture;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.bitmapToBundle;
+import static com.zandernickle.fallproject_pt1.ReusableUtil.bitmapToByteArray;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.disableTILErrorOnTextChanged;
+import static com.zandernickle.fallproject_pt1.ReusableUtil.log;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.mapTextInputLayouts;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.onImageCaptureResult;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.setOnClickListeners;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.setOnItemSelectedListeners;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.setTextChangedListeners;
+import static com.zandernickle.fallproject_pt1.ReusableUtil.toast;
 
 /**
  * The first functional View rendered (vs. splash screen). Sets up a user's profile data
@@ -62,6 +67,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
     private Bitmap mBitmapProfileImg;
 
     private OnDataPass mDataPasser;
+    private SignInViewModel mSignInViewModel;
 
     public SignInFragment() {
         // Required empty public constructor
@@ -70,12 +76,38 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+
+        log("ON CREATE HAS BEEN CALLED");
+
+        mSignInViewModel = ViewModelProviders.of(this).get(SignInViewModel.class);
+        mSignInViewModel.getCount().observe(this, new Observer<Integer>() {
+
+            @Override
+            public void onChanged(@Nullable Integer count) {
+                ReusableUtil.log("UPDATED COUNT: " + count);
+            }
+        });
+
+        LiveData<User> user = mSignInViewModel.getUser(3);
+        if (user.getValue() != null) {
+            log("USER EXISTS: " + user.getValue());
+
+            user.observe(this, new Observer<User>() {
+                @Override
+                public void onChanged(@Nullable User user) {
+                    ReusableUtil.log("USER CHANGED: " + user.getName() + ", id: " + user.getId());
+                }
+            });
+
+        } else {
+            log("USER DOES NOT EXIST: " + user.getValue());
+        }
+
     }
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Attaches this Fragment's OnDataPass interface to the host Activity (Main).
      */
     @Override
@@ -93,7 +125,55 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
+     * Initializes or updates non-graphical member variables and updates some graphical
+     * elements.
+     */
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        mTextInputLayoutMap = mapTextInputLayouts(mTilName, mTilPostalCode);
+        initializeSpinners();
+
+        final String USER_ID = "USER_ID"; // TODO: This is temporary...
+
+        EditText etName = mTextInputLayoutMap.get(R.id.til_name).getEditText();
+        EditText etPostalCode = mTextInputLayoutMap.get(R.id.til_postal_code).getEditText();
+
+        if (etPostalCode == null) {
+            ReusableUtil.toast(getContext(), "failed");
+        }
+
+//        mSignInViewModel = ViewModelProviders.of(this).get(SignInViewModel.class);
+
+        mSignInViewModel.getName().observe(this, new ObserverUtil.EditTextObserver(etName));
+        mSignInViewModel.getPostalCode().observe(this, new ObserverUtil.EditTextObserver(etPostalCode));
+        mSignInViewModel.getAgeIndex().observe(this, new ObserverUtil.SpinnerObserver(mSpinAge));
+        mSignInViewModel.getCountryCodeIndex().observe(this, new ObserverUtil.SpinnerObserver(mSpinCountry));
+
+        // This may be the first time the user has accessed the app.
+        if (getArguments().containsKey(USER_ID)) {
+
+        }
+
+//        if (savedInstanceState.getInt(USER_ID) != -1) {
+//
+//        }
+//        mSignInViewModel = ViewModelProviders.of(this).get(SignInViewModel.class);
+//        mSignInViewModel.init(savedInstanceState.getInt(USER_ID));
+//        mSignInViewModel.getUser().observe(this, observer);
+
+
+        if (savedInstanceState != null) {
+            mTilName.getEditText().setText(savedInstanceState.getString(Key.NAME));
+            mTilPostalCode.getEditText().setText(savedInstanceState.getString(Key.POSTAL_CODE));
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
      * Does the usual inflation stuff and sets up any action listeners.
      */
     @Override
@@ -116,39 +196,23 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
         setTextChangedListeners(SignInFragment.this, mTilName.getEditText(), mTilPostalCode.getEditText());
         setOnItemSelectedListeners(SignInFragment.this, mSpinAge, mSpinCountry);
 
-        ReusableUtil.setPortraitOnly(getActivity(), getArguments().getBoolean(Key.IS_TABLET));
+//        ReusableUtil.setPortraitOnly(getActivity(), getArguments().getBoolean(Key.IS_TABLET));
 
         return thisFragment;
     }
 
 
-    /**
-     * {@inheritDoc}
-     *
-     * Initializes or updates non-graphical member variables and updates some graphical
-     * elements.
-     */
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        mTextInputLayoutMap = mapTextInputLayouts(mTilName, mTilPostalCode);
-        initializeSpinners();
-
-        if (savedInstanceState != null) {
-            mTilPostalCode.getEditText().setText(savedInstanceState.getString(Key.POSTAL_CODE));
-        }
-    }
-
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putString(Key.NAME, mTilPostalCode.getTextString());
         outState.putString(Key.POSTAL_CODE, mTilPostalCode.getTextString());
     }
 
+
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Register views in onCreateView via ReusableUtil.setOnClickListeners.
      */
     @Override
@@ -164,17 +228,74 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
                 if (ensureCompletedFields()) {
 
                     String name = mTilName.getTextString();
-                    String age = mSpinAge.getSelectedItem().toString();
-                    String postalCode = mTilPostalCode.getTextString();
+                    int age = Integer.parseInt(mSpinAge.getSelectedItem().toString());
+                    int postalCode = Integer.parseInt(mTilPostalCode.getTextString());
                     CountryCode countryCode = getCountryCodeFromSpinner(mSpinCountry);
 
                     Bundle signInBundle = new Bundle();
 
                     bitmapToBundle(signInBundle, mBitmapProfileImg, Key.PROFILE_IMAGE);
                     signInBundle.putString(Key.NAME, name);
-                    signInBundle.putInt(Key.AGE, Integer.parseInt(age));
-                    signInBundle.putInt(Key.POSTAL_CODE, Integer.parseInt(postalCode));
+                    signInBundle.putInt(Key.AGE, age);
+                    signInBundle.putInt(Key.POSTAL_CODE,postalCode);
                     signInBundle.putSerializable(Key.COUNTRY, countryCode);
+
+
+
+
+//                    byte[] compressedImage = bitmapToByteArray(mBitmapProfileImg);
+//                    User user = new User(name, compressedImage, age, postalCode, countryCode);
+
+//                   int id, Sex sex, ActivityLevel activityLevel, int height, int weight, int delta
+//                    user.setSex(Sex.FEMALE);
+//                    user.setActivityLevel(ActivityLevel.MODERATELY_ACTIVE);
+//                    user.setHeight(4);
+//                    user.setWeight(3);
+//                    user.setWeightGoal(1);
+
+                    // int id, int BMI, int BMR, int calorieIntake
+//                    user.setBMI(100);
+//                    user.setBMR(2000);
+//                    user.setCalorieIntake(250);
+
+//                    ActiveUser activeUser = new ActiveUser();
+//                    activeUser.setUserId(1);
+
+
+//                    log("\n");
+////                    log("\n");
+////                    log("\nPRE-DATABASE ACCESS");
+////                    log("" + user.getId());
+////                    log(user.getName());
+////
+//                    int testId = mSignInViewModel.addUser(user);
+//                    mSignInViewModel.updateActiveUser(testId);
+//                    if (testId != UserRepository.ABORT) {
+//                        user.setId(testId);
+//                        log("\nPOST-DATABASE ACCESS");
+//                        log("" + user.getId());
+//                        log(user.getName());
+//                    } else {
+//                        log("FAILED TO ADD USER");
+//                    }
+////
+////                    log("\n");
+////                    log("\n");
+
+
+//                    int nonExistentUserId = mSignInViewModel.getActiveUser();
+//                    log("NON EXISTENT USER ID: " + nonExistentUserId);
+
+//                    int userId = mSignInViewModel.addUser(user);
+//                    user.setId(userId);
+//                    if (userId != -1) {
+//                        ActiveUser activeUser = new ActiveUser();
+//                        activeUser.setUserId(userId);
+//                        mSignInViewModel.updateActiveUser(activeUser);
+//                        int result = mSignInViewModel.getActiveUser();
+//                        log("RESULT: " + result);
+//                    }
+
 
                     mDataPasser.onDataPass(Module.FITNESS_INPUT, signInBundle); // SignInFragment -> MainActivity
                 }
@@ -188,7 +309,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Updates the user's profile image with the most recent image capture result.
      */
     @Override
@@ -211,7 +332,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Unimplemented. Required by TextWatcher.
      */
     @Override
@@ -221,7 +342,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Implemented on behalf of TextInputEditText via TextWatcher. Removes the error message
      * from the active EditText when the user attempts to correct an error.
      */
@@ -234,19 +355,18 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Unimplemented. Required by TextWatcher.
      */
     @Override
     public void afterTextChanged(Editable s) {
-        // Do nothing
     }
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Implemented on behalf of AppCompatSpinner. Removes the associated REQUIRED label
-     * when a valid item is selected.
+     * when a valid item is selected. Updates ViewModel.
      */
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -255,39 +375,22 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
 
         if (parentId == R.id.spin_age) {
             mTvAgeRequiredLabel.setText("");
+            mSignInViewModel.getAgeIndex().setValue(mSpinAge.getSelectedItemPosition());
         } else if (parentId == R.id.spin_country) {
             mTvCountryRequiredLabel.setText("");
+            mSignInViewModel.getCountryCodeIndex().setValue(mSpinCountry.getSelectedItemPosition());
         }
     }
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Unimplemented. Required by AppCompatSpinner.
      */
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         // Do nothing
     }
-
-//    /**
-//     * {@inheritDoc}
-//     *
-//     * Locks this Fragment to portrait orientation. There is too much to display with the current designs to
-//     * make landscape mode reasonable.
-//     *
-//     * https://stackoverflow.com/questions/20370636/how-to-lock-fragment-orientation-without-locking-activity-orientation
-//     */
-//    @Override
-//    public void setUserVisibleHint(boolean isVisibleToUser) {
-//        super.setUserVisibleHint(isVisibleToUser);
-//        if(isVisibleToUser) {
-//            Activity hostActivity = getActivity();
-//            if (hostActivity != null) {
-//                hostActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-//            }
-//        }
-//    }
 
     /**
      * An interface to communicate with this Fragment's host Activity.

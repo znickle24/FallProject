@@ -80,7 +80,8 @@ public class MenuBarFragment extends Fragment implements View.OnClickListener {
         Bundle arguments = getArguments();
 
         Module moduleName = (Module) arguments.getSerializable(Key.MODULE);
-        mBitmapProfileImage = bitmapFromBundle(arguments, Key.PROFILE_IMAGE);
+        User activeUser = arguments.getParcelable(Key.USER);
+        mBitmapProfileImage = ReusableUtil.byteArrayToBitmap(activeUser.getProfileImage());
 
         mTvModuleName.setText(moduleName.toString());
         mIvProfileImage.setImageBitmap(mBitmapProfileImage);

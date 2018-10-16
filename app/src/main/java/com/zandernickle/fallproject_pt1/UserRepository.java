@@ -7,8 +7,8 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.os.AsyncTask;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
-import static com.zandernickle.fallproject_pt1.ReusableUtil.loadFragment;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.log;
 
 
@@ -32,6 +32,12 @@ public class UserRepository {
      */
     public static final int ABORT = -1;
 
+
+
+
+
+    public static final int NON_EXISTENT_ID = -1;
+
     /**
      * {@link android.arch.persistence.room.Dao} containing the dependencies of this repository's API.
      */
@@ -42,6 +48,9 @@ public class UserRepository {
      * {@link UserDatabase} across the entire app.
      */
     UserRepository(Application application) {
+        if (application == null) {
+            log("APPLICATION IS NULL");
+        }
         UserDatabase db = UserDatabase.getDatabase(application);
         mUserDao = db.userDao();
     }
@@ -109,33 +118,36 @@ public class UserRepository {
         }
     }
 
-    /**
-     * Adds a new {@link ActiveUser}, a to the database if the corresponding {@link UserDatabase} table does NOT
-     * contain ANY entries. If the table does contain an entry, that entry is updated.
-     *
-     * This method wraps {@link UserDao#insert(ActiveUser)} and enforces the single row property of the ActiveUser
-     * table.  Any ActiveUser instance passed to this method will have its key set to {@link #ACTIVE_USER_KEY}. Use this
-     * property to change the primary key identifier for this row. However, doing so will add an additional row to the
-     * table.
-     *
-     * @param activeUser the ActiveUser object containing the values to update in the corresponding table.
-     */
-    public void update(ActiveUser activeUser) {
-        activeUser.setKey(ACTIVE_USER_KEY);
+//    /**
+//     * Adds a new {@link ActiveUser}, a to the database if the corresponding {@link UserDatabase} table does NOT
+//     * contain ANY entries. If the table does contain an entry, that entry is updated.
+//     *
+//     * This method wraps {@link UserDao#insert(ActiveUser)} and enforces the single row property of the ActiveUser
+//     * table.  Any ActiveUser instance passed to this method will have its key set to {@link #ACTIVE_USER_KEY}. Use this
+//     * property to change the primary key identifier for this row. However, doing so will add an additional row to the
+//     * table.
+//     *
+//     * @param userId the ActiveUser object containing the values to update in the corresponding table.
+//     */
+    public void updateActiveUser(int id) {
+        ActiveUser activeUser = new ActiveUser();
+        activeUser.setRowId(ACTIVE_USER_KEY);
+        activeUser.setUserId(id);
+        log("UPDATING ACTIVE USER: " + activeUser.getUserId());
         new UpdateActiveUserAsyncTask(mUserDao).execute(activeUser);
     }
 
-    /**
-     * An AsyncTask designed to update (or create) the {@link ActiveUser#id} stored in the corresponding
-     * {@link UserDatabase} table.
-     *
-     * In actuality, {@link #doInBackground(ActiveUser...)} calls the {@link UserDao#insert(ActiveUser)} method which
-     * is annotated with {@link android.arch.persistence.room.OnConflictStrategy#REPLACE}. Therefore, this AsyncTask
-     * will either update or create the current ActiveUser depending on the current state of the database.
-     *
-     * Important! Any method which calls {@link #doInBackground(ActiveUser...)} should guarantee the ActiveUser table
-     * has 0 or 1 rows at any given time. See {@link #update(ActiveUser)} for additional details.
-     */
+//    /**
+//     * An AsyncTask designed to update (or create) the {@link ActiveUser#userId} stored in the corresponding
+//     * {@link UserDatabase} table.
+//     *
+//     * In actuality, {@link #doInBackground(ActiveUser...)} calls the {@link UserDao#insert(ActiveUser)} method which
+//     * is annotated with {@link android.arch.persistence.room.OnConflictStrategy#REPLACE}. Therefore, this AsyncTask
+//     * will either update or create the current ActiveUser depending on the current state of the database.
+//     *
+//     * Important! Any method which calls {@link #doInBackground(ActiveUser...)} should guarantee the ActiveUser table
+//     * has 0 or 1 rows at any given time. See {@link #update(ActiveUser)} for additional details.
+//     */
     private class UpdateActiveUserAsyncTask extends AsyncTask<ActiveUser, Void, Void> {
 
         private UserDao mAsyncTaskDao;
@@ -151,11 +163,67 @@ public class UserRepository {
         }
     }
 
+    public int getActiveUserId() {
+        GetActiveUserAsyncTask asyncTask = new GetActiveUserAsyncTask(mUserDao);
+        asyncTask.execute(ACTIVE_USER_KEY);
+        int userId; // change to long if necessary.
+        try {
+            userId = asyncTask.get().getUserId(); // add this example to above docs
+        } catch (Exception e) {
+            e.printStackTrace();
+            userId = ABORT; // This currently also includes the NullPointerException when no entries exist.
+        }
+        return userId;
+    }
 
+    private class GetActiveUserAsyncTask extends AsyncTask<Integer, Void, ActiveUser> {
 
+        private UserDao mAsyncTaskDao;
 
+        public GetActiveUserAsyncTask(UserDao dao) {
+            mAsyncTaskDao = dao;
+        }
 
+        @Override
+        protected ActiveUser doInBackground(Integer... integers) {
+            return mUserDao.getActiveUser(integers[0]);
+        }
+    }
 
+    public User getUserSync(int id) {
+        GetUserAsyncTask asyncTask = new GetUserAsyncTask(mUserDao);
+        asyncTask.execute(id);
+        User user;
+        try {
+            user = asyncTask.get();
+        } catch (Exception e) {
+            e.printStackTrace();
+            user = null;
+        }
+        return user;
+    }
+
+    private class GetUserAsyncTask extends AsyncTask<Integer, Void, User> {
+
+        private UserDao mAsyncTaskDao;
+
+        public GetUserAsyncTask(UserDao dao) {
+            mAsyncTaskDao = dao;
+        }
+
+        @Override
+        protected User doInBackground(Integer... integers) {
+            return mAsyncTaskDao.getUserSync(integers[0]);
+        }
+    }
+
+    public void updateUser(User user) {
+        mUserDao.updateUser(user);
+    }
+
+    public LiveData<User> getUser(int id) {
+        return mUserDao.getUserAsync(id);
+    }
 
 
 
@@ -171,18 +239,16 @@ public class UserRepository {
         return mUserDao.getCount();
     }
 
-    public LiveData<List<User>> getAllUsers() {
-        return mUserDao.getAllUsers();
-    }
+//    public LiveData<List<User>> getAllUsers() {
+////        return mUserDao.getAllUsers();
+////    }
 
-    public LiveData<User> getUser(int id) {
-        return mUserDao.getUser(id);
-    }
+
 
 //    public long addUser(User user) {
 //        new AddUserAsyncTask(mUserDao).execute(user);
-//        log("THIS USER's ID: " + user.getId());
-//        return user.getId();
+//        log("THIS USER's ID: " + user.getUserId());
+//        return user.getUserId();
 //    }
 //
 //    public void addCurrentUser(ActiveUser activeUser) {
@@ -255,7 +321,7 @@ public class UserRepository {
 //        protected Void doInBackground(User... users) {
 //            log("UPDATING USER: " + users[0].getName());
 //            User user = users[0];
-//            mAsyncTaskDao.updateUserHealth(user.getId(), user.getBMI(), user.getBMR(), user.getCalorieIntake());
+//            mAsyncTaskDao.updateUserHealth(user.getUserId(), user.getBMI(), user.getBMR(), user.getCalorieIntake());
 //            return null;
 //        }
 //    }
@@ -270,7 +336,7 @@ public class UserRepository {
 //        protected Void doInBackground(User... users) {
 //            log("UPDATING USER: " + users[0].getName());
 //            User user = users[0];
-//            mAsyncTaskDao.updateUserFitness(user.getId(), user.getSex(), user.getActivityLevel(), user.getHeight(), user.getWeight(), user.getWeightGoal());
+//            mAsyncTaskDao.updateUserFitness(user.getUserId(), user.getSex(), user.getActivityLevel(), user.getHeight(), user.getWeight(), user.getWeightGoal());
 //            return null;
 //        }
 //    }

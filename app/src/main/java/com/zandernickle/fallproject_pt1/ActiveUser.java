@@ -10,39 +10,38 @@ import static android.arch.persistence.room.ForeignKey.CASCADE;
 
 
 /**
- * This class represents a table in the Room database containing the id of the currently signed-in ("active") user. Use
+ * This class represents a table in the Room database containing the userId of the currently signed-in ("active") user. Use
  * this class to ensure the correct user is signed in on app start-up.
  */
-@Entity(tableName = "current_user_table",
-        foreignKeys = {@ForeignKey(entity = User.class, parentColumns = {"id"}, childColumns = {"id"},
-                onUpdate = CASCADE, onDelete = CASCADE)})
+@Entity(foreignKeys = {@ForeignKey(entity = User.class, parentColumns = {"id"}, childColumns = {"userId"},
+        onUpdate = CASCADE, onDelete = CASCADE)})
 public class ActiveUser {
 
     @NonNull
     @PrimaryKey
-    private int key = 0;
+    private int rowId;
     @NonNull
-    private int id;
+    private int userId;
 
     ActiveUser() {
         // This constructor is required for database access.
     }
 
     @NonNull
-    public int getKey() {
-        return key;
+    public int getRowId() {
+        return rowId;
     }
 
-    public void setKey(@NonNull int key) {
-        this.key = key;
+    public void setRowId(@NonNull int rowId) {
+        this.rowId = rowId;
     }
 
     @NonNull
-    public int getId() {
-        return id;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setId(@NonNull int id) {
-        this.id = id;
+    public void setUserId(@NonNull int userId) {
+        this.userId = userId;
     }
 }

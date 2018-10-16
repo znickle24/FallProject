@@ -22,10 +22,15 @@ public class SignInViewModel extends AndroidViewModel {
     }
 
     LiveData<Integer> getCount() { return mRepository.getCount(); }
-    LiveData<List<User>> getAllUsers() { return mRepository.getAllUsers(); }
     LiveData<User> getUser(int id) { return mRepository.getUser(id); }
 
     public int addUser(User user) { return mRepository.addUser(user); }
+    public void updateActiveUser(int id) { mRepository.updateActiveUser(id); }
+    public int getActiveUser() { return mRepository.getActiveUserId(); }
+
+
+
+
 
 //    public void updateUserFitness(User user) { mRepository.updateUserFitness(user); }
 //    public void updateUserHealth(User user) { mRepository.updateUserHealth(user); }

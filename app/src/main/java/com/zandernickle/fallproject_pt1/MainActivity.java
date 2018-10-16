@@ -21,19 +21,25 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
         FitnessInputFragment.OnDataPass, MenuBarFragment.OnDataPass, RVAdapter.OnDataPass, BMRFragment.OnDataPass {
 
     public static final String PREV_FRAGMENT_TAG = "PREV_FRAGMENT_TAG";
-    private static final DatabaseService database = new DatabaseService(); // A placeholder for a real database.
     private static final HashMap<Module, Class<?>> mMappedModules = ModuleUtil.mapModuleList();
 
     private FragmentManager mFragmentManager = getSupportFragmentManager();
     private String mPrevFragmentTag;
-    private User mUser;
     private Bundle mBundle;
 
+    private User mUser;
+    private UserRepository mUserRepo;
+
+    private void loadModule() {
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mUserRepo = new UserRepository(MainActivity.this.getApplication()); // instantiate here important!
 
         boolean isTablet = isTablet();
         int viewId = isTablet ? R.id.fl_fragment_placeholder_tablet_right :
@@ -44,10 +50,24 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
             mBundle = new Bundle();
             mBundle.putBoolean(Key.IS_TABLET, isTablet);
 
-            mPrevFragmentTag = SIGN_IN_FRAGMENT;
-            Fragment signInFragment = new SignInFragment();
-            signInFragment.setArguments(mBundle);
-            loadFragment(mFragmentManager, viewId, signInFragment, mPrevFragmentTag, false);
+            int activeUserId = mUserRepo.getActiveUserId();
+            if (activeUserId != UserRepository.NON_EXISTENT_ID) {
+                mUser = mUserRepo.getUserSync(activeUserId);
+                mBundle.putSerializable(Key.MODULE, Module.HEALTH);
+                mBundle.putParcelable(Key.USER, mUser);
+
+                mPrevFragmentTag = Module.HEALTH.toString();
+                Fragment bmrFragment = new BMRFragment();
+                bmrFragment.setArguments(mBundle);
+                loadFragment(mFragmentManager, viewId, bmrFragment, mPrevFragmentTag, false);
+
+            } else {
+
+                mPrevFragmentTag = SIGN_IN_FRAGMENT; // TODO: change this name
+                Fragment signInFragment = new SignInFragment();
+                signInFragment.setArguments(mBundle);
+                loadFragment(mFragmentManager, viewId, signInFragment, mPrevFragmentTag, false);
+            }
 
         } else {
 
@@ -79,14 +99,6 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
 
     }
 
-    /**
-     * {@inheritDoc}
-     * <p>
-     * All communication with this Activity is via the OnDataPass interface. Though the interfaces
-     * all share the same name, all interface hosts are registered in this Activity's class signature.
-     * The origin of incoming data is identifiable by the passing of a key through the onDataPass
-     * method signature.
-     */
     @Override
     public void onDataPass(Module moduleToLoad, Bundle bundle) {
 
@@ -126,7 +138,10 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
                 // SignInFragment -> MainActivity -> FitnessInputFragment
 
                 mUser = new User(mBundle);
-                database.addUser(mUser);
+                log("FINISHED SIGN-IN... UPDATING DATABASE");
+                int id = mUserRepo.addUser(mUser);
+                mUser.setId(id);
+                mUserRepo.updateActiveUser(id);
 
                 /*
                  * At this point the user's account has been created but their health data has not been
@@ -141,6 +156,8 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
 
             case HEALTH:
 
+                log("FINISHED FITNESS INPUT... UPDATING DATABASE");
+
                 /* TODO
                  *
                  * This is a temporary line of code corresponding with the temporary code inside the
@@ -154,7 +171,7 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
                 // FitnessInputFragment -> MainActivity -> BMRFragment (health module)
 
                 mUser.updateFitnessData(mBundle);
-                database.updateUser(mUser);
+                // TODO: Update fitness data here.
 
                 /*
                  * The user's BMI and BMR data have yet to be added to the current User. This should occur

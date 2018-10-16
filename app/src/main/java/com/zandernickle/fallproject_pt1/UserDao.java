@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Update;
 
 import java.util.List;
 
@@ -29,39 +30,46 @@ public interface UserDao {
     @Insert
     long insert(User u);
 
-    /**
-     * Adds a new {@link ActiveUser}, a to the database if the corresponding table does NOT contain ANY entries. If the
-     * table does contain an entry, that entry is updated.
-     *
-     * Important! The ActiveUser table is intended to contain only a single row. Once created, the entry should only be
-     * updated. This is currently enforced by {@link UserRepository#update(ActiveUser)}.
-     *
-     * TODO
-     * Possible to prevent the getter/setter for the key to be used outside of the database?
-     *
-     * @param a ActiveUser to be added to or updated in the database.
-     */
+//    /**
+//     * Adds a new {@link ActiveUser}, a to the database if the corresponding table does NOT contain ANY entries. If the
+//     * table does contain an entry, that entry is updated.
+//     *
+//     * Important! The ActiveUser table is intended to contain only a single row. Once created, the entry should only be
+//     * updated. This is currently enforced by {@link UserRepository#update(ActiveUser)}.
+//     *
+//     * TODO
+//     * Possible to prevent the getter/setter for the key to be used outside of the database?
+//     *
+//     * @param a ActiveUser to be added to or updated in the database.
+//     */
     @Insert(onConflict = REPLACE)
     void insert(ActiveUser a);
 
+    @Query("SELECT * FROM ActiveUser WHERE `rowId` = :rowId" )
+    ActiveUser getActiveUser(int rowId);
+
+    @Query("SELECT * FROM user_table WHERE id = :id")
+    User getUserSync(int id);
+
+    @Query("SELECT * FROM user_table WHERE id = :id")
+    LiveData<User> getUserAsync(int id);
+
+    @Update
+    void updateUser(User user);
 
 
-
-
-
-    @Query("UPDATE user_table SET sex = :sex, activityLevel = :activityLevel, height = :height, weight = :weight, weightGoal = :delta WHERE id = :id")
-    public void updateUserFitness(int id, Sex sex, ActivityLevel activityLevel, int height, int weight, int delta);
-
-    @Query("UPDATE user_table SET BMI = :BMI, BMR = :BMR, calorieIntake = :calorieIntake WHERE id = :id")
-    public void updateUserHealth(int id, int BMI, int BMR, int calorieIntake);
+//    @Query("UPDATE user_table SET sex = :sex, activityLevel = :activityLevel, height = :height, weight = :weight, weightGoal = :delta WHERE id = :id")
+//    void updateUserFitness(int id, Sex sex, ActivityLevel activityLevel, int height, int weight, int delta);
+//
+//    @Query("UPDATE user_table SET BMI = :BMI, BMR = :BMR, calorieIntake = :calorieIntake WHERE id = :id")
+//    void updateUserHealth(int id, int BMI, int BMR, int calorieIntake);
 
     @Query("SELECT COUNT(id) FROM user_table")
     LiveData<Integer> getCount();
 
-    @Query("SELECT * FROM user_table")
-    LiveData<List<User>> getAllUsers();
+//    @Query("SELECT * FROM user_table")
+//    LiveData<List<User>> getAllUsers();
 
-    @Query("SELECT * FROM user_table WHERE id = :id")
-    LiveData<User> getUser(int id);
+
 
 }
