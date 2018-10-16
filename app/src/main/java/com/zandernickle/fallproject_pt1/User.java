@@ -2,6 +2,8 @@ package com.zandernickle.fallproject_pt1;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -10,7 +12,9 @@ import android.support.annotation.NonNull;
 
 import com.neovisionaries.i18n.CountryCode;
 
-@Entity(tableName = "user_table")
+
+@Entity(tableName = "user_table",
+        indices = {@Index(value = {"name"}, unique = true)})
 public class User implements Parcelable {
 
     public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
@@ -29,6 +33,7 @@ public class User implements Parcelable {
     @NonNull
     @PrimaryKey(autoGenerate = true)
     private int id;
+
     @NonNull
     private String name;
     @NonNull
@@ -52,6 +57,7 @@ public class User implements Parcelable {
 
     private User(Parcel in) {
         id = in.readInt();
+
         name = in.readString();
         in.readByteArray(profileImage);
         age = in.readInt();
@@ -81,6 +87,7 @@ public class User implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
 
         dest.writeInt(id);
+
         dest.writeString(name);
         dest.writeByteArray(profileImage);
         dest.writeInt(age);
@@ -132,8 +139,6 @@ public class User implements Parcelable {
     public void updateHealthData(Bundle BMRBundle) {
 
     }
-
-
 
     public int getId() {
         return id;

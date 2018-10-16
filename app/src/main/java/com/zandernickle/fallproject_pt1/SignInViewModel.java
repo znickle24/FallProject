@@ -4,16 +4,14 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
-
-import com.neovisionaries.i18n.CountryCode;
 
 import java.util.List;
 
 public class SignInViewModel extends AndroidViewModel {
 
     private UserRepository mRepository;
+
     private LiveData<Integer> count;
     private LiveData<List<User>> allUsers;
     private LiveData<User> mUser;
@@ -27,10 +25,15 @@ public class SignInViewModel extends AndroidViewModel {
     LiveData<List<User>> getAllUsers() { return mRepository.getAllUsers(); }
     LiveData<User> getUser(int id) { return mRepository.getUser(id); }
 
-    public long addUser(User user) { return mRepository.addUser(user); }
+    public int addUser(User user) { return mRepository.addUser(user); }
 
-    public void updateUserFitness(User user) { mRepository.updateUserFitness(user); }
-    public void updateUserHealth(User user) { mRepository.updateUserHealth(user); }
+//    public void updateUserFitness(User user) { mRepository.updateUserFitness(user); }
+//    public void updateUserHealth(User user) { mRepository.updateUserHealth(user); }
+
+//    public void updateCurrentUser(ActiveUser activeUser) {
+//        mRepository.addCurrentUser(activeUser);
+//    }
+
 
 
 
@@ -48,15 +51,12 @@ public class SignInViewModel extends AndroidViewModel {
     public MutableLiveData<String> getName() {
         return name;
     }
-
     public MutableLiveData<String> getPostalCode() {
         return postalCode;
     }
-
     public MutableLiveData<Integer> getAgeIndex() {
         return ageIndex;
     }
-
     public MutableLiveData<Integer> getCountryCodeIndex() {
         return countryCodeIndex;
     }
