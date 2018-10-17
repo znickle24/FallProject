@@ -1,5 +1,9 @@
 package com.zandernickle.fallproject_pt1;
 
+import android.app.Application;
+import android.arch.lifecycle.AndroidViewModel;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,15 +26,11 @@ import static com.zandernickle.fallproject_pt1.ReusableUtil.loadMenuBarFragment;
 public class BMRFragment extends android.support.v4.app.Fragment implements View.OnClickListener {
 
 
-    // TODO: Confirm
+
     private TextView mTv_BMR, mTv_weight_goal_to_label, mTv_weight_goal_data, mTv_BMI;
     private Button mBtn_update_goals;
 
-    // TODO Confirm
-//    private TextView mTv_BMR;
-//    private TextView mTv_BMR_data;
-//    private Button mButton_BMI_calculator;
-//    private TextView mTv_BMI_data;
+
     private boolean mLoseWeight = false;
     private static double BMR = -1.0; //value calculated based on age, sex, height, & weight
     private int mCalorieIntake; //the number of calories an individual needs to eat to meet their goal
@@ -45,6 +45,9 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
     private static int mAge = -1;
     private Bundle mArgsReceived; //arguments passed from Activity
     private User mUser;
+    private int mUserId;
+    private UserRepository mUserRepo;
+    private AndroidViewModel mViewModel;
     //values from bmi calculation
     private static final String mUnderweight = "Underweight";
     private static final String mNormalWeight = "Normal Weight";
@@ -254,21 +257,12 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
 
         //grab each of the views that will be filled with the information
         mTv_BMR = mFr_view.findViewById(R.id.tv_bmr);
-//        mTv_BMR_data = mFr_view.findViewById(R.id.tv_bmr_data);
-//        mTv_BMI_data = mFr_view.findViewById(R.id.tv_calculate_bmi_data);
-//        mButton_BMI_calculator = mFr_view.findViewById(R.id.button_calculate_bmi);
-
-
-        // TODO: Confirm
         mTv_BMR = mFr_view.findViewById(R.id.tv_bmr);
         mTv_BMI = mFr_view.findViewById(R.id.tv_bmi);
         mTv_weight_goal_to_label = mFr_view.findViewById(R.id.tv_weight_goal_top_label);
         mTv_weight_goal_data = mFr_view.findViewById(R.id.tv_weight_goal_data);
         mBtn_update_goals = mFr_view.findViewById(R.id.button_update_goals);
-
-
-
-        mBtn_update_goals.setOnClickListener(this); // TODO: Changed this ...
+        mBtn_update_goals.setOnClickListener(this);
 
 
         //null check to make sure that the previous activity/fragment sent over the information
@@ -276,13 +270,17 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
             mArgsReceived = getArguments();
         }
         if (savedInstanceState == null) {
+            //grab the user
+            mViewModel = ViewModelProviders.of(this.getActivity()).get(BMRViewModel.class);
+            mUserRepo = new UserRepository(this.getActivity().getApplication());
             //set the variables needed in calculating BMR and BMI
             mWeight = mArgsReceived.getInt(Key.WEIGHT);
             mAge = mArgsReceived.getInt(Key.AGE);
             mInches = mArgsReceived.getInt(Key.HEIGHT);
-            mWeightGoal = mArgsReceived.getInt(Key.GOAL);
             BMR = mArgsReceived.getInt(Key.BMR);
             mBMI = mArgsReceived.getInt(Key.BMI);
+            mUser = mArgsReceived.getParcelable(Key.USER);
+            mWeightGoal = mUser.getWeightGoal();
 
             if (mArgsReceived.get(Key.COUNTRY) == CountryCode.US) {
                 mAmerican = true;
@@ -295,7 +293,6 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
             }
 
             BMR = calculateBMR();
-
             /*
             * Calorie intake is based on their goal. Depending on if they're American or not, calc will be different.
             * Per lb lost/gained, suggested calorie discount/increase per week is 500
@@ -306,6 +303,7 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
             }
 
             mCalorieIntake = (int) BMR;
+
             if (mAmerican) {
                 //values are either positive, negative or 0. They represent lbs for Americans
                 mWeightGoal *= 500;
@@ -333,16 +331,17 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
                     }
                 }
             }
-//            mTv_BMR.setText("BMR: ");
-//            mTv_BMR_data.setText("You need " + mCalorieIntake + " Calories in order to meet your weight goal.");
 
             mTv_BMR.setText("Your BMR (Basal Metabolic Rate) is " + mCalorieIntake + " calories / day");
 
-            mTv_weight_goal_to_label.setText("To gain 2 lbs per week, you must eat"); // TODO: Determine weight goal here (add, maintain, or lose);
+            mTv_weight_goal_to_label.setText("To gain 2 lbs per week, you must eat");
             mTv_weight_goal_data.setText(mCalorieIntake + " CAL");
-            // TODO: Confirm
             mBMI = calculateBMI();
-            mTv_BMI.setText(String.valueOf("Your BMI (Body Mass Index) is " + mBMI)); // TODO: Instead of toast, concatenate underweight/overweight/normal to string.
+            // TODO: Make sure that these are actually being set in the user db
+            mUser.setBMR((int) BMR);
+            mUser.setBMI((int) mBMI);
+            mUser.setCalorieIntake(mCalorieIntake);
+            mUserRepo.updateUserAsync(mUser);
         }
 
         // Don't change this -- the menu bar with functioning navigation
