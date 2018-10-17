@@ -71,7 +71,7 @@ public class WeatherFragment extends Fragment {
         //Extract any pertinent data here from SignInActivity
         mArgsReceived = getArguments();
 //        mCityName = mArgsReceived.getString("CITY"); //NEED TO CHANGE KEY???
-//        mCountryName = mArgsReceived.getString("COUNTRY"); //NEED TO CHANGE KEY???
+        mCountryName = mArgsReceived.getString(Key.COUNTRY);
 //        String currentCityCountry = mCityName + "&" + mCountryName;
 
         //Create the view model

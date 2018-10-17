@@ -98,7 +98,7 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
         //Extract any pertinent data here from SignIn Activity
         mArgsReceived = getArguments();
 //        mCityName = mArgsReceived.getString("CITY"); //NEED TO CHANGE KEY???
-//        mCountryName = mArgsReceived.getString("COUNTRY"); //NEED TO CHANGE KEY???
+        mCountryName = mArgsReceived.getString(Key.COUNTRY);
 //        String currentCityCountry = mCityName + "&" + mCountryName;
 
         //Create the Hikes ViewModel
