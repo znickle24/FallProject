@@ -77,31 +77,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        log("ON CREATE HAS BEEN CALLED");
-
         mSignInViewModel = ViewModelProviders.of(this).get(SignInViewModel.class);
-        mSignInViewModel.getCount().observe(this, new Observer<Integer>() {
-
-            @Override
-            public void onChanged(@Nullable Integer count) {
-                ReusableUtil.log("UPDATED COUNT: " + count);
-            }
-        });
-
-        LiveData<User> user = mSignInViewModel.getUser(3);
-        if (user.getValue() != null) {
-            log("USER EXISTS: " + user.getValue());
-
-            user.observe(this, new Observer<User>() {
-                @Override
-                public void onChanged(@Nullable User user) {
-                    ReusableUtil.log("USER CHANGED: " + user.getName() + ", id: " + user.getId());
-                }
-            });
-
-        } else {
-            log("USER DOES NOT EXIST: " + user.getValue());
-        }
 
     }
 
@@ -136,39 +112,21 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
         mTextInputLayoutMap = mapTextInputLayouts(mTilName, mTilPostalCode);
         initializeSpinners();
 
-        final String USER_ID = "USER_ID"; // TODO: This is temporary...
 
-        EditText etName = mTextInputLayoutMap.get(R.id.til_name).getEditText();
-        EditText etPostalCode = mTextInputLayoutMap.get(R.id.til_postal_code).getEditText();
 
-        if (etPostalCode == null) {
-            ReusableUtil.toast(getContext(), "failed");
+        mTilName.getEditText().setText(mSignInViewModel.name);
+        mTilPostalCode.getEditText().setText(mSignInViewModel.postalCode);
+
+        byte[] compressedImage = mSignInViewModel.profileImage;
+        if (compressedImage != null) {
+            // TODO: Simplify
+            mBitmapProfileImg = ReusableUtil.byteArrayToBitmap(compressedImage);
+            mImgViewProfileImage.setImageBitmap(mBitmapProfileImg);
+            mImgBtnAddProfileImage.setVisibility(View.INVISIBLE);
+            mImgViewProfileImage.setImageBitmap(mBitmapProfileImg);
+            mImgViewProfileImage.setVisibility(View.VISIBLE);
         }
 
-//        mSignInViewModel = ViewModelProviders.of(this).get(SignInViewModel.class);
-
-        mSignInViewModel.getName().observe(this, new ObserverUtil.EditTextObserver(etName));
-        mSignInViewModel.getPostalCode().observe(this, new ObserverUtil.EditTextObserver(etPostalCode));
-        mSignInViewModel.getAgeIndex().observe(this, new ObserverUtil.SpinnerObserver(mSpinAge));
-        mSignInViewModel.getCountryCodeIndex().observe(this, new ObserverUtil.SpinnerObserver(mSpinCountry));
-
-        // This may be the first time the user has accessed the app.
-        if (getArguments().containsKey(USER_ID)) {
-
-        }
-
-//        if (savedInstanceState.getInt(USER_ID) != -1) {
-//
-//        }
-//        mSignInViewModel = ViewModelProviders.of(this).get(SignInViewModel.class);
-//        mSignInViewModel.init(savedInstanceState.getInt(USER_ID));
-//        mSignInViewModel.getUser().observe(this, observer);
-
-
-        if (savedInstanceState != null) {
-            mTilName.getEditText().setText(savedInstanceState.getString(Key.NAME));
-            mTilPostalCode.getEditText().setText(savedInstanceState.getString(Key.POSTAL_CODE));
-        }
     }
 
     /**
@@ -205,8 +163,12 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(Key.NAME, mTilPostalCode.getTextString());
-        outState.putString(Key.POSTAL_CODE, mTilPostalCode.getTextString());
+        // the edit texts are saved elsewhere & spinners keep state
+        if (mBitmapProfileImg != null) {
+            mSignInViewModel.profileImage = ReusableUtil.bitmapToByteArray(mBitmapProfileImg);
+        }
+        mSignInViewModel.ageSpinPosition = mSpinAge.getSelectedItemPosition();
+        mSignInViewModel.countrySpinPosition = mSpinCountry.getSelectedItemPosition();
     }
 
 
@@ -240,63 +202,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
                     signInBundle.putInt(Key.POSTAL_CODE,postalCode);
                     signInBundle.putSerializable(Key.COUNTRY, countryCode);
 
-
-
-
-//                    byte[] compressedImage = bitmapToByteArray(mBitmapProfileImg);
-//                    User user = new User(name, compressedImage, age, postalCode, countryCode);
-
-//                   int id, Sex sex, ActivityLevel activityLevel, int height, int weight, int delta
-//                    user.setSex(Sex.FEMALE);
-//                    user.setActivityLevel(ActivityLevel.MODERATELY_ACTIVE);
-//                    user.setHeight(4);
-//                    user.setWeight(3);
-//                    user.setWeightGoal(1);
-
-                    // int id, int BMI, int BMR, int calorieIntake
-//                    user.setBMI(100);
-//                    user.setBMR(2000);
-//                    user.setCalorieIntake(250);
-
-//                    ActiveUser activeUser = new ActiveUser();
-//                    activeUser.setUserId(1);
-
-
-//                    log("\n");
-////                    log("\n");
-////                    log("\nPRE-DATABASE ACCESS");
-////                    log("" + user.getId());
-////                    log(user.getName());
-////
-//                    int testId = mSignInViewModel.addUser(user);
-//                    mSignInViewModel.updateActiveUser(testId);
-//                    if (testId != UserRepository.ABORT) {
-//                        user.setId(testId);
-//                        log("\nPOST-DATABASE ACCESS");
-//                        log("" + user.getId());
-//                        log(user.getName());
-//                    } else {
-//                        log("FAILED TO ADD USER");
-//                    }
-////
-////                    log("\n");
-////                    log("\n");
-
-
-//                    int nonExistentUserId = mSignInViewModel.getActiveUser();
-//                    log("NON EXISTENT USER ID: " + nonExistentUserId);
-
-//                    int userId = mSignInViewModel.addUser(user);
-//                    user.setId(userId);
-//                    if (userId != -1) {
-//                        ActiveUser activeUser = new ActiveUser();
-//                        activeUser.setUserId(userId);
-//                        mSignInViewModel.updateActiveUser(activeUser);
-//                        int result = mSignInViewModel.getActiveUser();
-//                        log("RESULT: " + result);
-//                    }
-
-
                     mDataPasser.onDataPass(Module.FITNESS_INPUT, signInBundle); // SignInFragment -> MainActivity
                 }
 
@@ -319,6 +224,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
         if (requestCode == Key.REQUEST_IMAGE_CAPTURE) {
             // Nullable
             mBitmapProfileImg = onImageCaptureResult(SignInFragment.this.getActivity(), data, mBitmapProfileImg, resultCode, null);
+            toast(getContext(), "bitmap has been set");
             if (mBitmapProfileImg != null) {
 
                 // TODO: Add an update image button.
@@ -351,6 +257,11 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
         if (mTilName.isErrorEnabled() || mTilPostalCode.isErrorEnabled()) {
             disableTILErrorOnTextChanged(s.hashCode(), mTilName, mTilPostalCode);
         }
+        if (s.hashCode() == mTilName.getEditText().getText().hashCode()) {
+            mSignInViewModel.name = s.toString();
+        } else {
+            mSignInViewModel.postalCode = s.toString();
+        }
     }
 
     /**
@@ -375,10 +286,8 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
 
         if (parentId == R.id.spin_age) {
             mTvAgeRequiredLabel.setText("");
-            mSignInViewModel.getAgeIndex().setValue(mSpinAge.getSelectedItemPosition());
         } else if (parentId == R.id.spin_country) {
             mTvCountryRequiredLabel.setText("");
-            mSignInViewModel.getCountryCodeIndex().setValue(mSpinCountry.getSelectedItemPosition());
         }
     }
 
