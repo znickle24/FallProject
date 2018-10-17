@@ -51,6 +51,7 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
             mBundle.putBoolean(Key.IS_TABLET, isTablet);
 
             int activeUserId = mUserRepo.getActiveUserId();
+            log("ACTIVE USER ID: " + activeUserId);
             if (activeUserId != UserRepository.NON_EXISTENT_ID) {
                 mUser = mUserRepo.getUserSync(activeUserId);
                 mBundle.putSerializable(Key.MODULE, Module.HEALTH);
@@ -77,6 +78,8 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
             }
 
         } else {
+
+            log("SKIP INTRO");
 
             mBundle = savedInstanceState.getBundle(Key.BUNDLE);
             mUser = savedInstanceState.getParcelable(Key.USER);
@@ -144,21 +147,11 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
 
                 // SignInFragment -> MainActivity -> FitnessInputFragment
 
-                mUser = new User(mBundle);
-                mBundle.putParcelable(Key.USER, mUser);
-                log("FINISHED SIGN-IN... UPDATING DATABASE");
-                int id = mUserRepo.addUser(mUser);
-                mUser.setId(id);
-                mUserRepo.updateActiveUser(id);
-
-                /*
-                 * At this point the user's account has been created but their health data has not been
-                 * appended to their profile. If they choose not to proceed beyond the FitnessInputFragment
-                 * their account will remain.
-                 *
-                 * There are currently no checks to prevent duplicate accounts. Nor are there options to
-                 * remove an account once it has been created (apart from destroying this Activity of course).
-                 */
+                int activeUserId = mUserRepo.getActiveUserId();
+                log("ACTIVE USER ID: " + activeUserId);
+                User user = mBundle.getParcelable(Key.USER);
+                log("USER NAME: " + user.getName());
+                log("USER ID: " + user.getId());
 
                 break;
 
@@ -177,9 +170,6 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
                 MainActivity.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
 
                 // FitnessInputFragment -> MainActivity -> BMRFragment (health module)
-
-                mUser.updateFitnessData(mBundle);
-                // TODO: Update fitness data here.
 
                 /*
                  * The user's BMI and BMR data have yet to be added to the current User. This should occur

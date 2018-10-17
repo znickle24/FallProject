@@ -13,9 +13,23 @@ public class SignInViewModel extends AndroidViewModel {
     public int ageSpinPosition = 0;
     public int countrySpinPosition = 0;
 
+    private UserRepository mRepository;
+
     public SignInViewModel(@NonNull Application application) {
         super(application);
-        // TODO: Add repo for accessing database when user hits submit.
+        mRepository = new UserRepository(application);
+    }
+
+    public int addUserSync(User user) {
+        return mRepository.addUserSync(user);
+    }
+
+    public void updateActiveUser(int id) {
+        mRepository.updateActiveUser(id);
+    }
+
+    public int getActiveUser() {
+        return mRepository.getActiveUserId();
     }
 
 }

@@ -1,6 +1,8 @@
 package com.zandernickle.fallproject_pt1;
 
 
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -76,6 +78,8 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
     private Bundle mFitnessInputBundle; // required to communicate with dialog
 
     private OnDataPass mDataPasser;
+    private FitnessInputViewModel mViewModel;
+    private User mUser;
 
     public FitnessInputFragment() {
         // Required empty public constructor
@@ -146,9 +150,13 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        mViewModel = ViewModelProviders.of(this).get(FitnessInputViewModel.class);
+
         Bundle arguments = getArguments();
-        String firstNameUppercase = getFirstNameUppercase(arguments.getString(Key.NAME));
-        mCountryCode = (CountryCode) arguments.getSerializable(Key.COUNTRY);
+        mUser = arguments.getParcelable(Key.USER);
+
+        String firstNameUppercase = getFirstNameUppercase(mUser.getName());
+        mCountryCode = mUser.getCountryCode();
 
         mTvWelcome.setText(WELCOME + " " + firstNameUppercase);
 
@@ -186,6 +194,12 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
                 mFitnessInputBundle.putInt(Key.WEIGHT, weight);
                 mFitnessInputBundle.putSerializable(Key.WEIGHT_GOAL, delta);
 
+                mUser.setSex(sex);
+                mUser.setActivityLevel(activityLevel);
+                mUser.setHeight(height);
+                mUser.setWeight(weight);
+                mUser.setWeightGoal(delta);
+
                 if (isUnhealthyGoal(delta)) {
                     /* The user's fitness data should not be updated if they select the dialog's back
                      * button (as would happen if onDataPass was immediately called).
@@ -204,6 +218,7 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
                      * then given the decision whether to proceed against the warning or return to change
                      * their weight goal.
                      */
+                    mViewModel.updateUser(mUser);
                     mDataPasser.onDataPass(Module.HEALTH, mFitnessInputBundle);
                 }
 
@@ -220,6 +235,7 @@ public class FitnessInputFragment extends Fragment implements View.OnClickListen
      */
     @Override
     public void onWarningAccepted() {
+        mViewModel.updateUser(mUser);
         mDataPasser.onDataPass(Module.HEALTH, mFitnessInputBundle);
     }
 

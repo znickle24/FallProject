@@ -108,7 +108,7 @@ public class User implements Parcelable {
         }
     }
 
-    public User(@NonNull User user) {
+    public User() {
 
     }
 

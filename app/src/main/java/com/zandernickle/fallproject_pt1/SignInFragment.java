@@ -77,8 +77,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mSignInViewModel = ViewModelProviders.of(this).get(SignInViewModel.class);
-
     }
 
     /**
@@ -109,10 +107,10 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        mSignInViewModel = ViewModelProviders.of(this).get(SignInViewModel.class);
+
         mTextInputLayoutMap = mapTextInputLayouts(mTilName, mTilPostalCode);
         initializeSpinners();
-
-
 
         mTilName.getEditText().setText(mSignInViewModel.name);
         mTilPostalCode.getEditText().setText(mSignInViewModel.postalCode);
@@ -202,6 +200,25 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
                     signInBundle.putInt(Key.POSTAL_CODE,postalCode);
                     signInBundle.putSerializable(Key.COUNTRY, countryCode);
 
+                    User user = new User();
+                    user.setName(name);
+                    user.setAge(age);
+                    user.setPostalCode(postalCode);
+                    user.setCountryCode(countryCode);
+                    user.setProfileImage(ReusableUtil.bitmapToByteArray(mBitmapProfileImg));
+
+                    int resultCode = mSignInViewModel.addUserSync(user);
+                    log("NEW USER ATTEMPTED ADD; ID: " + resultCode + " : NAME: " + user.getName());
+
+                    if (resultCode == UserRepository.NON_EXISTENT_ID) {
+                        mTilName.setErrorEnabled(true);
+                        mTilName.setError("This name is already taken.");
+                        break;
+                    }
+
+                    mSignInViewModel.updateActiveUser(resultCode);
+                    user.setId(resultCode);
+                    signInBundle.putParcelable(Key.USER, user);
                     mDataPasser.onDataPass(Module.FITNESS_INPUT, signInBundle); // SignInFragment -> MainActivity
                 }
 
