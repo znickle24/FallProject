@@ -145,6 +145,7 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
                 // SignInFragment -> MainActivity -> FitnessInputFragment
 
                 mUser = new User(mBundle);
+                mBundle.putParcelable(Key.USER, mUser);
                 log("FINISHED SIGN-IN... UPDATING DATABASE");
                 int id = mUserRepo.addUser(mUser);
                 mUser.setId(id);

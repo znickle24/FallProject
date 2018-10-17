@@ -224,7 +224,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Te
         if (requestCode == Key.REQUEST_IMAGE_CAPTURE) {
             // Nullable
             mBitmapProfileImg = onImageCaptureResult(SignInFragment.this.getActivity(), data, mBitmapProfileImg, resultCode, null);
-            toast(getContext(), "bitmap has been set");
             if (mBitmapProfileImg != null) {
 
                 // TODO: Add an update image button.
