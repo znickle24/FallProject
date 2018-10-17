@@ -82,6 +82,7 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
             if (mCalorieIntake != -1) {
                 savedInstanceState.putInt("CalorieIntake", mCalorieIntake);
             }
+            savedInstanceState.putBoolean("Lose_Weight", mLoseWeight);
         }
         super.onSaveInstanceState(savedInstanceState);
     }
@@ -121,10 +122,14 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
             }
             if (mCalorieIntake != -1) {
                 mCalorieIntake = savedInstanceState.getInt("CalorieIntake");
-                mTv_weight_goal_to_label.setText("To gain 2 lbs per week, you must eat"); // TODO: Determine weight goal here (add, maintain, or lose);
+                if (mLoseWeight) {
+                    mTv_weight_goal_to_label.setText("To lose " + Math.abs(mWeightGoal) + " 2 lbs per week, you must eat"); // TODO: Determine weight goal here (add, maintain, or lose);
+                } else {
+                    mTv_weight_goal_to_label.setText("To gain " + mWeightGoal + " lbs per week, you must eat");
+                }
                 mTv_weight_goal_data.setText(mCalorieIntake + " CAL"); // TODO: Confirm (was losing this data on orientation change).
-
             }
+            mLoseWeight = savedInstanceState.getBoolean("Lose_Weight");
         }
         super.onViewStateRestored(savedInstanceState);
     }
@@ -303,11 +308,11 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
             }
 
             mCalorieIntake = (int) BMR;
-
+            int weightGoal = 0;
             if (mAmerican) {
                 //values are either positive, negative or 0. They represent lbs for Americans
-                mWeightGoal *= 500;
-                mCalorieIntake += mWeightGoal;
+                weightGoal = mWeightGoal * 500;
+                mCalorieIntake += weightGoal;
                 if (mLoseWeight) {
                     if (Sex.MALE != null && mCalorieIntake < 1200) {
                         Toast.makeText(getActivity(), "You are running a health risk by consuming below 1200 Calories a day",
@@ -319,8 +324,8 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
                 }
             } else { //not American
                 //values are either positive, negative, or 0. They represents kg for non-Americans
-                mWeightGoal *= 1100;
-                mCalorieIntake += mWeightGoal;
+                weightGoal =  mWeightGoal * 1100;
+                mCalorieIntake += weightGoal;
                 if (mLoseWeight) {
                     if (Sex.MALE != null && mCalorieIntake < 1200) {
                         Toast.makeText(getActivity(), "You are running a health risk by consuming below 1200 Calories a day",
@@ -333,11 +338,13 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
             }
 
             mTv_BMR.setText("Your BMR (Basal Metabolic Rate) is " + mCalorieIntake + " calories / day");
-
-            mTv_weight_goal_to_label.setText("To gain 2 lbs per week, you must eat");
+            if (mLoseWeight) {
+                mTv_weight_goal_to_label.setText("To lose " + Math.abs(mWeightGoal) + " lbs per week, you must eat");
+            } else {
+                mTv_weight_goal_to_label.setText("To gain"  + mWeightGoal + " lbs per week, you must eat");
+            }
             mTv_weight_goal_data.setText(mCalorieIntake + " CAL");
             mBMI = calculateBMI();
-            // TODO: Make sure that these are actually being set in the user db
             mUser.setBMR((int) BMR);
             mUser.setBMI((int) mBMI);
             mUser.setCalorieIntake(mCalorieIntake);
