@@ -118,6 +118,7 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
         super.onPause();
         if (mSensorListener != null) {
             mSensorManager.unregisterListener(mSensorListener);
+            mUser.setSteps(mSteps);
             mUserRepo.updateUserAsync(mUser);
         }
     }

@@ -50,6 +50,7 @@ public class User implements Parcelable {
     private int calorieIntake = -1;
     private int height = -1;
     private int weight = -1;
+    private int steps = 0;
     private Sex sex = null;
     private ActivityLevel activityLevel = null;
 
@@ -76,6 +77,7 @@ public class User implements Parcelable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        steps = in.readInt();
     }
 
     @Override
@@ -106,6 +108,7 @@ public class User implements Parcelable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        dest.writeInt(steps);
     }
 
     public User() {
@@ -240,4 +243,7 @@ public class User implements Parcelable {
         this.weightGoal = weightGoal;
     }
 
+    public int getSteps() { return steps; }
+
+    public void setSteps(int step) { this.steps = step; }
 }
