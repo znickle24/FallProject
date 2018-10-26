@@ -34,6 +34,7 @@ public class WeatherFragment extends Fragment {
 
     //Variables used to determine which units to use when displaying weather data
     private Bundle mArgsReceived;
+    private User mUser;
     private boolean mAmerican = false;
 
     private Context mContext;
@@ -70,7 +71,8 @@ public class WeatherFragment extends Fragment {
 
         //Extract any pertinent data here from SignInActivity
         mArgsReceived = getArguments();
-//        mCityName = mArgsReceived.getString("CITY"); //NEED TO CHANGE KEY???
+        mUser = mArgsReceived.getParcelable(Key.USER);
+        //mCityName = mArgsReceived.getString(Key.CITY); //NEED TO CHANGE KEY???
         mCountryName = mArgsReceived.getString(Key.COUNTRY);
 //        String currentCityCountry = mCityName + "&" + mCountryName;
 

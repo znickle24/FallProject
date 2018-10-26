@@ -52,6 +52,7 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
 
     //Used to determine units used in weather data displayed
     private Bundle mArgsReceived;
+    private User mUser;
     private boolean mAmerican = false;
 
     private Context mContext;
@@ -97,7 +98,8 @@ public class HikesFragment extends Fragment implements View.OnClickListener, Loc
 
         //Extract any pertinent data here from SignIn Activity
         mArgsReceived = getArguments();
-//        mCityName = mArgsReceived.getString("CITY"); //NEED TO CHANGE KEY???
+        mUser = mArgsReceived.getParcelable(Key.USER);
+        //mCityName = mArgsReceived.getString(Key.CITY); //NEED TO CHANGE KEY???
         mCountryName = mArgsReceived.getString(Key.COUNTRY);
 //        String currentCityCountry = mCityName + "&" + mCountryName;
 
