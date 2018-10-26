@@ -1,6 +1,11 @@
 package com.zandernickle.fallproject_pt1;
 
+import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -30,6 +35,10 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
     private User mUser;
     private UserRepository mUserRepo;
 
+    private SensorManager mSensorManager;
+    private Sensor mStepCounter;
+    private int mSteps;
+
     private void loadModule() {
 
     }
@@ -40,7 +49,8 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
         setContentView(R.layout.activity_main);
 
         mUserRepo = new UserRepository(MainActivity.this.getApplication()); // instantiate here important!
-
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mStepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         boolean isTablet = isTablet();
         int viewId = isTablet ? R.id.fl_fragment_placeholder_tablet_right :
                 R.id.fl_fragment_placeholder_phone;
@@ -88,6 +98,35 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
             Fragment currentFragment = mFragmentManager.findFragmentByTag(mPrevFragmentTag);
             loadFragment(mFragmentManager, viewId, currentFragment, mPrevFragmentTag, false);
 
+        }
+    }
+
+    private SensorEventListener mSensorListener = new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            mSteps = (int) event.values[0];
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+        }
+    };
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mSensorListener != null) {
+            mSensorManager.unregisterListener(mSensorListener);
+            mUserRepo.updateUserAsync(mUser);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mSensorListener != null) {
+            mSensorManager.registerListener(mSensorListener, mStepCounter, SensorManager.SENSOR_DELAY_NORMAL);
         }
     }
 
