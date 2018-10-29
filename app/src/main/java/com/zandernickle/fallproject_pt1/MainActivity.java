@@ -44,16 +44,19 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
     private Sensor mLinearAccelerometer;
     private final double mThreshold = 2.0;
 
-    //Previous positions along x, y, and z axes - for custom gesture
+    //Previous positions along x, y, and z axes - for custom gesture (shake)
     private double mPrevX, mPrevY, mPrevZ;
 
-    //Current positions along x, y, and z axes - for custom gesture
+    //Current positions along x, y, and z axes - for custom gesture (shake)
     private double mCurrX, mCurrY,mCurrZ;
 
+    //Used to detect custom gesture
     private boolean mNotFirstTime;
 
-    private void loadModule() {
+    //Flag to determine if step counter should be on or off with custom gesture
+    private boolean mStepCountOn;
 
+    private void loadModule() {
     }
 
     @Override
@@ -65,7 +68,7 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mStepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
 
-        //Get linear acceleration sensor for custom gesture
+        //Get linear acceleration sensor for custom gesture (shake)
         mLinearAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
         boolean isTablet = isTablet();
@@ -111,6 +114,10 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
             mBundle = savedInstanceState.getBundle(Key.BUNDLE);
             mUser = savedInstanceState.getParcelable(Key.USER);
 
+            //booleans used for custom gesture (shake) and step counter
+            mStepCountOn = savedInstanceState.getBoolean("StepCounter");
+            mSteps = savedInstanceState.getInt("StepCount");
+
             mPrevFragmentTag = savedInstanceState.getString(PREV_FRAGMENT_TAG);
             Fragment currentFragment = mFragmentManager.findFragmentByTag(mPrevFragmentTag);
             loadFragment(mFragmentManager, viewId, currentFragment, mPrevFragmentTag, false);
@@ -121,6 +128,13 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
     private SensorEventListener mSensorListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
+
+            //PRINTING FOR DEBUGGING
+            if(mStepCountOn) {
+                Log.d("mStepCountOn is TRUE: ","STEP COUNTER ON");
+            } else if(!mStepCountOn) {
+                Log.d("mStepCountOn is FALSE: ", "STEP COUNTER OFF");
+            }
 
             //Get the acceleration rates along the x, y, and z axes
             mCurrX = sensorEvent.values[0];
@@ -137,10 +151,28 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
                         (dx > mThreshold && dz > mThreshold)||
                         (dy > mThreshold && dz > mThreshold)) {
 
-                    //Activate step counter when custom gesture is completed
-                    mSteps = (int) sensorEvent.values[0];
+                    //toggle mStepCountOn boolean when custom gesture (shake) is activated
+                    if(mStepCountOn) {
+                        mStepCountOn = false;
+                        if (mSensorListener != null) {
+                            //unregister step counter to turn it off
+                            mSensorManager.unregisterListener(mSensorListener);
+                        }
+                        int currentSteps = (int) sensorEvent.values[0];
+                        if(currentSteps < 0) {
+                            currentSteps = currentSteps * -1;
+                        }
+                        mSteps += currentSteps; //add to step total
+                        Log.d("mSteps: ", Integer.toString(mSteps)); //printing for testing
 
-                    Log.d("mSteps: ", Integer.toString(mSteps)); //printing for debugging
+                    } else if(!mStepCountOn) {
+                        mStepCountOn = true;
+                        if (mSensorListener != null) {
+                            //register step counter to turn it on
+                            mSensorManager.registerListener(mSensorListener, mStepCounter, SensorManager.SENSOR_DELAY_NORMAL);
+                        }
+                    }
+
                 }
             }
             mPrevX = mCurrX;
@@ -172,9 +204,9 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
     @Override
     protected void onResume() {
         super.onResume();
-        if (mSensorListener != null) {
-            mSensorManager.registerListener(mSensorListener, mStepCounter, SensorManager.SENSOR_DELAY_NORMAL);
-        }
+//        if (mSensorListener != null) {
+//            mSensorManager.registerListener(mSensorListener, mStepCounter, SensorManager.SENSOR_DELAY_NORMAL);
+//        }
         //for custom gesture
         if(mLinearAccelerometer!=null){
             mSensorManager.registerListener(mSensorListener, mLinearAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
@@ -196,6 +228,8 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
         outState.putBundle(Key.BUNDLE, mBundle);
         outState.putParcelable(Key.USER, mUser);
         outState.putString(PREV_FRAGMENT_TAG, mPrevFragmentTag);
+        outState.putBoolean("StepCounter", mStepCountOn);
+        outState.putInt("StepCount", mSteps);
 
     }
 
