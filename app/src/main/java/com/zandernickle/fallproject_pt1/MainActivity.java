@@ -11,7 +11,19 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.mobile.client.AWSMobileClient;
+import com.amazonaws.mobile.client.AWSStartupHandler;
+import com.amazonaws.mobile.client.AWSStartupResult;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
+import com.amazonaws.services.s3.AmazonS3Client;
+
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 
@@ -26,7 +38,14 @@ import static com.zandernickle.fallproject_pt1.ReusableUtil.log;
 public class MainActivity extends CustomAppCompatActivity implements SignInFragment.OnDataPass,
         FitnessInputFragment.OnDataPass, MenuBarFragment.OnDataPass, RVAdapter.OnDataPass, BMRFragment.OnDataPass {
 
-    public static final String PREV_FRAGMENT_TAG = "PREV_FRAGMENT_TAG";
+    private static final String AWS_ACCESS_ID = "AKIAJO4MY562M732ZGFA";
+    private static final String AWS_SECRET_KEY = "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";
+    private boolean mIsDownloadComplete = false;
+    private String mDbPath;
+
+    private boolean mHasEncounteredUploadError = false;
+
+    private static final String PREV_FRAGMENT_TAG = "PREV_FRAGMENT_TAG";
     private static final HashMap<Module, Class<?>> mMappedModules = ModuleUtil.mapModuleList();
 
     private FragmentManager mFragmentManager = getSupportFragmentManager();
@@ -53,16 +72,22 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
     //Used to detect custom gesture
     private boolean mNotFirstTime;
 
+<<<<<<< HEAD
     //Flag to determine if step counter should be on or off with custom gesture
     private boolean mStepCountOn;
 
     private void loadModule() {
     }
+=======
+>>>>>>> 1a77eb85bd9f74f7e25bec4e2f592290eb37d762
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        AWSMobileClient.getInstance().initialize(this).execute();
+        mDbPath = UserDatabase.getDatabase(this).getOpenHelper().getWritableDatabase().getPath();
 
         mUserRepo = new UserRepository(MainActivity.this.getApplication()); // instantiate here important!
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -77,11 +102,27 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
 
         if (savedInstanceState == null) {
 
+            // download backed-up file here?
+
             mBundle = new Bundle();
             mBundle.putBoolean(Key.IS_TABLET, isTablet);
 
+            // get the most recent database file if an internet connection exists.
+//            downloadFromCloud();
+
+           /*
+            * This is a hack of a solution but a placeholder for when a download functionality is implemented.
+            */
+//            do {
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace(); // Just continue on with the most recent local copy.
+//                }
+//            } while (!mIsDownloadComplete); // see downloadFromCloud implementation.
+
             int activeUserId = mUserRepo.getActiveUserId();
-            log("ACTIVE USER ID: " + activeUserId);
+
             if (activeUserId != UserRepository.NON_EXISTENT_ID) {
                 mUser = mUserRepo.getUserSync(activeUserId);
                 mBundle.putSerializable(Key.MODULE, Module.HEALTH);
@@ -109,8 +150,6 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
 
         } else {
 
-            log("SKIP INTRO");
-
             mBundle = savedInstanceState.getBundle(Key.BUNDLE);
             mUser = savedInstanceState.getParcelable(Key.USER);
 
@@ -124,6 +163,10 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
 
         }
     }
+
+//    private void toast() {
+//        ReusableUtil.toast(this, "SUCCESSFULL UPLOAD");
+//    }
 
     private SensorEventListener mSensorListener = new SensorEventListener() {
         @Override
@@ -190,6 +233,9 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
     @Override
     protected void onPause() {
         super.onPause();
+
+        backupToCloud();
+
         if (mSensorListener != null && mUser != null) {
             mSensorManager.unregisterListener(mSensorListener);
             mUser.setSteps(mSteps);
@@ -264,7 +310,7 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
 
             case SIGN_IN:
 
-                // Not implemented. This module is currently the entry point. See onCreate.
+                backupToCloud(); // The user is about to log out.
                 break;
 
             case FITNESS_INPUT:
@@ -272,16 +318,14 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
                 // SignInFragment -> MainActivity -> FitnessInputFragment
 
                 int activeUserId = mUserRepo.getActiveUserId();
-                log("ACTIVE USER ID: " + activeUserId);
                 User user = mBundle.getParcelable(Key.USER);
-                log("USER NAME: " + user.getName());
-                log("USER ID: " + user.getId());
+                backupToCloud(); // updated fitness data
 
                 break;
 
             case HEALTH:
 
-                log("FINISHED FITNESS INPUT... UPDATING DATABASE");
+                backupToCloud(); // updated fitness data.
 
                 /* TODO
                  *
@@ -323,6 +367,12 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
 
         }
 
+        if (mHasEncounteredUploadError) {
+            // Try again
+            // This will probably be too often for a network disconnected device but for now will suffice.
+            backupToCloud();
+        }
+
         nextFragment.setArguments(mBundle);
         loadFragment(mFragmentManager, prevFragment.getId(), nextFragment, mPrevFragmentTag, false);
     }
@@ -354,6 +404,84 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
             e.printStackTrace();
         }
         return nextModuleView; // Don't let this be null... you'll crash in onDataPass.
+    }
+
+    private void backupToCloud() {
+
+        BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_ACCESS_ID, AWS_SECRET_KEY);
+        AmazonS3Client s3Client = new AmazonS3Client(credentials);
+
+        TransferUtility transferUtility =
+                TransferUtility.builder()
+                        .context(getApplicationContext())
+                        .awsConfiguration(AWSMobileClient.getInstance().getConfiguration())
+                        .s3Client(s3Client)
+                        .build();
+
+        TransferObserver uploadObserver =
+                transferUtility.upload("jsaS3/" + mDbPath, new File(mDbPath));
+
+        uploadObserver.setTransferListener(new TransferListener() {
+
+            @Override
+            public void onStateChanged(int id, TransferState state) {
+                if (TransferState.COMPLETED == state) {
+                    // Make sure to fix the error flag once a successful upload has occurred.
+                    mHasEncounteredUploadError = false;
+                }
+            }
+
+            @Override
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                // Do nothing.
+            }
+
+            @Override
+            public void onError(int id, Exception ex) {
+                // This flag will signal to attempt another upload before onPause.
+                mHasEncounteredUploadError = true;
+            }
+
+        });
+    }
+
+    private void downloadFromCloud() {
+
+        mIsDownloadComplete = false;
+
+        BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_ACCESS_ID, AWS_SECRET_KEY);
+        AmazonS3Client s3Client = new AmazonS3Client(credentials);
+
+        TransferUtility transferUtility =
+                TransferUtility.builder()
+                        .context(getApplicationContext())
+                        .awsConfiguration(AWSMobileClient.getInstance().getConfiguration())
+                        .s3Client(s3Client)
+                        .build();
+
+        TransferObserver downloadObserver =
+                transferUtility.download("jsaS3/" + mDbPath, new File(mDbPath));
+
+        downloadObserver.setTransferListener(new TransferListener() {
+
+            @Override
+            public void onStateChanged(int id, TransferState state) {
+                if (TransferState.COMPLETED == state) {
+                    mIsDownloadComplete = true;
+                }
+            }
+
+            @Override
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                // Not implemented.
+            }
+
+            @Override
+            public void onError(int id, Exception ex) {
+                // Handle errors
+            }
+
+        });
     }
 }
 

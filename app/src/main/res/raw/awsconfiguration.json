@@ -4,7 +4,7 @@
   "CredentialsProvider": {
     "CognitoIdentity": {
       "Default": {
-        "PoolId": "us-east-1:1959a84a-8fcb-43a7-86d2-e71d935d1f44",
+        "PoolId": "us-east-1:e3375f20-2fbd-46d2-93a9-e5285ed760a6",
         "Region": "us-east-1"
       }
     }
@@ -12,14 +12,26 @@
   "IdentityManager": {
     "Default": {}
   },
+  "S3TransferUtility": {
+    "Default": {
+      "Bucket": "msdfitnesstracker-userfiles-mobilehub-511266515",
+      "Region": "us-east-1"
+    }
+  },
   "PinpointAnalytics": {
     "Default": {
-      "AppId": "887d9c2bc833401ba14bfe6de096a11e",
+      "AppId": "3221968047454c0cbf62336c14513e34",
       "Region": "us-east-1"
     }
   },
   "PinpointTargeting": {
     "Default": {
+      "Region": "us-east-1"
+    }
+  },
+  "UserFileManager": {
+    "Default": {
+      "Bucket": "msdfitnesstracker-userfiles-mobilehub-511266515",
       "Region": "us-east-1"
     }
   }
