@@ -40,18 +40,17 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
     private Sensor mStepCounter;
     private int mSteps;
 
-    //ADDED for custom gesture
+    //Sensor for custom gesture
     private Sensor mLinearAccelerometer;
     private final double mThreshold = 2.0;
 
-    //Previous positions
-    private double last_x, last_y, last_z;
+    //Previous positions along x, y, and z axes - for custom gesture
+    private double mPrevX, mPrevY, mPrevZ;
 
-    //Current positions
-    private double now_x, now_y,now_z;
+    //Current positions along x, y, and z axes - for custom gesture
+    private double mCurrX, mCurrY,mCurrZ;
 
     private boolean mNotFirstTime;
-    //ADDED for custom gesture
 
     private void loadModule() {
 
@@ -66,12 +65,8 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mStepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
 
-
-        //ADDED for custom gesture
-        //Get linear acceleration sensor
+        //Get linear acceleration sensor for custom gesture
         mLinearAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-        //ADDED for custom gesture
-
 
         boolean isTablet = isTablet();
         int viewId = isTablet ? R.id.fl_fragment_placeholder_tablet_right :
@@ -127,37 +122,31 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
 
-            //mSteps = (int) sensorEvent.values[0];
-
-
-            //ADDED for custom gesture
-            //Get the acceleration rates along the y and z axes
-            now_x = sensorEvent.values[0];
-            now_y = sensorEvent.values[1];
-            now_z = sensorEvent.values[2];
+            //Get the acceleration rates along the x, y, and z axes
+            mCurrX = sensorEvent.values[0];
+            mCurrY = sensorEvent.values[1];
+            mCurrZ = sensorEvent.values[2];
 
             if(mNotFirstTime){
-                double dx = Math.abs(last_x - now_x);
-                double dy = Math.abs(last_y - now_y);
-                double dz = Math.abs(last_z - now_z);
+                double dx = Math.abs(mPrevX - mCurrX);
+                double dy = Math.abs(mPrevY - mCurrY);
+                double dz = Math.abs(mPrevZ - mCurrZ);
 
                 //Check if the values of acceleration have changed on any pair of axes
-                if( (dx > mThreshold && dy > mThreshold) ||
+                if((dx > mThreshold && dy > mThreshold) ||
                         (dx > mThreshold && dz > mThreshold)||
-                        (dy > mThreshold && dz > mThreshold)){
+                        (dy > mThreshold && dz > mThreshold)) {
 
                     //Activate step counter when custom gesture is completed
                     mSteps = (int) sensorEvent.values[0];
 
-                    Log.d("CUSTOM GESTURE ACTIVATED", "CUSTOM GESTURE ACTIVIATED");
-                    Log.d("mSteps: ", Integer.toString(mSteps));
+                    Log.d("mSteps: ", Integer.toString(mSteps)); //printing for debugging
                 }
             }
-            last_x = now_x;
-            last_y = now_y;
-            last_z = now_z;
+            mPrevX = mCurrX;
+            mPrevY = mCurrY;
+            mPrevZ = mCurrZ;
             mNotFirstTime = true;
-            //ADDED for custom gesture
         }
 
         @Override
@@ -174,12 +163,10 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
             mUser.setSteps(mSteps);
             mUserRepo.updateUserAsync(mUser);
         }
-
-        //ADDED for custom gesture
-        if(mLinearAccelerometer!=null){
+        //for custom gesture
+        if(mLinearAccelerometer!=null) {
             mSensorManager.unregisterListener(mSensorListener);
         }
-        //ADDED for custom gesture
     }
 
     @Override
@@ -188,12 +175,10 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
         if (mSensorListener != null) {
             mSensorManager.registerListener(mSensorListener, mStepCounter, SensorManager.SENSOR_DELAY_NORMAL);
         }
-
-        //ADDED for custom gesture
+        //for custom gesture
         if(mLinearAccelerometer!=null){
-            mSensorManager.registerListener(mSensorListener,mLinearAccelerometer,SensorManager.SENSOR_DELAY_NORMAL);
+            mSensorManager.registerListener(mSensorListener, mLinearAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         }
-        //ADDED for custom gesture
     }
 
     @Override
