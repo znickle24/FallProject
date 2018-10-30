@@ -283,7 +283,6 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
             mAge = mArgsReceived.getInt(Key.AGE);
             mInches = mArgsReceived.getInt(Key.HEIGHT);
             BMR = mArgsReceived.getInt(Key.BMR);
-            mBMI = mArgsReceived.getInt(Key.BMI);
             mUser = mArgsReceived.getParcelable(Key.USER);
             mWeightGoal = mUser.getWeightGoal();
 
@@ -345,6 +344,7 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
             }
             mTv_weight_goal_data.setText(mCalorieIntake + " CAL");
             mBMI = calculateBMI();
+            mTv_BMI.setText(String.valueOf(mBMI));
             mUser.setBMR((int) BMR);
             mUser.setBMI((int) mBMI);
             mUser.setCalorieIntake(mCalorieIntake);

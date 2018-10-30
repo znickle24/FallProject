@@ -72,14 +72,11 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
     //Used to detect custom gesture
     private boolean mNotFirstTime;
 
-<<<<<<< HEAD
     //Flag to determine if step counter should be on or off with custom gesture
     private boolean mStepCountOn;
 
     private void loadModule() {
     }
-=======
->>>>>>> 1a77eb85bd9f74f7e25bec4e2f592290eb37d762
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
