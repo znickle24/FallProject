@@ -30,6 +30,7 @@ import java.util.HashMap;
 import static com.zandernickle.fallproject_pt1.Key.SIGN_IN_FRAGMENT;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.loadFragment;
 import static com.zandernickle.fallproject_pt1.ReusableUtil.log;
+import static com.zandernickle.fallproject_pt1.ReusableUtil.toast;
 
 /**
  * This application's entry point. Use this class to pass data from one Fragment (or Activity) to the next. Register
@@ -437,9 +438,14 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
             public void onError(int id, Exception ex) {
                 // This flag will signal to attempt another upload before onPause.
                 mHasEncounteredUploadError = true;
+                uploadErrorToast();
             }
 
         });
+    }
+
+    private void uploadErrorToast() {
+        toast(this, "There was a problem saving your data. Don't worry, we'll try again later.");
     }
 
     private void downloadFromCloud() {
