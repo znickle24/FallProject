@@ -198,6 +198,7 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
                         if (mSensorListener != null) {
                             //unregister step counter to turn it off
                             mSensorManager.unregisterListener(mSensorListener);
+                            Toast.makeText(MainActivity.this, "Step counter is deactivated.", Toast.LENGTH_SHORT).show();
                         }
                         int currentSteps = (int) sensorEvent.values[0];
                         if(currentSteps < 0) {
@@ -211,6 +212,7 @@ public class MainActivity extends CustomAppCompatActivity implements SignInFragm
                         if (mSensorListener != null) {
                             //register step counter to turn it on
                             mSensorManager.registerListener(mSensorListener, mStepCounter, SensorManager.SENSOR_DELAY_NORMAL);
+                            Toast.makeText(MainActivity.this, "Step counter is activated.", Toast.LENGTH_SHORT).show();
                         }
                     }
 
