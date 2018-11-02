@@ -27,11 +27,12 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
 
 
 
-    private TextView mTv_BMR, mTv_weight_goal_to_label, mTv_weight_goal_data, mTv_BMI;
+    private TextView mTv_BMR, mTv_weight_goal_to_label, mTv_weight_goal_data, mTv_BMI, mTv_Steps;
     private Button mBtn_update_goals;
 
 
     private boolean mLoseWeight = false;
+    private int mSteps = -1;
     private static double BMR = -1.0; //value calculated based on age, sex, height, & weight
     private int mCalorieIntake; //the number of calories an individual needs to eat to meet their goal
     private static double mBMI = -1.0; //value calculated based on height, weight (metric or imperial) set to -1 if the user hasn't calculated it before.
@@ -82,6 +83,9 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
             if (mCalorieIntake != -1) {
                 savedInstanceState.putInt("CalorieIntake", mCalorieIntake);
             }
+            if (mSteps != -1) {
+                savedInstanceState.putInt("Steps", mSteps);
+            }
             savedInstanceState.putBoolean("Lose_Weight", mLoseWeight);
         }
         super.onSaveInstanceState(savedInstanceState);
@@ -130,6 +134,10 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
                 mTv_weight_goal_data.setText(mCalorieIntake + " CAL"); // TODO: Confirm (was losing this data on orientation change).
             }
             mLoseWeight = savedInstanceState.getBoolean("Lose_Weight");
+            if (mSteps != -1) {
+                mSteps = savedInstanceState.getInt("Steps");
+                mTv_Steps.setText("You've walked " + mSteps + " keep it up!");
+            }
         }
         super.onViewStateRestored(savedInstanceState);
     }
@@ -264,6 +272,7 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
         mTv_BMR = mFr_view.findViewById(R.id.tv_bmr);
         mTv_BMR = mFr_view.findViewById(R.id.tv_bmr);
         mTv_BMI = mFr_view.findViewById(R.id.tv_bmi);
+        mTv_Steps = mFr_view.findViewById(R.id.tv_steps);
         mTv_weight_goal_to_label = mFr_view.findViewById(R.id.tv_weight_goal_top_label);
         mTv_weight_goal_data = mFr_view.findViewById(R.id.tv_weight_goal_data);
         mBtn_update_goals = mFr_view.findViewById(R.id.button_update_goals);
@@ -285,7 +294,7 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
             BMR = mArgsReceived.getInt(Key.BMR);
             mUser = mArgsReceived.getParcelable(Key.USER);
             mWeightGoal = mUser.getWeightGoal();
-
+            mSteps = mUser.getSteps();
             if (mArgsReceived.get(Key.COUNTRY) == CountryCode.US) {
                 mAmerican = true;
             }
@@ -342,9 +351,11 @@ public class BMRFragment extends android.support.v4.app.Fragment implements View
             } else {
                 mTv_weight_goal_to_label.setText("To gain"  + mWeightGoal + " lbs per week, you must eat");
             }
+
             mTv_weight_goal_data.setText(mCalorieIntake + " CAL");
             mBMI = calculateBMI();
             mTv_BMI.setText(String.valueOf(mBMI));
+            mTv_Steps.setText("You've walked " + mUser.getSteps() + " keep it up!");
             mUser.setBMR((int) BMR);
             mUser.setBMI((int) mBMI);
             mUser.setCalorieIntake(mCalorieIntake);
